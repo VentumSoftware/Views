@@ -8,43 +8,16 @@ const dfltState = {
     headers: {},
     filters: {},
     filterButtons: {
-        filter: {
-            type: "submit",
-            className: "btn btn-success",
-            value: "submit",
-            innerHTML: "Filtrar",
-            position: "relative",
-            width: '95%'
-        },
-        erase: {
-            type: "submit",
-            className: "btn btn-success",
-            value: "submit",
-            innerHTML: "Filtrar",
-            position: "relative",
-            width: '95%'
-        },
-        edit: {
-            type: "submit",
-            className: "btn btn-success",
-            value: "submit",
-            innerHTML: "Filtrar",
-            position: "relative",
-            width: '95%'
-        },
-        add: {
-            type: "submit",
-            className: "btn btn-success",
-            value: "submit",
-            innerHTML: "Filtrar",
-            position: "relative",
-            width: '95%'
-        },
+        filter: true,
+        erase: true,
+        edit: true,
+        add: true,
     },
     initialStages: {},
     finalStages: {},
     footerButtons: {},
     rows: [],
+    selectedRows: [],
     emptyCellChar: "-",
     selectedPage: 0,
     paginationIndex: 0,
@@ -284,6 +257,18 @@ const getFiltersValues = (state) => {
 };
 
 //----------------------------------------------------------------------------------------------
+
+const addNewElement = () => {
+
+};
+
+const eraseSelectedRows = () => {
+
+};
+
+const editSelectedRows = () => {
+
+};
 
 const drawPagination = (state, count) => {
     try {
@@ -577,65 +562,132 @@ const create = (data, parent) => {
         inputs.className = "form-row";
         col.appendChild(inputs);
 
-        var btns = Object.values(newState.filterButtons);
+        var btns = Object.entries(newState.filterButtons);
+        var btnsCount = 0;
+        btns.forEach(([key, value]) => {
+            if (value)
+                btnsCount++;
+        });
+        console.log("btncount: " + btnsCount.toString());
+        btns.forEach(([key, value]) => {
+            if (value) {
+                var btnDiv = document.createElement("div");
+                switch (btnsCount) {
+                    case 1:
+                        btnDiv.className += "col-12";
+                        break;
+                    case 2:
+                        btnDiv.className += "col-6";
+                        break;
+                    case 3:
+                        btnDiv.className += "col-4";
+                        break;
+                    case 4:
+                        btnDiv.className += "col-3";
+                        break;
+                    default:
+                        btnDiv.className += "col-12";
+                        break;
+                }
 
-        btns.forEach(element => {
-            var btnDiv = document.createElement("div");
+                inputs.appendChild(btnDiv);
 
-            switch (inputsArray.length) {
-                case 1:
-                    btnDiv.className += "col-12";
-                    break;
-                case 2:
-                    btnDiv.className += "col-6";
-                    break;
-                case 3:
-                    btnDiv.className += "col-4";
-                    break;
-                case 4:
-                    btnDiv.className += "col-3";
-                    break;
-                default:
-                    btnDiv.className += "col-12";
-                    break;
+                var btn = document.createElement("button");
+                btn.type = "submit";
+                btn.style.position = "relative";
+                btn.style.width = '100%';
+                btn.style.overflowWrap = "normal";
+
+
+                //<i class="fa fa-home"></i>
+                btnDiv.appendChild(btn);
+
+                switch (key) {
+                    case "filter":
+                        btn.className = "btn btn-secondary";
+                        if (btnsCount <= 3)
+                            btn.innerHTML = "Filtrar";
+                        btn.value = "submit";
+                        var icon = document.createElement("i");
+                        icon.className = "fa fa-search";
+                        btn.appendChild(icon);
+
+                        btn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            newState.selectedPage = 0;
+                            newState.paginationIndex = 0;
+                            update(newState)
+                                .then(() => console.log("updated"))
+                                .catch(err => console.log("failed update: " + err));
+                        });
+                        break;
+                    case "erase":
+                        btn.className = "btn btn-danger";
+                        if (btnsCount <= 3)
+                            btn.innerHTML = "Borrar";
+                        btn.value = "submit";
+                        btn.disabled = true;
+                        var icon = document.createElement("i");
+                        icon.className = "fa fa-trash";
+                        btn.appendChild(icon);
+                        btn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            eraseSelectedRows();
+                        });
+                        break;
+                    case "edit":
+                        btn.className = "btn btn-primary";
+                        if (btnsCount <= 3)
+                            btn.innerHTML = "Editar";
+                        btn.value = "submit";
+                        btn.disabled = true;
+                        var icon = document.createElement("i");
+                        icon.className = "fa fa-pencil";
+                        btn.appendChild(icon);
+                        btn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            editSelectedRows();
+                        });
+                        break;
+                    case "add":
+                        btn.className = "btn btn-success";
+                        if (btnsCount <= 3)
+                            btn.innerHTML = "Agregar";
+                        btn.value = "submit";
+                        var icon = document.createElement("i");
+                        icon.className = "fa fa-plus";
+                        btn.appendChild(icon);
+                        btn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            addNewElement();
+                        });
+                        break;
+                    default:
+                        break;
+                }
+
+
             }
-
-            col.appendChild(btnDiv);
-
-            var btn = document.createElement("button");
-            btn.type = element.type;
-            btn.className = element.className;
-            btn.value = element.value;
-            btn.innerHTML = element.innerHTML;
-            btn.style.position = element.position;
-            btn.style.width = element.width;
-            btnDiv.appendChild(btn);
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                newState.selectedPage = 0;
-                newState.paginationIndex = 0;
-                update(newState).then(() => console.log("updated")).catch(err => console.log("failed update: " + err));
-            });
         });
 
-        if (newState.filterButtons.filter) {
-            var btn = document.createElement("button");
-            btn.type = "submit";
-            btn.className = "btn btn-success";
-            btn.value = "submit";
-            btn.innerHTML = "Filtrar";
-            btn.style.position = "relative";
-            btn.style.width = '95%';
+        // if (newState.filterButtons.filter) {
+        //     var btn = document.createElement("button");
+        //     btn.type = "submit";
+        //     btn.className = "btn btn-success";
+        //     btn.value = "submit";
+        //     btn.innerHTML = "Filtrar";
+        //     btn.style.position = "relative";
+        //     btn.style.width = '95%';
 
-            col.appendChild(btn);
-        }
+        //     col.appendChild(btn);
+        // }
 
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            newState.selectedPage = 0;
-            newState.paginationIndex = 0;
-            update(newState).then(() => console.log("updated")).catch(err => console.log("failed update: " + err));
-        });
+        // btn.addEventListener('click', (e) => {
+        //     e.preventDefault();
+        //     newState.selectedPage = 0;
+        //     newState.paginationIndex = 0;
+        //     update(newState).then(() => console.log("updated")).catch(err => console.log("failed update: " + err));
+        // });
 
         return div;
     };
