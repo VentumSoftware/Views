@@ -7,8 +7,43 @@ const dfltState = {
     fetchPath: "/api/aggregate",
     headers: {},
     filters: {},
+    filterButtons: {
+        filter: {
+            type: "submit",
+            className: "btn btn-success",
+            value: "submit",
+            innerHTML: "Filtrar",
+            position: "relative",
+            width: '95%'
+        },
+        erase: {
+            type: "submit",
+            className: "btn btn-success",
+            value: "submit",
+            innerHTML: "Filtrar",
+            position: "relative",
+            width: '95%'
+        },
+        edit: {
+            type: "submit",
+            className: "btn btn-success",
+            value: "submit",
+            innerHTML: "Filtrar",
+            position: "relative",
+            width: '95%'
+        },
+        add: {
+            type: "submit",
+            className: "btn btn-success",
+            value: "submit",
+            innerHTML: "Filtrar",
+            position: "relative",
+            width: '95%'
+        },
+    },
     initialStages: {},
     finalStages: {},
+    footerButtons: {},
     rows: [],
     emptyCellChar: "-",
     selectedPage: 0,
@@ -537,14 +572,63 @@ const create = (data, parent) => {
         label.style.position = "relative";
         label.style.width = '100%';
         col.appendChild(label);
-        var btn = document.createElement("button");
-        btn.type = "submit";
-        btn.className = "btn btn-success";
-        btn.value = "submit";
-        btn.innerHTML = "Filtrar";
-        btn.style.position = "relative";
-        btn.style.width = '90%';
-        col.appendChild(btn);
+
+        var inputs = document.createElement("div");
+        inputs.className = "form-row";
+        col.appendChild(inputs);
+
+        var btns = Object.values(newState.filterButtons);
+
+        btns.forEach(element => {
+            var btnDiv = document.createElement("div");
+
+            switch (inputsArray.length) {
+                case 1:
+                    btnDiv.className += "col-12";
+                    break;
+                case 2:
+                    btnDiv.className += "col-6";
+                    break;
+                case 3:
+                    btnDiv.className += "col-4";
+                    break;
+                case 4:
+                    btnDiv.className += "col-3";
+                    break;
+                default:
+                    btnDiv.className += "col-12";
+                    break;
+            }
+
+            col.appendChild(btnDiv);
+
+            var btn = document.createElement("button");
+            btn.type = element.type;
+            btn.className = element.className;
+            btn.value = element.value;
+            btn.innerHTML = element.innerHTML;
+            btn.style.position = element.position;
+            btn.style.width = element.width;
+            btnDiv.appendChild(btn);
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                newState.selectedPage = 0;
+                newState.paginationIndex = 0;
+                update(newState).then(() => console.log("updated")).catch(err => console.log("failed update: " + err));
+            });
+        });
+
+        if (newState.filterButtons.filter) {
+            var btn = document.createElement("button");
+            btn.type = "submit";
+            btn.className = "btn btn-success";
+            btn.value = "submit";
+            btn.innerHTML = "Filtrar";
+            btn.style.position = "relative";
+            btn.style.width = '95%';
+
+            col.appendChild(btn);
+        }
 
         btn.addEventListener('click', (e) => {
             e.preventDefault();
