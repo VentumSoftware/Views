@@ -7,17 +7,21 @@ const dfltState = {
     fetchPath: "/api/aggregate",
     headers: {},
     filters: {},
-    filterButtons: {
+    enabledBtns: {
         filter: true,
         erase: true,
         edit: true,
         add: true,
     },
+    filterBtn: null,
+    eraseBtn: null,
+    editBtn: null,
+    addBtn: null,
     initialStages: {},
     finalStages: {},
     footerButtons: {},
     rows: [],
-    selectedRows: [],
+    rowsCheckboxs: [],
     emptyCellChar: "-",
     selectedPage: 0,
     paginationIndex: 0,
@@ -270,6 +274,33 @@ const editSelectedRows = () => {
 
 };
 
+const updateEditRemoveBtns = (state) => {
+    const enableBtns = () => {
+        state.eraseBtn.disabled = false;
+        state.editBtn.disabled = false;
+        console.log("enableBtns true");
+    };
+
+    const disableBtns = () => {
+        state.eraseBtn.disabled = true;
+        state.editBtn.disabled = true;
+        console.log("enableBtns false");
+    };
+
+
+    var enable = false;
+    state.rowsCheckboxs.forEach((checkbox) => {
+        if (checkbox.checked) {
+            enable = true;
+        }
+    });
+    if (enable) {
+        enableBtns();
+    } else {
+        disableBtns();
+    }
+}
+
 const drawPagination = (state, count) => {
     try {
         state.paginationRoot.innerHTML = "";
@@ -433,6 +464,8 @@ const drawRows = (state, data) => {
         console.log("drawRows headers: " + JSON.stringify(state.headers));
         state.rowsRoot.innerHTML = "";
 
+        state.rowsCheckboxs = [];
+
         data.forEach(row => {
             var tr = document.createElement("tr");
             tr.className = "";
@@ -443,6 +476,10 @@ const drawRows = (state, data) => {
                 var checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
                 checkbox.className = "";
+                state.rowsCheckboxs.push(checkbox);
+                checkbox.addEventListener('click', (e) => {
+                    updateEditRemoveBtns(state);
+                })
                 th.appendChild(checkbox);
                 tr.appendChild(th);
             }
@@ -572,7 +609,7 @@ const create = (data, parent) => {
         inputs.className = "form-row";
         col.appendChild(inputs);
 
-        var btns = Object.entries(newState.filterButtons);
+        var btns = Object.entries(newState.enabledBtns);
         var btnsCount = 0;
         btns.forEach(([key, value]) => {
             if (value)
@@ -630,6 +667,7 @@ const create = (data, parent) => {
                                 .then(() => console.log("updated"))
                                 .catch(err => console.log("failed update: " + err));
                         });
+                        newState.filterBtn = btn;
                         break;
                     case "erase":
                         btn.className = "btn btn-danger";
@@ -644,6 +682,7 @@ const create = (data, parent) => {
                             e.preventDefault();
                             eraseSelectedRows();
                         });
+                        newState.eraseBtn = btn;
                         break;
                     case "edit":
                         btn.className = "btn btn-primary";
@@ -658,6 +697,7 @@ const create = (data, parent) => {
                             e.preventDefault();
                             editSelectedRows();
                         });
+                        newState.editBtn = btn;
                         break;
                     case "add":
                         btn.className = "btn btn-success";
@@ -671,6 +711,7 @@ const create = (data, parent) => {
                             e.preventDefault();
                             addNewElement();
                         });
+                        newState.addBtn = btn;
                         break;
                     default:
                         break;
