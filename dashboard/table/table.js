@@ -437,6 +437,16 @@ const drawRows = (state, data) => {
             var tr = document.createElement("tr");
             tr.className = "";
             state.rowsRoot.appendChild(tr);
+
+            if (true) {
+                var th = document.createElement("th");
+                var checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.className = "";
+                th.appendChild(checkbox);
+                tr.appendChild(th);
+            }
+
             Object.keys(state.headers).forEach(headerKey => {
                 var th = document.createElement("th");
                 var cellValue = getCellValue(row, state.headers[headerKey].name.split('.'));
@@ -707,6 +717,15 @@ const create = (data, parent) => {
         tr.id = newState.id + "-table-headers-tr";
         tr.className = "";
         thead.appendChild(tr);
+
+        if (true) {
+            var th = document.createElement("th");
+            th.id = newState.id + "-table-headers-th";
+            th.className = "";
+            th.innerHTML = " &nbsp";
+            thead.appendChild(th);
+        }
+
         Object.keys(newState.headers).forEach(key => {
             var th = document.createElement("th");
             th.id = newState.id + "-table-headers-th";
