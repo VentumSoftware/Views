@@ -20,7 +20,7 @@ const dfltState = {
     initialStages: {},
     finalStages: {},
     footerButtons: {},
-    rows: [],
+    rowsData: [],
     rowsCheckboxs: [],
     emptyCellChar: "-",
     selectedPage: 0,
@@ -266,8 +266,49 @@ const addNewElement = () => {
 
 };
 
-const eraseSelectedRows = () => {
+const eraseSelectedRows = (state) => {
+    var selectedIds = [];
+    const getSelectedIDs = () => {
+        try {
+            for (let index = 0; index < state.rowsCheckboxs.length; index++) {
+                if (state.rowsCheckboxs[index].checked) {
+                    selectedIds.push(state.rowsData[index]._id);
+                }
+            }
+            return selectedIds;
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
+    const buildPipeline = (ids) => {
+        console.log(ids);
+    }
+
+    try {
+        //"_id": "5f7de246efb14400177b981e"
+        var path = state.fetchPath;
+        var ids = getSelectedIDs();
+        var pipeline = buildPipeline(ids);
+        const options = `{"collation":{"locale":"en_US","numericOrdering":true}}`;
+        fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
+                referrerPolicy: "origin-when-cross-origin",
+                credentials: 'include',
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                }
+            })
+            .then(res => res.json())
+            .then(res => update(state))
+            .catch(err => {
+                console.log(err);
+                reject(err)
+            });
+
+    } catch (error) {
+        console.log(error);
+    }
 };
 
 const editSelectedRows = () => {
@@ -287,13 +328,13 @@ const updateEditRemoveBtns = (state) => {
         console.log("enableBtns false");
     };
 
-
     var enable = false;
     state.rowsCheckboxs.forEach((checkbox) => {
         if (checkbox.checked) {
             enable = true;
         }
     });
+
     if (enable) {
         enableBtns();
     } else {
@@ -501,6 +542,7 @@ const update = (state) => {
     return new Promise((resolve, reject) => {
         fetchData(state)
             .then(result => {
+                state.rowsData = result.rows;
                 drawRows(state, result.rows);
                 drawPagination(state, result.count);
                 resolve("ok");
@@ -680,7 +722,7 @@ const create = (data, parent) => {
                         btn.appendChild(icon);
                         btn.addEventListener('click', (e) => {
                             e.preventDefault();
-                            eraseSelectedRows();
+                            eraseSelectedRows(newState);
                         });
                         newState.eraseBtn = btn;
                         break;
@@ -695,7 +737,7 @@ const create = (data, parent) => {
                         btn.appendChild(icon);
                         btn.addEventListener('click', (e) => {
                             e.preventDefault();
-                            editSelectedRows();
+                            editSelectedRows(newState);
                         });
                         newState.editBtn = btn;
                         break;
@@ -709,7 +751,7 @@ const create = (data, parent) => {
                         btn.appendChild(icon);
                         btn.addEventListener('click', (e) => {
                             e.preventDefault();
-                            addNewElement();
+                            addNewElement(newState);
                         });
                         newState.addBtn = btn;
                         break;
