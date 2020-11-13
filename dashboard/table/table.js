@@ -1,5 +1,8 @@
+import dashboard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/dashboard.js';
 import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
 import card from 'https://ventumdashboard.s3.amazonaws.com/dashboard/card/card.js';
+import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.js';
+import modal from 'https://ventumdashboard.s3.amazonaws.com/dashboard/modal/modal.js';
 
 const dfltState = {
     id: "noID",
@@ -8,15 +11,182 @@ const dfltState = {
     headers: {},
     filters: {},
     enabledBtns: {
-        filter: true,
-        erase: true,
-        edit: true,
-        add: true,
+        filter: {
+            enabled: "true",
+            type: "filter",
+            label: "filtrar",
+            onClick: {
+                cmd: "filter"
+            }
+        },
+        erase: {
+            enabled: "true",
+            type: "erase",
+            label: "filtrar",
+            onClick: {
+                cmd: "erase"
+            }
+        },
+        edit: {
+            enabled: "true",
+            type: "edit",
+            label: "editar",
+            onClick: {
+                cmds: {
+                    1: {
+                        type: "modal",
+                        form: {
+                            title: "INTI",
+                            cols: {
+                                0: {
+                                    0: {
+                                        type: "text",
+                                        label: "DNI",
+                                        placeholder: "DNI"
+                                    },
+                                    1: {
+                                        type: "text",
+                                        label: "Nombre",
+                                        placeholder: "Nombre"
+                                    },
+                                    2: {
+                                        type: "text",
+                                        label: "Apellido",
+                                        placeholder: "Apellido"
+                                    },
+                                    3: {
+                                        type: "date",
+                                        label: "Fecha N.",
+                                        placeholder: ""
+                                    },
+                                    4: {
+                                        type: "text",
+                                        label: "Empresa",
+                                        placeholder: "Empresa"
+                                    },
+                                },
+                                1: {
+                                    0: {
+                                        type: "text",
+                                        label: "Sector",
+                                        placeholder: "Sector"
+                                    },
+                                    1: {
+                                        type: "text",
+                                        label: "Posición",
+                                        placeholder: "Posición"
+                                    },
+                                    2: {
+                                        type: "text",
+                                        label: "Mail",
+                                        placeholder: "Mail"
+                                    },
+                                    3: {
+                                        type: "text",
+                                        label: "Teléfono",
+                                        placeholder: ""
+                                    },
+                                    4: {
+                                        type: "text",
+                                        label: "Dirección",
+                                        placeholder: "Dirección"
+                                    },
+                                }
+                            },
+                            footerBtns: {
+                                cancel: {
+                                    enabled: "true",
+                                    type: "edit",
+                                    label: "editar",
+                                    onClick: {}
+                                },
+                                acept: {
+                                    enabled: "true",
+                                    type: "edit",
+                                    label: "editar",
+                                    onClick: {}
+                                }
+                            }
+                        },
+                    }
+                }
+            }
+        },
+        add: {
+            enabled: "true",
+            type: "add",
+            label: "agregar",
+            onClick: {
+                cmds: {
+                    0: {
+                        type: "add",
+                        payload: {
+                            form: {
+                                title: "INTI",
+                                cols: {
+                                    0: {
+                                        0: {
+                                            type: "text",
+                                            label: "DNI",
+                                            placeholder: "DNI"
+                                        },
+                                        1: {
+                                            type: "text",
+                                            label: "Nombre",
+                                            placeholder: "Nombre"
+                                        },
+                                        2: {
+                                            type: "text",
+                                            label: "Apellido",
+                                            placeholder: "Apellido"
+                                        },
+                                        3: {
+                                            type: "date",
+                                            label: "Fecha N.",
+                                            placeholder: ""
+                                        },
+                                        4: {
+                                            type: "text",
+                                            label: "Empresa",
+                                            placeholder: "Empresa"
+                                        },
+                                    },
+                                    1: {
+                                        0: {
+                                            type: "text",
+                                            label: "Sector",
+                                            placeholder: "Sector"
+                                        },
+                                        1: {
+                                            type: "text",
+                                            label: "Posición",
+                                            placeholder: "Posición"
+                                        },
+                                        2: {
+                                            type: "text",
+                                            label: "Mail",
+                                            placeholder: "Mail"
+                                        },
+                                        3: {
+                                            type: "text",
+                                            label: "Teléfono",
+                                            placeholder: ""
+                                        },
+                                        4: {
+                                            type: "text",
+                                            label: "Dirección",
+                                            placeholder: "Dirección"
+                                        },
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     },
-    filterBtn: null,
-    eraseBtn: null,
-    editBtn: null,
-    addBtn: null,
+    add: {},
     initialStages: {},
     finalStages: {},
     footerButtons: {},
@@ -25,248 +195,41 @@ const dfltState = {
     emptyCellChar: "-",
     selectedPage: 0,
     paginationIndex: 0,
+
+    //HTML References:
+    filterBtn: null,
+    eraseBtn: null,
+    editBtn: null,
+    addBtn: null,
 };
 
 var states = [];
 
-const getRows = (state) => {
+//---------------------------------------- Otros ----------------------------------------------------
 
-    const buildPipeline = (filters) => {
-
-        const buildStage = (key, value) => {
-            console.log(key);
-            console.log(value);
-
-            const getStageDefinition = () => {
-                var result = null;
-                if (value == "")
-                    return result;
-                Object.keys(state.filters).forEach((index) => {
-                    Object.keys(state.filters[index].inputs).forEach((filter) => {
-                        if (state.filters[index].inputs[filter].name == key) {
-                            result = state.filters[index].inputs[filter].stage;
-                            console.log(result);
-                        }
-                    })
-                })
-                return result;
-            };
-
-            var result = "";
-            var stageDef = getStageDefinition();
-            console.log(stageDef);
-            if (stageDef != null) {
-                switch (stageDef.type) {
-                    case "match":
-                        switch (stageDef.transform) {
-                            case "date":
-                                value = formatDateToQuery(value);
-                                break;
-                            default:
-                                break;
-                        }
-                        var op = "";
-                        switch (typeof(stageDef.op)) {
-                            case 'string':
-                                op = `{"${stageDef.op}":"${value}"}`;
-                                break;
-                            case 'undefined':
-                                op = `"${value}"`;
-                                break;
-                            case 'object':
-                                //TODO
-                                break;
-                            default:
-                                break;
-                        }
-                        result += `{"$match":{"${stageDef.var}":${op}}},`;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            return result;
-        }
-
-        var result = "[";
-        Object.keys(filters).forEach(key => {
-            result += buildStage(key, filters[key]);
-        });
-        Object.keys(state.finalStages).forEach((key) => {
-            result += state.finalStages[key] + ",";
-        })
-        result += `{"$skip": ${state.selectedPage*10} },{"$limit": 10 }]`; //Ordenamiento descendente por Hora (de nuevo a viejo) -- Hasta 10 resultados.
-        console.log(result);
-        return result;
-    };
-    var path = state.fetchPath;
-    var filters = getFiltersValues(state);
-    var pipeline = buildPipeline(filters);
-
-    return new Promise((resolve, reject) => {
-        const options = `{"collation":{"locale":"en_US","numericOrdering":true}}`;
-        fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
-                referrerPolicy: "origin-when-cross-origin",
-                credentials: 'include',
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8',
-                }
-            })
-            .then(res => res.json())
-            .then(res => resolve(res))
-            .catch(err => {
-                console.log(err);
-                reject(err)
-            });
-    });
-}
-
-const getCount = (state) => {
-    const buildPipeline = (filters) => {
-
-        const buildStage = (key, value) => {
-            console.log(key);
-            console.log(value);
-
-            const getStageDefinition = () => {
-                var result = null;
-                if (value == "")
-                    return result;
-                Object.keys(state.filters).forEach((index) => {
-                    Object.keys(state.filters[index].inputs).forEach((filter) => {
-                        if (state.filters[index].inputs[filter].name == key) {
-                            result = state.filters[index].inputs[filter].stage;
-                            console.log(result);
-                        }
-                    })
-                })
-                return result;
-            };
-
-            var result = "";
-            var stageDef = getStageDefinition();
-            console.log(stageDef);
-            if (stageDef != null) {
-                switch (stageDef.type) {
-                    case "match":
-                        switch (stageDef.transform) {
-                            case "date":
-                                value = formatDateToQuery(value);
-                                break;
-                            default:
-                                break;
-                        }
-                        var op = "";
-                        switch (typeof(stageDef.op)) {
-                            case 'string':
-                                op = `{"${stageDef.op}":"${value}"}`;
-                                break;
-                            case 'undefined':
-                                op = `"${value}"`;
-                                break;
-                            case 'object':
-                                //TODO
-                                break;
-                            default:
-                                break;
-                        }
-                        result += `{"$match":{"${stageDef.var}":${op}}},`;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            return result;
-        }
-
-        var result = "[";
-        Object.keys(filters).forEach(key => {
-            result += buildStage(key, filters[key]);
-        });
-        Object.keys(state.finalStages).forEach((key) => {
-            result += state.finalStages[key] + ",";
-        })
-        result += `{ "$count": "count" }]`; //Ordenamiento descendente por Hora (de nuevo a viejo) -- Hasta 10 resultados.
-        console.log(result);
-        return result;
-    };
-    var path = state.fetchPath;
-    var filters = getFiltersValues(state);
-    var pipeline = buildPipeline(filters);
-
-    return new Promise((resolve, reject) => {
-        const options = `{"collation":{"locale":"en_US","numericOrdering":true}}`;
-        fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
-                referrerPolicy: "origin-when-cross-origin",
-                credentials: 'include',
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8',
-                }
-            })
-            .then(res => {
-                console.log(res);
-                return res.json();
-            })
-            .then(res => {
-                console.log(res);
-                resolve(res);
-            })
-            .catch(err => {
-                console.log(err);
-                reject(err)
-            });
-    });
-};
-
-const fetchData = (state) => {
-    return new Promise((resolve, reject) => {
-        var result = {};
-        getRows(state)
-            .then(rows => {
-                result.rows = rows;
-                return getCount(state);
-            })
-            .then(count => {
-                result.count = count[0].count;
-                resolve(result);
-            })
-            .catch(err => {
-                console.log(err);
-                reject(err);
-            });
-    });
-};
-
-//--------------------------------------------------------------------------------------------
-
+//TODO: Mover a un librería
 const formatDateToQuery = (date) => {
     var dateToFormat = date.split("-");
     dateToFormat = dateToFormat[0] + dateToFormat[1] + dateToFormat[2];
     return (dateToFormat[0] + dateToFormat[1] + dateToFormat[2]);
 };
 
-const getFiltersValues = (state) => {
-    var result = {};
-    if (state.filterForm) {
-        const formData = new FormData(state.filterForm);
-        var i = 0;
-        for (var pair of formData.entries()) {
-            result[pair[0]] = pair[1];
+//----------------------------------------- Cmds -------------------------------------------
+
+const addNewElement = (state, payload) => {
+    return new Promise((success, failed) => {
+        try {
+            console.log("cmd: addNewElement. Payload: " + JSON.stringify(payload));
+            modal.show(payload);
+            success("ok");
+        } catch (error) {
+            console.log(error);
+            failed(error);
         }
-    };
-    console.log("filter values: " + JSON.stringify(result));
-    return result;
+    });
 };
 
-//----------------------------------------------------------------------------------------------
-
-const addNewElement = () => {
-
-};
-
-const eraseSelectedRows = (state) => {
+const eraseSelectedRows = (state, payload) => {
     var selectedIds = [];
     const getSelectedIDs = () => {
         try {
@@ -286,7 +249,6 @@ const eraseSelectedRows = (state) => {
     }
 
     try {
-        //"_id": "5f7de246efb14400177b981e"
         var path = state.fetchPath;
         var ids = getSelectedIDs();
         var pipeline = buildPipeline(ids);
@@ -311,11 +273,11 @@ const eraseSelectedRows = (state) => {
     }
 };
 
-const editSelectedRows = () => {
-
+const editSelectedRows = (state, payload) => {
+    state.enabledBtns.edit.onclick();
 };
 
-const updateEditRemoveBtns = (state) => {
+const updateEditRemoveBtns = (state, payload) => {
     const enableBtns = () => {
         state.eraseBtn.disabled = false;
         state.editBtn.disabled = false;
@@ -340,211 +302,437 @@ const updateEditRemoveBtns = (state) => {
     } else {
         disableBtns();
     }
-}
-
-const drawPagination = (state, count) => {
-    try {
-        state.paginationRoot.innerHTML = "";
-
-        const removeAllActives = () => {
-            state.paginationRoot.childNodes.forEach(el => el.classList.remove("active"));
-        }
-
-        //Creo el btn first
-        var first = document.createElement("li");
-        first.className = "page-item";
-        state.paginationRoot.appendChild(first);
-        var firstButton = document.createElement("button");
-        firstButton.className = "page-link ventum-pagination-btn";
-        firstButton.innerHTML = "Principio";
-        if (state.paginationIndex == 0) {
-            firstButton.disabled = true;
-            firstButton.style.color = "grey";
-        }
-        firstButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            state.paginationIndex = 0;
-            drawPagination(state, count);
-        })
-        first.appendChild(firstButton);
-
-        //Creo el btn <<
-        var previous = document.createElement("li");
-        previous.className = "page-item";
-        state.paginationRoot.appendChild(previous);
-        var previousButton = document.createElement("button");
-        previousButton.className = "page-link ventum-pagination-btn";
-        previousButton.innerHTML = "<<";
-        if (state.paginationIndex == 0) {
-            previousButton.disabled = true;
-            previousButton.style.color = "grey";
-        }
-        previousButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            state.paginationIndex -= 1;
-            drawPagination(state, count);
-        });
-        previous.appendChild(previousButton);
-
-        //Creo los indices...
-        for (let index = state.paginationIndex * 10;
-            (index < count / 10 && index < state.paginationIndex * 10 + 10); index++) {
-            console.log(index);
-            var li = document.createElement("li");
-            li.className = "page-item";
-            state.paginationRoot.appendChild(li);
-            var button = document.createElement("button");
-            button.className = "page-link ventum-pagination-btn";
-            button.innerHTML = (index + 1).toString();
-            const i = index;
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
-                removeAllActives();
-                state.selectedPage = i;
-                state.paginationRoot.childNodes[state.selectedPage % 10 + 2].className += " active";
-                update(state).then(() => console.log("updated")).catch(err => console.log("failed update: " + err));
-            })
-            li.appendChild(button);
-        }
-
-        removeAllActives();
-        if (state.selectedPage >= state.paginationIndex * 10 && state.selectedPage <= (state.paginationIndex + 1) * 10)
-            state.paginationRoot.childNodes[state.selectedPage % 10 + 2].className += " active";
-
-        //Creo el btn >>
-        var next = document.createElement("li");
-        next.className = "page-item";
-        state.paginationRoot.appendChild(next);
-        var nextButton = document.createElement("button");
-        nextButton.className = "page-link ventum-pagination-btn";
-        nextButton.innerHTML = ">>";
-        if (Math.trunc(count / 100) == state.paginationIndex) {
-            nextButton.disabled = true;
-            nextButton.style.color = "grey";
-        }
-
-        nextButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            state.paginationIndex += 1;
-            drawPagination(state, count);
-        });
-        next.appendChild(nextButton);
-
-        //Creo el btn last
-        var last = document.createElement("li");
-        last.className = "page-item";
-        state.paginationRoot.appendChild(last);
-        var lastButton = document.createElement("button");
-        lastButton.className = "page-link ventum-pagination-btn";
-        lastButton.innerHTML = "Último";
-        if (Math.trunc(count / 100) == state.paginationIndex) {
-            lastButton.disabled = true;
-            lastButton.style.color = "grey";
-        }
-
-        lastButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            state.paginationIndex = Math.trunc(count / 100);
-            drawPagination(state, count);
-        })
-        last.appendChild(lastButton);
-
-        //Pagina n de N
-        var pages = document.createElement("li");
-        pages.className = "page-item";
-        pages.style["align-self"] = "center";
-        pages.style.float = "right";
-        pages.innerHTML = `${state.selectedPage + 1} de ${Math.trunc(count/10+ 1) } &nbsp`;
-        pages.style.color = "grey";
-        state.paginationRoot.appendChild(pages);
-
-        //Input ir a
-        var goToLi = document.createElement("li");
-        goToLi.className = "page-item";
-        goToLi.style.width = '5%';
-        state.paginationRoot.appendChild(goToLi);
-        var goTo = document.createElement("input");
-        goTo.className = "form-control";
-        goTo.style.width = '95%';
-        goToLi.appendChild(goTo);
-        var goToButton = document.createElement("button");
-        goToButton.className = "page-link ventum-pagination-btn";
-        goToButton.innerHTML = "Ir";
-        goToButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            var page = parseInt(goTo.value, 10);
-            if (page && page < count / 10) {
-                state.selectedPage = page - 1;
-                state.paginationIndex = Math.trunc(state.selectedPage / 10);
-                update(state).then(() => console.log("updated")).catch(err => console.log("failed update: " + err));
-            } else {
-                goTo.value = "";
-            }
-        })
-        state.paginationRoot.appendChild(goToButton);
-    } catch (error) {
-        console.log(error);
-    }
 };
 
-const drawRows = (state, data) => {
-    try {
+//Updates table data and view
+const update = (state, payload) => {
 
-        const getCellValue = (row, path) => {
-            if (row[path[0]] == null) {
-                return null;
-            } else if (path.length > 1) {
-                var temp = path.shift();
-                return getCellValue(row[temp], path);
-            } else {
-                return row[path[0]];
-            }
-        }
+    const fetchData = () => {
 
-        console.log("drawRows data: " + JSON.stringify(data));
-        console.log("drawRows headers: " + JSON.stringify(state.headers));
-        state.rowsRoot.innerHTML = "";
+        const getFiltersValues = () => {
+            var result = {};
+            if (state.filterForm) {
+                const formData = new FormData(state.filterForm);
+                var i = 0;
+                for (var pair of formData.entries()) {
+                    result[pair[0]] = pair[1];
+                }
+            };
+            console.log("filter values: " + JSON.stringify(result));
+            return result;
+        };
 
-        state.rowsCheckboxs = [];
+        const getRows = () => {
 
-        data.forEach(row => {
-            var tr = document.createElement("tr");
-            tr.className = "";
-            state.rowsRoot.appendChild(tr);
+            const buildPipeline = (filters) => {
 
-            if (true) {
-                var th = document.createElement("th");
-                var checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.className = "";
-                state.rowsCheckboxs.push(checkbox);
-                checkbox.addEventListener('click', (e) => {
-                    updateEditRemoveBtns(state);
+                const buildStage = (key, value) => {
+                    console.log(key);
+                    console.log(value);
+
+                    const getStageDefinition = () => {
+                        var result = null;
+                        if (value == "")
+                            return result;
+                        Object.keys(state.filters).forEach((index) => {
+                            Object.keys(state.filters[index].inputs).forEach((filter) => {
+                                if (state.filters[index].inputs[filter].name == key) {
+                                    result = state.filters[index].inputs[filter].stage;
+                                    console.log(result);
+                                }
+                            })
+                        })
+                        return result;
+                    };
+
+                    var result = "";
+                    var stageDef = getStageDefinition();
+                    console.log(stageDef);
+                    if (stageDef != null) {
+                        switch (stageDef.type) {
+                            case "match":
+                                switch (stageDef.transform) {
+                                    case "date":
+                                        value = formatDateToQuery(value);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                var op = "";
+                                switch (typeof(stageDef.op)) {
+                                    case 'string':
+                                        op = `{"${stageDef.op}":"${value}"}`;
+                                        break;
+                                    case 'undefined':
+                                        op = `"${value}"`;
+                                        break;
+                                    case 'object':
+                                        //TODO
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                result += `{"$match":{"${stageDef.var}":${op}}},`;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    return result;
+                }
+
+                var result = "[";
+                Object.keys(filters).forEach(key => {
+                    result += buildStage(key, filters[key]);
+                });
+                Object.keys(state.finalStages).forEach((key) => {
+                    result += state.finalStages[key] + ",";
                 })
-                th.appendChild(checkbox);
-                tr.appendChild(th);
+                result += `{"$skip": ${state.selectedPage*10} },{"$limit": 10 }]`; //Ordenamiento descendente por Hora (de nuevo a viejo) -- Hasta 10 resultados.
+                console.log(result);
+                return result;
+            };
+            var path = state.fetchPath;
+            var filters = getFiltersValues();
+            var pipeline = buildPipeline(filters);
+
+            return new Promise((resolve, reject) => {
+                const options = `{"collation":{"locale":"en_US","numericOrdering":true}}`;
+                fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
+                        referrerPolicy: "origin-when-cross-origin",
+                        credentials: 'include',
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8',
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(res => resolve(res))
+                    .catch(err => {
+                        console.log(err);
+                        reject(err)
+                    });
+            });
+        }
+
+        const getCount = () => {
+            const buildPipeline = (filters) => {
+
+                const buildStage = (key, value) => {
+                    console.log(key);
+                    console.log(value);
+
+                    const getStageDefinition = () => {
+                        var result = null;
+                        if (value == "")
+                            return result;
+                        Object.keys(state.filters).forEach((index) => {
+                            Object.keys(state.filters[index].inputs).forEach((filter) => {
+                                if (state.filters[index].inputs[filter].name == key) {
+                                    result = state.filters[index].inputs[filter].stage;
+                                    console.log(result);
+                                }
+                            })
+                        })
+                        return result;
+                    };
+
+                    var result = "";
+                    var stageDef = getStageDefinition();
+                    console.log(stageDef);
+                    if (stageDef != null) {
+                        switch (stageDef.type) {
+                            case "match":
+                                switch (stageDef.transform) {
+                                    case "date":
+                                        value = formatDateToQuery(value);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                var op = "";
+                                switch (typeof(stageDef.op)) {
+                                    case 'string':
+                                        op = `{"${stageDef.op}":"${value}"}`;
+                                        break;
+                                    case 'undefined':
+                                        op = `"${value}"`;
+                                        break;
+                                    case 'object':
+                                        //TODO
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                result += `{"$match":{"${stageDef.var}":${op}}},`;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    return result;
+                }
+
+                var result = "[";
+                Object.keys(filters).forEach(key => {
+                    result += buildStage(key, filters[key]);
+                });
+                Object.keys(state.finalStages).forEach((key) => {
+                    result += state.finalStages[key] + ",";
+                })
+                result += `{ "$count": "count" }]`; //Ordenamiento descendente por Hora (de nuevo a viejo) -- Hasta 10 resultados.
+                console.log(result);
+                return result;
+            };
+            var path = state.fetchPath;
+            var filters = getFiltersValues();
+            var pipeline = buildPipeline(filters);
+
+            return new Promise((resolve, reject) => {
+                const options = `{"collation":{"locale":"en_US","numericOrdering":true}}`;
+                fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
+                        referrerPolicy: "origin-when-cross-origin",
+                        credentials: 'include',
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8',
+                        }
+                    })
+                    .then(res => {
+                        console.log(res);
+                        return res.json();
+                    })
+                    .then(res => {
+                        console.log(res);
+                        resolve(res);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        reject(err)
+                    });
+            });
+        };
+
+        return new Promise((resolve, reject) => {
+            var result = {};
+            getRows()
+                .then(rows => {
+                    result.rows = rows;
+                    return getCount();
+                })
+                .then(count => {
+                    result.count = count[0].count;
+                    resolve(result);
+                })
+                .catch(err => {
+                    console.log(err);
+                    reject(err);
+                });
+        });
+    };
+
+    const drawPagination = (count) => {
+        try {
+            state.paginationRoot.innerHTML = "";
+
+            const removeAllActives = () => {
+                state.paginationRoot.childNodes.forEach(el => el.classList.remove("active"));
             }
 
-            Object.keys(state.headers).forEach(headerKey => {
-                var th = document.createElement("th");
-                var cellValue = getCellValue(row, state.headers[headerKey].name.split('.'));
-                cellValue = cellValue || state.emptyCellChar;
-                th.innerHTML = cellValue;
-                tr.appendChild(th);
-            });
-        });
-    } catch (error) {
-        console.log(error);
-    }
-};
+            //Creo el btn first
+            var first = document.createElement("li");
+            first.className = "page-item";
+            state.paginationRoot.appendChild(first);
+            var firstButton = document.createElement("button");
+            firstButton.className = "page-link ventum-pagination-btn";
+            firstButton.innerHTML = "Principio";
+            if (state.paginationIndex == 0) {
+                firstButton.disabled = true;
+                firstButton.style.color = "grey";
+            }
+            firstButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                state.paginationIndex = 0;
+                drawPagination(state, count);
+            })
+            first.appendChild(firstButton);
 
-const update = (state) => {
+            //Creo el btn <<
+            var previous = document.createElement("li");
+            previous.className = "page-item";
+            state.paginationRoot.appendChild(previous);
+            var previousButton = document.createElement("button");
+            previousButton.className = "page-link ventum-pagination-btn";
+            previousButton.innerHTML = "<<";
+            if (state.paginationIndex == 0) {
+                previousButton.disabled = true;
+                previousButton.style.color = "grey";
+            }
+            previousButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                state.paginationIndex -= 1;
+                drawPagination(state, count);
+            });
+            previous.appendChild(previousButton);
+
+            //Creo los indices...
+            for (let index = state.paginationIndex * 10;
+                (index < count / 10 && index < state.paginationIndex * 10 + 10); index++) {
+                console.log(index);
+                var li = document.createElement("li");
+                li.className = "page-item";
+                state.paginationRoot.appendChild(li);
+                var button = document.createElement("button");
+                button.className = "page-link ventum-pagination-btn";
+                button.innerHTML = (index + 1).toString();
+                const i = index;
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    removeAllActives();
+                    state.selectedPage = i;
+                    state.paginationRoot.childNodes[state.selectedPage % 10 + 2].className += " active";
+                    update(state).then(() => console.log("updated")).catch(err => console.log("failed update: " + err));
+                })
+                li.appendChild(button);
+            }
+
+            removeAllActives();
+            if (state.selectedPage >= state.paginationIndex * 10 && state.selectedPage <= (state.paginationIndex + 1) * 10)
+                state.paginationRoot.childNodes[state.selectedPage % 10 + 2].className += " active";
+
+            //Creo el btn >>
+            var next = document.createElement("li");
+            next.className = "page-item";
+            state.paginationRoot.appendChild(next);
+            var nextButton = document.createElement("button");
+            nextButton.className = "page-link ventum-pagination-btn";
+            nextButton.innerHTML = ">>";
+            if (Math.trunc(count / 100) == state.paginationIndex) {
+                nextButton.disabled = true;
+                nextButton.style.color = "grey";
+            }
+
+            nextButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                state.paginationIndex += 1;
+                drawPagination(state, count);
+            });
+            next.appendChild(nextButton);
+
+            //Creo el btn last
+            var last = document.createElement("li");
+            last.className = "page-item";
+            state.paginationRoot.appendChild(last);
+            var lastButton = document.createElement("button");
+            lastButton.className = "page-link ventum-pagination-btn";
+            lastButton.innerHTML = "Último";
+            if (Math.trunc(count / 100) == state.paginationIndex) {
+                lastButton.disabled = true;
+                lastButton.style.color = "grey";
+            }
+
+            lastButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                state.paginationIndex = Math.trunc(count / 100);
+                drawPagination(state, count);
+            })
+            last.appendChild(lastButton);
+
+            //Pagina n de N
+            var pages = document.createElement("li");
+            pages.className = "page-item";
+            pages.style["align-self"] = "center";
+            pages.style.float = "right";
+            pages.innerHTML = `${state.selectedPage + 1} de ${Math.trunc(count/10+ 1) } &nbsp`;
+            pages.style.color = "grey";
+            state.paginationRoot.appendChild(pages);
+
+            //Input ir a
+            var goToLi = document.createElement("li");
+            goToLi.className = "page-item";
+            goToLi.style.width = '5%';
+            state.paginationRoot.appendChild(goToLi);
+            var goTo = document.createElement("input");
+            goTo.className = "form-control";
+            goTo.style.width = '95%';
+            goToLi.appendChild(goTo);
+            var goToButton = document.createElement("button");
+            goToButton.className = "page-link ventum-pagination-btn";
+            goToButton.innerHTML = "Ir";
+            goToButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                var page = parseInt(goTo.value, 10);
+                if (page && page < count / 10) {
+                    state.selectedPage = page - 1;
+                    state.paginationIndex = Math.trunc(state.selectedPage / 10);
+                    update(state).then(() => console.log("updated")).catch(err => console.log("failed update: " + err));
+                } else {
+                    goTo.value = "";
+                }
+            })
+            state.paginationRoot.appendChild(goToButton);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const drawRows = (data) => {
+        try {
+
+            const getCellValue = (row, path) => {
+                if (row[path[0]] == null) {
+                    return null;
+                } else if (path.length > 1) {
+                    var temp = path.shift();
+                    return getCellValue(row[temp], path);
+                } else {
+                    return row[path[0]];
+                }
+            }
+
+            console.log("drawRows data: " + JSON.stringify(data));
+            console.log("drawRows headers: " + JSON.stringify(state.headers));
+            state.rowsRoot.innerHTML = "";
+
+            state.rowsCheckboxs = [];
+
+            data.forEach(row => {
+                var tr = document.createElement("tr");
+                tr.className = "";
+                state.rowsRoot.appendChild(tr);
+
+                if (true) {
+                    var th = document.createElement("th");
+                    var checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.className = "";
+                    state.rowsCheckboxs.push(checkbox);
+                    checkbox.addEventListener('click', (e) => {
+                        updateEditRemoveBtns(state);
+                    })
+                    th.appendChild(checkbox);
+                    tr.appendChild(th);
+                }
+
+                Object.keys(state.headers).forEach(headerKey => {
+                    var th = document.createElement("th");
+                    var cellValue = getCellValue(row, state.headers[headerKey].name.split('.'));
+                    cellValue = cellValue || state.emptyCellChar;
+                    th.innerHTML = cellValue;
+                    tr.appendChild(th);
+                });
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return new Promise((resolve, reject) => {
-        fetchData(state)
+        fetchData()
             .then(result => {
                 state.rowsData = result.rows;
-                drawRows(state, result.rows);
-                drawPagination(state, result.count);
+                drawRows(result.rows);
+                drawPagination(result.count);
                 resolve("ok");
             })
             .catch(err => {
@@ -554,7 +742,58 @@ const update = (state) => {
     });
 };
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------ Públicos -----------------------------------------------------------------
+
+// filter, edit, erase, add, dismissModal, post, update, modal
+const cmd = (state, payload, res, pos) => {
+    try {
+        console.log({ state, payload, res, pos });
+        console.log(Object.keys(payload.cmds));
+        //A: Si ya ejecute todos los comandos termino
+        if (Object.keys(payload.cmds).length == pos) {
+            return;
+        } else {
+            var c = null;
+            var command = payload.cmds[pos];
+            switch (command.type) {
+                case "filter":
+                    c = () => update(state, command.payload);
+                    break;
+                case "erase":
+                    c = () => eraseSelectedRows(state, command.payload);
+                    break;
+                case "edit":
+                    c = () => editSelectedRows(state, command.payload);
+                    break;
+                case "add":
+                    c = () => addNewElement(state, command.payload);
+                    break;
+                case "dissmis-modal":
+                    c = () => dismissModal(state, command.payload);
+                    break;
+                case "post":
+                    c = () => dashboard.post(command.payload);
+                    break;
+                case "modal":
+                    c = () => modal.show(command.payload);
+                    break;
+                default:
+                    break;
+            }
+
+            c()
+                .then((res) => {
+                    console.log(state);
+                    console.log(payload);
+                    console.log(res);
+                    cmd(state, payload, res, pos + 1);
+                })
+                .catch(err => console.log(err));
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
 
 const resetStates = () => {
     if (states.length > 0) {
@@ -563,7 +802,7 @@ const resetStates = () => {
         })
     }
     states = [];
-}
+};
 
 const create = (data, parent) => {
 
@@ -659,7 +898,7 @@ const create = (data, parent) => {
         });
         console.log("btncount: " + btnsCount.toString());
         btns.forEach(([key, value]) => {
-            if (value) {
+            if (value.enabled) {
                 var btnDiv = document.createElement("div");
                 switch (btnsCount) {
                     case 1:
@@ -691,10 +930,10 @@ const create = (data, parent) => {
                 //<i class="fa fa-home"></i>
                 btnDiv.appendChild(btn);
 
-                switch (key) {
+                switch (value.type) {
                     case "filter":
                         btn.className = "btn btn-secondary";
-                        if (btnsCount <= 3)
+                        if (btnsCount < 3)
                             btn.innerHTML = "Filtrar";
                         btn.value = "submit";
                         var icon = document.createElement("i");
@@ -713,74 +952,58 @@ const create = (data, parent) => {
                         break;
                     case "erase":
                         btn.className = "btn btn-danger";
-                        if (btnsCount <= 3)
+                        if (btnsCount < 3)
                             btn.innerHTML = "Borrar";
                         btn.value = "submit";
                         btn.disabled = true;
                         var icon = document.createElement("i");
                         icon.className = "fa fa-trash";
                         btn.appendChild(icon);
-                        btn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            eraseSelectedRows(newState);
-                        });
+                        // btn.addEventListener('click', (e) => {
+                        //     e.preventDefault();
+                        //     eraseSelectedRows(newState);
+                        // });
                         newState.eraseBtn = btn;
                         break;
                     case "edit":
                         btn.className = "btn btn-primary";
-                        if (btnsCount <= 3)
+                        if (btnsCount < 3)
                             btn.innerHTML = "Editar";
                         btn.value = "submit";
                         btn.disabled = true;
                         var icon = document.createElement("i");
                         icon.className = "fa fa-pencil";
                         btn.appendChild(icon);
-                        btn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            editSelectedRows(newState);
-                        });
+                        // btn.addEventListener('click', (e) => {
+                        //     e.preventDefault();
+                        //     editSelectedRows(newState);
+                        // });
                         newState.editBtn = btn;
                         break;
                     case "add":
                         btn.className = "btn btn-success";
-                        if (btnsCount <= 3)
+                        if (btnsCount < 3)
                             btn.innerHTML = "Agregar";
                         btn.value = "submit";
                         var icon = document.createElement("i");
                         icon.className = "fa fa-plus";
                         btn.appendChild(icon);
-                        btn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            addNewElement(newState);
-                        });
+                        // btn.addEventListener('click', (e) => {
+                        //     e.preventDefault();
+                        //     //addNewElement(newState);
+                        // });
                         newState.addBtn = btn;
                         break;
                     default:
                         break;
                 }
 
-
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    cmd(newState, value.onClick, null, 0);
+                });
             }
         });
-
-        // if (newState.filterButtons.filter) {
-        //     var btn = document.createElement("button");
-        //     btn.type = "submit";
-        //     btn.className = "btn btn-success";
-        //     btn.value = "submit";
-        //     btn.innerHTML = "Filtrar";
-        //     btn.style.position = "relative";
-        //     btn.style.width = '95%';
-
-        //     col.appendChild(btn);
-        // }
-
-        // btn.addEventListener('click', (e) => {
-        //     e.preventDefault();
-        //     newState.selectedPage = 0;
-        //     newState.paginationIndex = 0;
-        //     update(newState).then(() => console.log("updated")).catch(err => console.log("failed update: " + err));
-        // });
 
         return div;
     };
@@ -857,4 +1080,4 @@ const create = (data, parent) => {
     return newState;
 };
 
-export default { create, resetStates };
+export default { create, resetStates, cmd, states };

@@ -1,7 +1,9 @@
 import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
 import table from 'https://ventumdashboard.s3.amazonaws.com/dashboard/table/table.js';
 import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.js';
-//--------------------------Dashboard---------------------------------------
+
+//--------------------------------- Dashboard --------------------------------------------
+
 const dfltState = {
     contentDiv: null, //Contenedor donde voy a dibujar cada pantalla...
     id: "id",
@@ -213,6 +215,8 @@ const dfltState = {
 
 var state = {};
 
+//--------------------------------- Public Interface ------------------------------------
+
 const getDivs = (parent, cols) => {
     if (!cols) cols = 1;
     var divs = [];
@@ -295,6 +299,17 @@ const createCol = (parent) => {
 };
 
 //--------------------------------- Public Interface ------------------------------------
+
+//Hace un post al endpoint indicado en el payload con el estado de la categoria como body
+const post = (payload) => {
+    var body = {
+        tablesState: table.states,
+        formsStates: form.states,
+    }
+
+
+
+}
 
 const selectCategory = (cat) => {
     try {
@@ -560,4 +575,4 @@ const create = (data) => {
     return nav;
 };
 
-export default { create };
+export default { create, post };

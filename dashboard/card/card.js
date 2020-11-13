@@ -11,6 +11,7 @@ const create = (data, parent) => {
         var div = document.createElement("div");
         div.id = data.id + "-card-div";
         div.className = "card shadow ventum-card";
+        console.log(parent);
         parent.appendChild(div);
         return div;
     };
