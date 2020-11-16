@@ -306,10 +306,7 @@ const post = (payload) => {
         tablesState: table.states,
         formsStates: form.states,
     }
-
-
-
-}
+};
 
 const selectCategory = (cat) => {
     try {

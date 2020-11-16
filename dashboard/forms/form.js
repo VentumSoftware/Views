@@ -1,5 +1,6 @@
 import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
 import card from 'https://ventumdashboard.s3.amazonaws.com/dashboard/card/card.js';
+import buttons from 'https://ventumdashboard.s3.amazonaws.com/dashboard/buttons/buttons.js';
 
 const dfltState = {
     id: "noID",
@@ -13,15 +14,17 @@ const dfltState = {
     emptyCellChar: "-",
     selectedPage: 0,
     paginationIndex: 0,
-    footerBtns: {
+    footerButtons: {
         empty0: {
-            enabled: "true",
+            display: "none",
+            disabled: "true",
             type: "none",
             label: "",
             onClick: {}
         },
         empty1: {
-            enabled: "true",
+            display: "none",
+            disabled: "true",
             type: "none",
             label: "",
             onClick: {}
@@ -34,9 +37,7 @@ var states = [];
 
 //-----------------------------------------------------------------------------------------------
 
-const removeState = () => {
-
-}
+const removeState = () => {}
 
 const resetStates = () => {
     if (states.length > 0) {
@@ -88,7 +89,7 @@ const create = (data, parent) => {
                 });
             });
 
-            var btns = Object.entries(newState.footerBtns);
+            var btns = Object.entries(newState.footerButtons);
             var btnsCount = 0;
             btns.forEach(([key, value]) => {
                 if (value)
@@ -101,134 +102,42 @@ const create = (data, parent) => {
 
             console.log("btncount: " + btnsCount.toString());
             btns.forEach(([key, value]) => {
-                if (value.enabled) {
-                    var btnDiv = document.createElement("div");
-                    switch (btnsCount) {
-                        case 1:
-                            btnDiv.className += "col-12";
-                            break;
-                        case 2:
-                            btnDiv.className += "col-6";
-                            break;
-                        case 3:
-                            btnDiv.className += "col-4";
-                            break;
-                        case 4:
-                            btnDiv.className += "col-3";
-                            break;
-                        case 5:
-                            btnDiv.className += "col-2";
-                            break;
-                        case 6:
-                            btnDiv.className += "col-2";
-                            break;
-                        default:
-                            btnDiv.className += "col-12";
-                            break;
-                    }
-
-                    btnsRow.appendChild(btnDiv);
-
-                    var btn = document.createElement("button");
-                    btn.type = "submit";
-                    btn.style.position = "relative";
-                    btn.style.width = '100%';
-                    btn.style.overflowWrap = "normal";
-
-
-                    //<i class="fa fa-home"></i>
-                    btnDiv.appendChild(btn);
-
-                    switch (value.type) {
-                        case "filter":
-                            btn.className = "btn btn-secondary";
-                            if (btnsCount < 3)
-                                btn.innerHTML = "Filtrar";
-                            btn.value = "submit";
-                            var icon = document.createElement("i");
-                            icon.className = "fa fa-search";
-                            btn.appendChild(icon);
-
-                            btn.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                newState.selectedPage = 0;
-                                newState.paginationIndex = 0;
-                                update(newState)
-                                    .then(() => console.log("updated"))
-                                    .catch(err => console.log("failed update: " + err));
-                            });
-                            newState.filterBtn = btn;
-                            break;
-                        case "erase":
-                            btn.className = "btn btn-danger";
-                            if (btnsCount < 3)
-                                btn.innerHTML = "Borrar";
-                            btn.value = "submit";
-                            btn.disabled = true;
-                            var icon = document.createElement("i");
-                            icon.className = "fa fa-trash";
-                            btn.appendChild(icon);
-                            btn.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                eraseSelectedRows(newState);
-                            });
-                            newState.eraseBtn = btn;
-                            break;
-                        case "edit":
-                            btn.className = "btn btn-primary";
-                            if (btnsCount < 3)
-                                btn.innerHTML = "Editar";
-                            btn.value = "submit";
-                            btn.disabled = true;
-                            var icon = document.createElement("i");
-                            icon.className = "fa fa-pencil";
-                            btn.appendChild(icon);
-                            btn.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                editSelectedRows(newState);
-                            });
-                            newState.editBtn = btn;
-                            break;
-                        case "add":
-                            btn.className = "btn btn-success";
-                            if (btnsCount < 3)
-                                btn.innerHTML = "Agregar";
-                            btn.value = "submit";
-                            var icon = document.createElement("i");
-                            icon.className = "fa fa-plus";
-                            btn.appendChild(icon);
-                            btn.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                addNewElement(newState);
-                            });
-                            newState.addBtn = btn;
-                            break;
-                        case "none":
-                            btn.className = "btn btn-success";
-                            if (btnsCount < 3)
-                                btn.innerHTML = "Agregar";
-                            btn.value = "submit";
-                            var icon = document.createElement("i");
-                            icon.className = "fa fa-plus";
-                            btn.style.display = "none";
-                            btn.appendChild(icon);
-                            btn.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                addNewElement(newState);
-                            });
-                            newState.addBtn = btn;
-                            break;
-                        default:
-                            break;
-                    }
-
-                    btn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        cmd(newState, value.cmd, payload);
-                    });
+                if (btnsCount < 3)
+                    value.showLabel = true;
+                else
+                    value.showLabel = false;
+                var btnDiv = document.createElement("div");
+                switch (btnsCount) {
+                    case 1:
+                        btnDiv.className += "col-12";
+                        break;
+                    case 2:
+                        btnDiv.className += "col-6";
+                        break;
+                    case 3:
+                        btnDiv.className += "col-4";
+                        break;
+                    case 4:
+                        btnDiv.className += "col-3";
+                        break;
+                    case 5:
+                        btnDiv.className += "col-2";
+                        break;
+                    case 6:
+                        btnDiv.className += "col-2";
+                        break;
+                    default:
+                        btnDiv.className += "col-12";
+                        break;
                 }
+                btnsRow.appendChild(btnDiv);
+                var btn = buttons.createBtn(value, newState);
+                btnDiv.appendChild(btn);
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    //cmd(newState, value.onClick, null, 0);
+                });
             });
-
             return form;
         } catch (error) {
             console.log(error);

@@ -3,6 +3,7 @@ import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
 import card from 'https://ventumdashboard.s3.amazonaws.com/dashboard/card/card.js';
 import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.js';
 import modal from 'https://ventumdashboard.s3.amazonaws.com/dashboard/modal/modal.js';
+import buttons from 'https://ventumdashboard.s3.amazonaws.com/dashboard/buttons/buttons.js';
 
 const dfltState = {
     id: "noID",
@@ -10,13 +11,18 @@ const dfltState = {
     fetchPath: "/api/aggregate",
     headers: {},
     filters: {},
-    enabledBtns: {
+    headerButtons: {
         filter: {
             enabled: "true",
             type: "filter",
             label: "filtrar",
             onClick: {
-                cmd: "filter"
+                cmds: {
+                    0: {
+                        type: "filter",
+                        payload: {}
+                    }
+                }
             }
         },
         erase: {
@@ -24,7 +30,12 @@ const dfltState = {
             type: "erase",
             label: "filtrar",
             onClick: {
-                cmd: "erase"
+                cmds: {
+                    0: {
+                        type: "erase",
+                        payload: {}
+                    }
+                }
             }
         },
         edit: {
@@ -178,6 +189,24 @@ const dfltState = {
                                             placeholder: "Dirección"
                                         },
                                     }
+                                },
+                                footerButtons: {
+                                    cancel: {
+                                        enabled: "true",
+                                        type: "cancel",
+                                        label: "Cancelar",
+                                        onClick: {
+
+                                        }
+                                    },
+                                    accept: {
+                                        enabled: "true",
+                                        type: "accept",
+                                        label: "Aceptar",
+                                        onClick: {
+
+                                        }
+                                    },
                                 }
                             }
                         }
@@ -252,7 +281,7 @@ const eraseSelectedRows = (state, payload) => {
         var path = state.fetchPath;
         var ids = getSelectedIDs();
         var pipeline = buildPipeline(ids);
-        const options = `{"collation":{"locale":"en_US","numericOrdering":true}}`;
+        const options = `{"collation":{"locale":"en_US","numericOrdering":true},"allowDiskUse" : true }`;
         fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
                 referrerPolicy: "origin-when-cross-origin",
                 credentials: 'include',
@@ -274,7 +303,7 @@ const eraseSelectedRows = (state, payload) => {
 };
 
 const editSelectedRows = (state, payload) => {
-    state.enabledBtns.edit.onclick();
+    state.headerButtons.edit.onclick();
 };
 
 const updateEditRemoveBtns = (state, payload) => {
@@ -303,6 +332,24 @@ const updateEditRemoveBtns = (state, payload) => {
         disableBtns();
     }
 };
+
+const filter = (state, payload) => {
+    return new Promise((res, rej) => {
+        state.selectedPage = 0;
+        state.paginationIndex = 0;
+        update(state)
+            .then(() => {
+                console.log("updated");
+                res();
+            })
+            .catch(err => {
+                console.log("failed update: " + err);
+                rej();
+            });
+    });
+
+}
+
 
 //Updates table data and view
 const update = (state, payload) => {
@@ -397,7 +444,7 @@ const update = (state, payload) => {
             var pipeline = buildPipeline(filters);
 
             return new Promise((resolve, reject) => {
-                const options = `{"collation":{"locale":"en_US","numericOrdering":true}}`;
+                const options = `{"collation":{"locale":"en_US","numericOrdering":true},"allowDiskUse" : true}`;
                 fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
                         referrerPolicy: "origin-when-cross-origin",
                         credentials: 'include',
@@ -489,7 +536,8 @@ const update = (state, payload) => {
             var pipeline = buildPipeline(filters);
 
             return new Promise((resolve, reject) => {
-                const options = `{"collation":{"locale":"en_US","numericOrdering":true}}`;
+                // const options = `{"collation":{"locale":"en_US","numericOrdering":true}, "allowDiskUse" : true}`;
+                const options = `{"allowDiskUse" : "true"}`;
                 fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
                         referrerPolicy: "origin-when-cross-origin",
                         credentials: 'include',
@@ -521,7 +569,10 @@ const update = (state, payload) => {
                     return getCount();
                 })
                 .then(count => {
-                    result.count = count[0].count;
+                    if (count[0])
+                        result.count = count[0].count;
+                    else
+                        result.count = 0;
                     resolve(result);
                 })
                 .catch(err => {
@@ -597,7 +648,7 @@ const update = (state, payload) => {
             }
 
             removeAllActives();
-            if (state.selectedPage >= state.paginationIndex * 10 && state.selectedPage <= (state.paginationIndex + 1) * 10)
+            if (state.selectedPage >= state.paginationIndex * 10 && state.selectedPage <= (state.paginationIndex + 1) * 10 && state.paginationRoot.childNodes[state.selectedPage % 10 + 2])
                 state.paginationRoot.childNodes[state.selectedPage % 10 + 2].className += " active";
 
             //Creo el btn >>
@@ -757,7 +808,7 @@ const cmd = (state, payload, res, pos) => {
             var command = payload.cmds[pos];
             switch (command.type) {
                 case "filter":
-                    c = () => update(state, command.payload);
+                    c = () => filter(state, command.payload);
                     break;
                 case "erase":
                     c = () => eraseSelectedRows(state, command.payload);
@@ -890,15 +941,19 @@ const create = (data, parent) => {
         inputs.className = "form-row";
         col.appendChild(inputs);
 
-        var btns = Object.entries(newState.enabledBtns);
+        var btns = Object.entries(newState.headerButtons);
         var btnsCount = 0;
         btns.forEach(([key, value]) => {
             if (value)
                 btnsCount++;
         });
-        console.log("btncount: " + btnsCount.toString());
+        console.log("header buttons: " + btnsCount.toString());
         btns.forEach(([key, value]) => {
             if (value.enabled) {
+                if (btnsCount < 3)
+                    value.showLabel = true;
+                else
+                    value.showLabel = false;
                 var btnDiv = document.createElement("div");
                 switch (btnsCount) {
                     case 1:
@@ -917,87 +972,9 @@ const create = (data, parent) => {
                         btnDiv.className += "col-12";
                         break;
                 }
-
                 inputs.appendChild(btnDiv);
-
-                var btn = document.createElement("button");
-                btn.type = "submit";
-                btn.style.position = "relative";
-                btn.style.width = '100%';
-                btn.style.overflowWrap = "normal";
-
-
-                //<i class="fa fa-home"></i>
+                var btn = buttons.createBtn(value);
                 btnDiv.appendChild(btn);
-
-                switch (value.type) {
-                    case "filter":
-                        btn.className = "btn btn-secondary";
-                        if (btnsCount < 3)
-                            btn.innerHTML = "Filtrar";
-                        btn.value = "submit";
-                        var icon = document.createElement("i");
-                        icon.className = "fa fa-search";
-                        btn.appendChild(icon);
-
-                        btn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            newState.selectedPage = 0;
-                            newState.paginationIndex = 0;
-                            update(newState)
-                                .then(() => console.log("updated"))
-                                .catch(err => console.log("failed update: " + err));
-                        });
-                        newState.filterBtn = btn;
-                        break;
-                    case "erase":
-                        btn.className = "btn btn-danger";
-                        if (btnsCount < 3)
-                            btn.innerHTML = "Borrar";
-                        btn.value = "submit";
-                        btn.disabled = true;
-                        var icon = document.createElement("i");
-                        icon.className = "fa fa-trash";
-                        btn.appendChild(icon);
-                        // btn.addEventListener('click', (e) => {
-                        //     e.preventDefault();
-                        //     eraseSelectedRows(newState);
-                        // });
-                        newState.eraseBtn = btn;
-                        break;
-                    case "edit":
-                        btn.className = "btn btn-primary";
-                        if (btnsCount < 3)
-                            btn.innerHTML = "Editar";
-                        btn.value = "submit";
-                        btn.disabled = true;
-                        var icon = document.createElement("i");
-                        icon.className = "fa fa-pencil";
-                        btn.appendChild(icon);
-                        // btn.addEventListener('click', (e) => {
-                        //     e.preventDefault();
-                        //     editSelectedRows(newState);
-                        // });
-                        newState.editBtn = btn;
-                        break;
-                    case "add":
-                        btn.className = "btn btn-success";
-                        if (btnsCount < 3)
-                            btn.innerHTML = "Agregar";
-                        btn.value = "submit";
-                        var icon = document.createElement("i");
-                        icon.className = "fa fa-plus";
-                        btn.appendChild(icon);
-                        // btn.addEventListener('click', (e) => {
-                        //     e.preventDefault();
-                        //     //addNewElement(newState);
-                        // });
-                        newState.addBtn = btn;
-                        break;
-                    default:
-                        break;
-                }
-
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
                     cmd(newState, value.onClick, null, 0);

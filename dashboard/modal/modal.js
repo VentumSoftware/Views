@@ -40,7 +40,6 @@ const show = (data) => {
     const drawContent = () => {
         modalDialog.innerHTML = null;
         var f = form.create(data.form, modalDialog);
-
     };
 
     if (state == null) {
@@ -54,7 +53,6 @@ const show = (data) => {
     });
 
     return modalDialog;
-
 }
 
 const create = () => {
