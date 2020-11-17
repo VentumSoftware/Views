@@ -33,6 +33,14 @@ const createBtn = (data) => {
                 btn.className = "btn btn-success";
                 icon.className = "fa fa-plus";
                 break;
+            case "cancel":
+                btn.className = "btn btn-secondary";
+                icon.className = "fa fa-ban";
+                break;
+            case "accept":
+                btn.className = "btn btn-success";
+                icon.className = "fa fa-check";
+                break;
             default:
                 btn.className = "btn btn-secondary";
                 icon.className = "fa fa-search";

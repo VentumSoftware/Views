@@ -2,44 +2,19 @@ import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
 import card from 'https://ventumdashboard.s3.amazonaws.com/dashboard/card/card.js';
 import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.js';
 
-const dfltState = {
-    id: "noID",
-    title: "Table",
-    fetchPath: "/api/aggregate",
-    headers: {},
-    filters: {},
-    enabledBtns: {
-        filter: {},
-        erase: {},
-        edit: {},
-        add: {},
-    },
-    initialStages: {},
-    finalStages: {},
-    footerButtons: {},
-    rowsData: [],
-    rowsCheckboxs: [],
-    emptyCellChar: "-",
-    selectedPage: 0,
-    paginationIndex: 0,
-
-    //HTML References:
-    filterBtn: null,
-    eraseBtn: null,
-    editBtn: null,
-    addBtn: null,
-};
+const dfltState = {};
 
 var state = null;
 var root = null;
 var modalDialog = null;
+var modalContent = null;
 //-----------------------------------------------------------------------------------------------
 
 const show = (data) => {
 
     const drawContent = () => {
-        modalDialog.innerHTML = null;
-        var f = form.create(data.form, modalDialog);
+        modalContent.innerHTML = null;
+        var f = form.create(data.form, modalContent);
     };
 
     if (state == null) {
@@ -48,6 +23,7 @@ const show = (data) => {
     drawContent();
     root.modal('show');
     root.on('hidden.bs.modal', function(e) {
+        e.preventDefault();
         console.log("modalCerrado");
         $(e.currentTarget).unbind(); // or $(this)        
     });
@@ -55,36 +31,7 @@ const show = (data) => {
     return modalDialog;
 }
 
-const create = () => {
-
-    // <div id="modal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    //       <div class="modal-dialog modal-lg">
-    //           <div class="modal-content">
-    //               <div class="modal-header">
-    //                   <h5 class="modal-title" id="exampleModalLabel">New message</h5>
-    //                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-    //                   <span aria-hidden="true">&times;</span>
-    //                 </button>
-    //               </div>
-    //               <div class="modal-body">
-    //                   <form>
-    //                       <div class="form-group">
-    //                           <label for="recipient-name" class="col-form-label">Recipient:</label>
-    //                           <input type="text" class="form-control" id="recipient-name">
-    //                       </div>
-    //                       <div class="form-group">
-    //                           <label for="message-text" class="col-form-label">Message:</label>
-    //                           <textarea class="form-control" id="message-text"></textarea>
-    //                       </div>
-    //                   </form>
-    //               </div>
-    //               <div class="modal-footer">
-    //                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-    //                   <button type="button" class="btn btn-primary">Send message</button>
-    //               </div>
-    //           </div>
-    //       </div>
-    //   </div>
+const create = (data) => {
 
     const createModal = () => {
         var modalRoot = document.createElement("div");
@@ -100,25 +47,18 @@ const create = () => {
         modalDialog.className = "modal-dialog modal-lg";
         modalRoot.appendChild(modalDialog);
 
-        //card.create({ title: "holaa" }, modalDialog);
-        // var modalHeader = document.createElement("div");
-        // modalHeader.className = "modal-header";
-        // modalDialog.appendChild(modalHeader);
-
-        // var modalBody = document.createElement("div");
-        // modalBody.className = "modal-body";
-        // modalDialog.appendChild(modalBody);
-
-        // var modalFooter = document.createElement("div");
-        // modalFooter.className = "modal-footer";
-        // modalDialog.appendChild(modalFooter);
+        modalContent = document.createElement("div");
+        modalContent.className = "modal-content";
+        modalContent.style.display = "contents";
+        modalDialog.appendChild(modalContent);
 
         return modalRoot;
     };
 
-    // state = utils.fillObjWithDflt(data, dfltState);
+    state = utils.fillObjWithDflt(data, dfltState);
     createModal();
     root = $('#modal');
+    root.modal({ backdrop: 'static', keyboard: true }); // Para q no se cierre cuando hago click
 };
 
 export default { create, show };
