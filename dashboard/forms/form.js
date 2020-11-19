@@ -1,19 +1,14 @@
 import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
 import card from 'https://ventumdashboard.s3.amazonaws.com/dashboard/card/card.js';
 import buttons from 'https://ventumdashboard.s3.amazonaws.com/dashboard/buttons/buttons.js';
+import modal from 'https://ventumdashboard.s3.amazonaws.com/dashboard/modal/modal.js';
+import dashboard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/dashboard.js';
 
 const dfltState = {
     id: "noID",
-    title: "Table",
+    title: "Form",
     fetchPath: "/api/aggregate",
-    headers: {},
-    filters: {},
-    initialStages: {},
-    finalStages: {},
-    rows: [],
-    emptyCellChar: "-",
-    selectedPage: 0,
-    paginationIndex: 0,
+    inputs: {},
     footerButtons: {
         empty0: {
             display: "none",
@@ -37,7 +32,90 @@ var states = [];
 
 //-----------------------------------------------------------------------------------------------
 
-const removeState = () => {}
+// dismissModal
+const cmd = (state, cmds, res, pos) => {
+
+
+    const pushForm = (state, payload) => {
+        return new Promise((success, failed) => {
+            try {
+                console.log("cmd: pushForm. Payload: " + JSON.stringify(payload));
+                modal.show(state, { spinner: {} });
+                var options = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf-8'
+                    },
+                    body: JSON.stringify(state)
+                };
+                fetch(payload.fetchPath, options)
+                    .then(() => {
+                        dashboard.reloadCat();
+                        dismissModal();
+                        success("ok");
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        failed(err);
+                    });
+
+
+            } catch (error) {
+                console.log(error);
+                failed(error);
+            }
+        });
+    };
+
+    const dismissModal = (state, payload) => {
+        return new Promise((success, failed) => {
+            try {
+                console.log("cmd: dismissModal. Payload: " + JSON.stringify(payload));
+                const modalData = modal.getData();
+                console.log("cmodalData: " + JSON.stringify(modalData));
+                modal.close();
+                success(modalData);
+            } catch (error) {
+                console.log(error);
+                failed(error);
+            }
+        });
+    };
+
+    console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
+
+    try {
+        //A: Si ya ejecute todos los comandos termino
+        if (Object.keys(cmds).length <= pos) {
+            return;
+        } else {
+            var c = null;
+            var command = cmds[pos];
+            switch (command.type) {
+                case "push-form":
+                    c = () => pushForm(state, command.payload);
+                    break;
+                case "dissmis-modal":
+                    c = () => dismissModal(state, command.payload);
+                    break;
+                default:
+                    console.log(`Cmd not found: ${command.type}`);
+                    c = () => new Promise((res, rej) => { rej(`Cmd not found: ${command.type}`) });
+                    break;
+            }
+
+            c()
+                .then((res) => {
+                    cmd(state, cmds, res, pos + 1);
+                })
+                .catch(err => console.log(err));
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const removeState = (state) => {}
 
 const resetStates = () => {
     if (states.length > 0) {
@@ -86,6 +164,10 @@ const create = (data, parent) => {
                     inputIn.className = "form-control";
                     inputIn.placeholder = input.placeholder;
                     inputDiv.appendChild(inputIn);
+                    newState.inputs[input.label] = null;
+                    inputIn.addEventListener('change', (event) => {
+                        newState.inputs[input.label] = event.target.value;
+                    });
                 });
             });
 
@@ -135,10 +217,11 @@ const create = (data, parent) => {
                 btnDiv.appendChild(btn);
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    //cmd(newState, value.onClick, null, 0);
+                    cmd(newState, value.onClick.cmds, null, 0);
                 });
             });
             return form;
+
         } catch (error) {
             console.log(error);
         }
@@ -154,4 +237,4 @@ const create = (data, parent) => {
     return newState;
 };
 
-export default { create, resetStates, states };
+export default { create, resetStates, removeState, states };

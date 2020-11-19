@@ -1,34 +1,78 @@
 import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
 import card from 'https://ventumdashboard.s3.amazonaws.com/dashboard/card/card.js';
 import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.js';
+import dashboard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/dashboard.js';
 
 const dfltState = {};
+
+//Estados de los elementos del modal: forms, tables, etc...
+var subStates = []
 
 var state = null;
 var root = null;
 var modalDialog = null;
 var modalContent = null;
+
 //-----------------------------------------------------------------------------------------------
 
-const show = (data) => {
 
-    const drawContent = () => {
-        modalContent.innerHTML = null;
-        var f = form.create(data.form, modalContent);
-    };
+const getData = () => {
+    return subStates;
+};
 
-    if (state == null) {
-        create();
+const show = (invokerState, data) => {
+
+    const spinner = (payload, parent) => {
+        //<div class="d-flex justify-content-center"></div>
+
+        var justifyDiv = document.createElement("div");
+        justifyDiv.className = "d-flex justify-content-center";
+        parent.appendChild(justifyDiv);
+
+        var spinnerBorder = document.createElement("div");
+        spinnerBorder.className = "spinner-border text-light";
+        spinnerBorder.role = "status";
+        justifyDiv.appendChild(spinnerBorder);
+
+        var span = document.createElement("div");
+        span.className = "sr-only";
+        span.innerHTML = "Loading...";
+        spinnerBorder.appendChild(span);
     }
-    drawContent();
-    root.modal('show');
-    root.on('hidden.bs.modal', function(e) {
-        e.preventDefault();
-        console.log("modalCerrado");
-        $(e.currentTarget).unbind(); // or $(this)        
-    });
 
-    return modalDialog;
+    return new Promise((resolve, reject) => {
+        const drawContent = () => {
+            modalContent.innerHTML = null;
+            subStates = [];
+            if (data.form) {
+                var formState = form.create(data.form, modalContent);
+                subStates.push(formState);
+            }
+
+            if (data.spinner) {
+                spinner(data.spinner, modalContent);
+            }
+        };
+
+        if (state == null) {
+            create();
+        }
+
+        drawContent();
+        root.modal('show');
+        root.on('hidden.bs.modal', function(e) {
+            e.preventDefault();
+            console.log("modalCerrado");
+            $(e.currentTarget).unbind(); // or $(this)  
+            //sacar state del form 
+            resolve();
+        });
+    });
+};
+
+const close = () => {
+    //remover subStates acá;
+    root.modal('hide');
 }
 
 const create = (data) => {
@@ -61,4 +105,4 @@ const create = (data) => {
     root.modal({ backdrop: 'static', keyboard: true }); // Para q no se cierre cuando hago click
 };
 
-export default { create, show };
+export default { create, show, close, getData };

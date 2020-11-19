@@ -210,7 +210,8 @@ const dfltState = {
         //     }
         // },
     },
-    logOut: {}
+    logOut: {},
+    selectedCat: null
 };
 
 var state = {};
@@ -300,8 +301,13 @@ const createCol = (parent) => {
 
 //--------------------------------- Public Interface ------------------------------------
 
+//Vuelve a cargar la vista seleccionada
+const reloadCat = () => {
+    selectCategory(state.selectedCat);
+}
+
 //Hace un post al endpoint indicado en el payload con el estado de la categoria como body
-const post = (payload) => {
+const post = (invokerState, payload) => {
     var body = {
         tablesState: table.states,
         formsStates: form.states,
@@ -339,6 +345,8 @@ const selectCategory = (cat) => {
                 });
             });
         });
+
+        state.selectedCat = cat;
     } catch (error) {
         console.log("Error with selected cat! " + error);
     }
@@ -572,4 +580,4 @@ const create = (data) => {
     return nav;
 };
 
-export default { create, post };
+export default { create, post, reloadCat };
