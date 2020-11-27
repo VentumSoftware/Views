@@ -553,7 +553,7 @@ const cmd = (state, cmds, res, pos) => {
             });
         };
 
-        const drawPagination = (count) => {
+        const drawPagination = (state, count) => {
             try {
                 state.paginationRoot.innerHTML = "";
 
@@ -723,7 +723,13 @@ const cmd = (state, cmds, res, pos) => {
                     tr.className = "";
                     state.rowsRoot.appendChild(tr);
 
-                    if (true) {
+                    var addCheckbox = false;
+                    //Si hay algun boton "targeted" agrego el checkbos a las filas
+                    Object.values(state.headerButtons).forEach((btn) => {
+                        if (btn.targeted)
+                            addCheckbox = true;
+                    });
+                    if (addCheckbox) {
                         var th = document.createElement("th");
                         var checkbox = document.createElement("input");
                         checkbox.type = "checkbox";
@@ -754,7 +760,7 @@ const cmd = (state, cmds, res, pos) => {
                 .then(result => {
                     state.rowsData = result.rows;
                     drawRows(result.rows);
-                    drawPagination(result.count);
+                    drawPagination(state, result.count);
                     resolve("ok");
                 })
                 .catch(err => {
