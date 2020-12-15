@@ -11,240 +11,236 @@ const dfltState = {
     fetchPath: "/api/aggregate",
     headers: {},
     filters: {},
-    headerButtons: {
-        filter: {
-            enabled: "true",
-            type: "filter",
-            label: "filtrar",
-            onClick: {
-                cmds: {
-                    0: {
-                        type: "filter",
-                        payload: {}
-                    }
-                }
-            }
-        },
-        erase: {
-            enabled: "true",
-            type: "erase",
-            label: "filtrar",
-            targeted: true, // Solo se habilita si tengo seleccionado elementos de la tabla
-            onClick: {
-                cmds: {
-                    0: {
-                        type: "erase",
-                        payload: {}
-                    }
-                }
-            }
-        },
-        edit: {
-            enabled: "true",
-            type: "edit",
-            label: "editar",
-            targeted: true, // Solo se habilita si tengo seleccionado elementos de la tabla
-            onClick: {
-                cmds: {
-                    1: {
-                        type: "modal",
-                        form: {
-                            title: "INTI",
-                            cols: {
-                                0: {
-                                    0: {
-                                        type: "text",
-                                        label: "DNI",
-                                        placeholder: "DNI"
-                                    },
-                                    1: {
-                                        type: "text",
-                                        label: "Nombre",
-                                        placeholder: "Nombre"
-                                    },
-                                    2: {
-                                        type: "text",
-                                        label: "Apellido",
-                                        placeholder: "Apellido"
-                                    },
-                                    3: {
-                                        type: "date",
-                                        label: "Fecha N.",
-                                        placeholder: ""
-                                    },
-                                    4: {
-                                        type: "text",
-                                        label: "Empresa",
-                                        placeholder: "Empresa"
-                                    },
-                                },
-                                1: {
-                                    0: {
-                                        type: "text",
-                                        label: "Sector",
-                                        placeholder: "Sector"
-                                    },
-                                    1: {
-                                        type: "text",
-                                        label: "Posición",
-                                        placeholder: "Posición"
-                                    },
-                                    2: {
-                                        type: "text",
-                                        label: "Mail",
-                                        placeholder: "Mail"
-                                    },
-                                    3: {
-                                        type: "text",
-                                        label: "Teléfono",
-                                        placeholder: ""
-                                    },
-                                    4: {
-                                        type: "text",
-                                        label: "Dirección",
-                                        placeholder: "Dirección"
-                                    },
-                                }
-                            },
-                            footerBtns: {
-                                cancel: {
-                                    enabled: "true",
-                                    type: "edit",
-                                    label: "editar",
-                                    onClick: {}
-                                },
-                                acept: {
-                                    enabled: "true",
-                                    type: "edit",
-                                    label: "editar",
-                                    onClick: {}
-                                }
-                            }
-                        },
-                    }
-                }
-            }
-        },
-        add: {
-            enabled: "true",
-            type: "add",
-            label: "agregar",
-            onClick: {
-                cmds: {
-                    0: {
-                        type: "modal",
-                        payload: {
-                            form: {
-                                title: "Usuario",
-                                cols: {
-                                    0: {
-                                        0: {
-                                            type: "text",
-                                            label: "DNI",
-                                            placeholder: "DNI"
-                                        },
-                                        1: {
-                                            type: "text",
-                                            label: "Nombre",
-                                            placeholder: "Nombre"
-                                        },
-                                        2: {
-                                            type: "text",
-                                            label: "Apellido",
-                                            placeholder: "Apellido"
-                                        },
-                                        3: {
-                                            type: "date",
-                                            label: "Fecha N.",
-                                            placeholder: ""
-                                        },
-                                        4: {
-                                            type: "text",
-                                            label: "Empresa",
-                                            placeholder: "Empresa"
-                                        },
-                                    },
-                                    1: {
-                                        0: {
-                                            type: "text",
-                                            label: "Sector",
-                                            placeholder: "Sector"
-                                        },
-                                        1: {
-                                            type: "text",
-                                            label: "Posición",
-                                            placeholder: "Posición"
-                                        },
-                                        2: {
-                                            type: "text",
-                                            label: "Mail",
-                                            placeholder: "Mail"
-                                        },
-                                        3: {
-                                            type: "text",
-                                            label: "Teléfono",
-                                            placeholder: ""
-                                        },
-                                        4: {
-                                            type: "text",
-                                            label: "Dirección",
-                                            placeholder: "Dirección"
-                                        },
-                                    }
-                                },
-                                footerButtons: {
-                                    cancel: {
-                                        enabled: "true",
-                                        type: "cancel",
-                                        label: "Cancelar",
-                                        onClick: {
-                                            cmds: {
-                                                0: {
-                                                    type: "dissmis-modal",
-                                                    payload: {}
-                                                }
-                                            }
-                                        }
-                                    },
-                                    accept: {
-                                        enabled: "true",
-                                        type: "accept",
-                                        label: "Aceptar",
-                                        onClick: {
-                                            cmds: {
-                                                0: {
-                                                    type: "push-form",
-                                                    payload: {
-                                                        fetchPath: "/ingreso/nuevo-equipo",
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    },
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    headerBtns: {
+        // filter: {
+        //     enabled: "true",
+        //     type: "filter",
+        //     label: "filtrar",
+        //     onClick: {
+        //         cmds: {
+        //             0: {
+        //                 type: "filter",
+        //                 payload: {}
+        //             }
+        //         }
+        //     }
+        // },
+        // erase: {
+        //     enabled: "true",
+        //     type: "erase",
+        //     label: "filtrar",
+        //     targeted: true, // Solo se habilita si tengo seleccionado elementos de la tabla
+        //     onClick: {
+        //         cmds: {
+        //             0: {
+        //                 type: "erase",
+        //                 payload: {}
+        //             }
+        //         }
+        //     }
+        // },
+        // edit: {
+        //     enabled: "true",
+        //     type: "edit",
+        //     label: "editar",
+        //     targeted: true, // Solo se habilita si tengo seleccionado elementos de la tabla
+        //     onClick: {
+        //         cmds: {
+        //             1: {
+        //                 type: "modal",
+        //                 form: {
+        //                     title: "INTI",
+        //                     cols: {
+        //                         0: {
+        //                             0: {
+        //                                 type: "text",
+        //                                 label: "DNI",
+        //                                 placeholder: "DNI"
+        //                             },
+        //                             1: {
+        //                                 type: "text",
+        //                                 label: "Nombre",
+        //                                 placeholder: "Nombre"
+        //                             },
+        //                             2: {
+        //                                 type: "text",
+        //                                 label: "Apellido",
+        //                                 placeholder: "Apellido"
+        //                             },
+        //                             3: {
+        //                                 type: "date",
+        //                                 label: "Fecha N.",
+        //                                 placeholder: ""
+        //                             },
+        //                             4: {
+        //                                 type: "text",
+        //                                 label: "Empresa",
+        //                                 placeholder: "Empresa"
+        //                             },
+        //                         },
+        //                         1: {
+        //                             0: {
+        //                                 type: "text",
+        //                                 label: "Sector",
+        //                                 placeholder: "Sector"
+        //                             },
+        //                             1: {
+        //                                 type: "text",
+        //                                 label: "Posición",
+        //                                 placeholder: "Posición"
+        //                             },
+        //                             2: {
+        //                                 type: "text",
+        //                                 label: "Mail",
+        //                                 placeholder: "Mail"
+        //                             },
+        //                             3: {
+        //                                 type: "text",
+        //                                 label: "Teléfono",
+        //                                 placeholder: ""
+        //                             },
+        //                             4: {
+        //                                 type: "text",
+        //                                 label: "Dirección",
+        //                                 placeholder: "Dirección"
+        //                             },
+        //                         }
+        //                     },
+        //                     footerBtns: {
+        //                         cancel: {
+        //                             enabled: "true",
+        //                             type: "edit",
+        //                             label: "editar",
+        //                             onClick: {}
+        //                         },
+        //                         acept: {
+        //                             enabled: "true",
+        //                             type: "edit",
+        //                             label: "editar",
+        //                             onClick: {}
+        //                         }
+        //                     }
+        //                 },
+        //             }
+        //         }
+        //     }
+        // },
+        // add: {
+        //     enabled: "true",
+        //     type: "add",
+        //     label: "agregar",
+        //     onClick: {
+        //         cmds: {
+        //             0: {
+        //                 type: "modal",
+        //                 payload: {
+        //                     form: {
+        //                         title: "Usuario",
+        //                         cols: {
+        //                             0: {
+        //                                 0: {
+        //                                     type: "text",
+        //                                     label: "DNI",
+        //                                     placeholder: "DNI"
+        //                                 },
+        //                                 1: {
+        //                                     type: "text",
+        //                                     label: "Nombre",
+        //                                     placeholder: "Nombre"
+        //                                 },
+        //                                 2: {
+        //                                     type: "text",
+        //                                     label: "Apellido",
+        //                                     placeholder: "Apellido"
+        //                                 },
+        //                                 3: {
+        //                                     type: "date",
+        //                                     label: "Fecha N.",
+        //                                     placeholder: ""
+        //                                 },
+        //                                 4: {
+        //                                     type: "text",
+        //                                     label: "Empresa",
+        //                                     placeholder: "Empresa"
+        //                                 },
+        //                             },
+        //                             1: {
+        //                                 0: {
+        //                                     type: "text",
+        //                                     label: "Sector",
+        //                                     placeholder: "Sector"
+        //                                 },
+        //                                 1: {
+        //                                     type: "text",
+        //                                     label: "Posición",
+        //                                     placeholder: "Posición"
+        //                                 },
+        //                                 2: {
+        //                                     type: "text",
+        //                                     label: "Mail",
+        //                                     placeholder: "Mail"
+        //                                 },
+        //                                 3: {
+        //                                     type: "text",
+        //                                     label: "Teléfono",
+        //                                     placeholder: ""
+        //                                 },
+        //                                 4: {
+        //                                     type: "text",
+        //                                     label: "Dirección",
+        //                                     placeholder: "Dirección"
+        //                                 },
+        //                             }
+        //                         },
+        //                         footerButtons: {
+        //                             cancel: {
+        //                                 enabled: "true",
+        //                                 type: "cancel",
+        //                                 label: "Cancelar",
+        //                                 onClick: {
+        //                                     cmds: {
+        //                                         0: {
+        //                                             type: "return",
+        //                                             payload: {
+        //                                                 response: "false"
+        //                                             }
+        //                                         }
+        //                                     }
+        //                                 }
+        //                             },
+        //                             accept: {
+        //                                 enabled: "true",
+        //                                 type: "accept",
+        //                                 label: "Aceptar",
+        //                                 onClick: {
+        //                                     cmds: {
+        //                                         0: {
+        //                                             type: "return",
+        //                                             payload: {
+        //                                                 response: "true"
+        //                                             }
+        //                                         }
+        //                                     }
+        //                                 }
+        //                             },
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
     },
-    add: {},
     initialStages: {},
     finalStages: {},
-    footerButtons: {},
+    footerBtns: {},
     rowsData: [],
     rowsCheckboxs: [],
-    targetedButtons: [],
+    targetedBtns: [],
     emptyCellChar: "-",
     selectedPage: 0,
     paginationIndex: 0,
 
-    //HTML References:
-    filterBtn: null,
-    eraseBtn: null,
-    editBtn: null,
-    addBtn: null,
 };
 
 var states = [];
@@ -263,20 +259,49 @@ const formatDateToQuery = (date) => {
 // filter, edit, erase, add, dismissModal, post, update, modal
 const cmd = (state, cmds, res, pos) => {
 
-    const updateEditRemoveBtns = (state, payload) => {
+    const parentCmd = (state, payload, res) => {
+        switch (state.parentState.type) {
+            case "modal":
+                payload.cmds = payload.cmds || res;
+                return modal.cmd(state.parentState, payload.cmds, res, 0);
+            default:
+                return new Promise((resolve, reject) => {
+                    reject("Error with type: " + key);
+                })
+        }
+    };
+
+    const post = (state, payload, res) => {
+        var options = {
+            method: payload.method || 'GET',
+            mode: payload.mode || 'cors',
+            cache: payload.cache || 'no-cache',
+            credentials: payload.credentials || 'same-origin',
+            headers: payload.headers || {
+                'Content-Type': 'application/json'
+            },
+            redirect: payload.redirect || 'follow',
+            referrerPolicy: payload.referrerPolicy || 'no-referrer',
+        };
+        if (options.method == "POST") {
+            options.body = JSON.stringify(payload.body || res)
+        }
+        return fetch(payload.url, options);
+    }
+
+    const updateEditRemoveBtns = (state, payload, res) => {
 
         return new Promise((resolve, reject) => {
             try {
-
                 const enableBtns = () => {
-                    state.targetedButtons.forEach((btn) => {
+                    state.targetedBtns.forEach((btn) => {
                         btn.disabled = false;
                     });
                     console.log("enableBtns true");
                 };
 
                 const disableBtns = () => {
-                    state.targetedButtons.forEach((btn) => {
+                    state.targetedBtns.forEach((btn) => {
                         btn.disabled = true;
                     });
                     console.log("enableBtns false");
@@ -305,7 +330,7 @@ const cmd = (state, cmds, res, pos) => {
 
     };
 
-    const filter = (state, payload) => {
+    const filter = (state, payload, res) => {
         return new Promise((res, rej) => {
             state.selectedPage = 0;
             state.paginationIndex = 0;
@@ -322,8 +347,26 @@ const cmd = (state, cmds, res, pos) => {
 
     };
 
+    const confirmationBox = (state, payload, res) => {
+        return new Promise((res, rej) => {
+            rej("not implemented!");
+        });
+    };
+
+    const ifCmd = (state, payload, res) => {
+        return new Promise((res, rej) => {
+            rej("not implemented!");
+        });
+    };
+
+    const dismissModal = (state, payload, res) => {
+        return new Promise((res, rej) => {
+            rej("not implemented!");
+        });
+    };
+
     //Updates table data and view
-    const update = (state, payload) => {
+    const update = (state, payload, res) => {
 
         const fetchData = () => {
 
@@ -564,10 +607,13 @@ const cmd = (state, cmds, res, pos) => {
                 //Creo el btn first
                 var first = document.createElement("li");
                 first.className = "page-item";
+                first.style.alignSelf = "center";
+                first.style.minWidth = "fit-content";
                 state.paginationRoot.appendChild(first);
                 var firstButton = document.createElement("button");
                 firstButton.className = "page-link ventum-pagination-btn";
                 firstButton.innerHTML = "Principio";
+
                 if (state.paginationIndex == 0) {
                     firstButton.disabled = true;
                     firstButton.style.color = "grey";
@@ -582,10 +628,14 @@ const cmd = (state, cmds, res, pos) => {
                 //Creo el btn <<
                 var previous = document.createElement("li");
                 previous.className = "page-item";
+                previous.style.alignSelf = "center";
+                previous.style.minWidth = "fit-content";
                 state.paginationRoot.appendChild(previous);
                 var previousButton = document.createElement("button");
                 previousButton.className = "page-link ventum-pagination-btn";
                 previousButton.innerHTML = "<<";
+                previousButton.style.alignSelf = "center";
+                previousButton.style.minWidth = "fit-content";
                 if (state.paginationIndex == 0) {
                     previousButton.disabled = true;
                     previousButton.style.color = "grey";
@@ -603,10 +653,14 @@ const cmd = (state, cmds, res, pos) => {
                     console.log(index);
                     var li = document.createElement("li");
                     li.className = "page-item";
+                    li.style.alignSelf = "center";
+                    li.style.minWidth = "fit-content";
                     state.paginationRoot.appendChild(li);
                     var button = document.createElement("button");
                     button.className = "page-link ventum-pagination-btn";
                     button.innerHTML = (index + 1).toString();
+                    button.style.alignSelf = "center";
+                    button.style.minWidth = "fit-content";
                     const i = index;
                     button.addEventListener('click', (e) => {
                         e.preventDefault();
@@ -625,10 +679,13 @@ const cmd = (state, cmds, res, pos) => {
                 //Creo el btn >>
                 var next = document.createElement("li");
                 next.className = "page-item";
+                next.style.alignSelf = "center";
+                next.style.minWidth = "fit-content";
                 state.paginationRoot.appendChild(next);
                 var nextButton = document.createElement("button");
                 nextButton.className = "page-link ventum-pagination-btn";
                 nextButton.innerHTML = ">>";
+
                 if (Math.trunc(count / 100) == state.paginationIndex) {
                     nextButton.disabled = true;
                     nextButton.style.color = "grey";
@@ -644,6 +701,8 @@ const cmd = (state, cmds, res, pos) => {
                 //Creo el btn last
                 var last = document.createElement("li");
                 last.className = "page-item";
+                last.style.alignSelf = "center";
+                last.style.minWidth = "fit-content";
                 state.paginationRoot.appendChild(last);
                 var lastButton = document.createElement("button");
                 lastButton.className = "page-link ventum-pagination-btn";
@@ -667,16 +726,21 @@ const cmd = (state, cmds, res, pos) => {
                 pages.style.float = "right";
                 pages.innerHTML = `${state.selectedPage + 1} de ${Math.trunc(count/10+ 1) } &nbsp`;
                 pages.style.color = "grey";
+                pages.style.alignSelf = "center";
+                pages.style.minWidth = "fit-content";
                 state.paginationRoot.appendChild(pages);
 
                 //Input ir a
                 var goToLi = document.createElement("li");
                 goToLi.className = "page-item";
                 goToLi.style.width = '5%';
+                goToLi.style.alignSelf = "center";
+                // goToLi.style.minWidth = "fit-content";
                 state.paginationRoot.appendChild(goToLi);
                 var goTo = document.createElement("input");
                 goTo.className = "form-control";
                 goTo.style.width = '95%';
+
                 goToLi.appendChild(goTo);
                 var goToButton = document.createElement("button");
                 goToButton.className = "page-link ventum-pagination-btn";
@@ -693,6 +757,72 @@ const cmd = (state, cmds, res, pos) => {
                     }
                 })
                 state.paginationRoot.appendChild(goToButton);
+
+                //Agrego los botones del footer
+                var divBtns = document.createElement("div");
+                divBtns.id = state.id + "-card-footer-div-btns";
+                divBtns.className = "pagination ventum-table-footer-ul row";
+                divBtns.style.width = "75%";
+                //divBtns.style.paddingTop = "10px";
+                state.paginationRoot.appendChild(divBtns);
+
+                state.targetedBtns = [];
+                var btns = Object.entries(state.footerBtns);
+                var btnsCount = 0;
+                btns.forEach(([key, value]) => {
+                    if (value)
+                        btnsCount++;
+                });
+                console.log("header buttons: " + btnsCount.toString());
+
+                btns.forEach(([key, value]) => {
+                    if (value.enabled) {
+                        if (btnsCount < 7)
+                            value.showLabel = true;
+                        else
+                            value.showLabel = false;
+
+                        var btnDiv = document.createElement("div");
+                        switch (btnsCount) {
+                            case 1:
+                                btnDiv.className += "col-12";
+                                break;
+                            case 2:
+                                btnDiv.className += "col-6";
+                                break;
+                            case 3:
+                                btnDiv.className += "col-4";
+                                break;
+                            case 4:
+                                btnDiv.className += "col-3";
+                                break;
+                            case 5:
+                                btnDiv.className += "col-2";
+                                break;
+                            case 6:
+                                btnDiv.className += "col-2";
+                                break;
+                            default:
+                                btnDiv.className += "col-12";
+                                break;
+                        }
+                        divBtns.appendChild(btnDiv);
+                        var btn = buttons.createBtn(value);
+                        btnDiv.appendChild(btn);
+                        btnDiv.style.alignSelf = "center";
+                        btnDiv.style.minWidth = "fit-content";
+                        btn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            cmd(state, value.onClick.cmds, null, 0);
+                        });
+
+                        if (value.targeted) {
+                            state.targetedBtns.push(btn);
+                            btn.disabled = true;
+                        }
+                    }
+                });
+
             } catch (error) {
                 console.log(error);
             }
@@ -725,7 +855,7 @@ const cmd = (state, cmds, res, pos) => {
 
                     var addCheckbox = false;
                     //Si hay algun boton "targeted" agrego el checkbos a las filas
-                    Object.values(state.headerButtons).forEach((btn) => {
+                    Object.values(state.headerBtns).forEach((btn) => {
                         if (btn.targeted)
                             addCheckbox = true;
                     });
@@ -756,6 +886,7 @@ const cmd = (state, cmds, res, pos) => {
         };
 
         return new Promise((resolve, reject) => {
+            state.targetedBtns = [];
             fetchData()
                 .then(result => {
                     state.rowsData = result.rows;
@@ -769,27 +900,41 @@ const cmd = (state, cmds, res, pos) => {
                 });
         });
     };
+
     console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
 
-    try {
+    return new Promise((resolve, reject) => {
         //A: Si ya ejecute todos los comandos termino
         if (Object.keys(cmds).length == pos) {
-            return;
+            resolve();
         } else {
             var c = null;
             var command = cmds[pos];
             switch (command.type) {
+                case "parent-cmd":
+                    c = () => parentCmd(state, command.payload, res);
+                    break;
                 case "filter":
-                    c = () => filter(state, command.payload);
+                    c = () => filter(state, command.payload, res);
                     break;
                 case "post":
-                    c = () => dashboard.post(state, command.payload);
+                    c = () => post(state, command.payload, res);
                     break;
                 case "modal":
-                    c = () => modal.show(state, command.payload);
+                    c = () => modal.create(command.payload, res);
+                    break;
+                    //TODO: CONFIRMATION BOX debería ser un template de modal...
+                case "confirmationBox":
+                    c = () => confirmationBox(state, command.payload, res);
+                    break;
+                case "if":
+                    c = () => ifCmd(state, command.payload, res);
+                    break;
+                case "dismiss-modal":
+                    c = () => dismissModal(state, command.payload, res);
                     break;
                 case "update":
-                    c = () => update(state, command.payload);
+                    c = () => update(state, command.payload, res);
                     break;
                 default:
                     console.log(`Cmd not found: ${command.type}`);
@@ -801,11 +946,13 @@ const cmd = (state, cmds, res, pos) => {
                 .then((res) => {
                     cmd(state, cmds, res, pos + 1);
                 })
-                .catch(err => console.log(err));
+                .then((res) => resolve(res))
+                .catch(err => {
+                    console.log(err);
+                    reject(err);
+                });
         }
-    } catch (error) {
-        console.log(error);
-    }
+    });
 };
 
 const resetStates = () => {
@@ -821,202 +968,213 @@ const create = (data, parent) => {
     try {
 
         const createFilters = () => {
-            var div = document.createElement("div");
-            div.id = newState.id + "-table-filters";
-            div.className = "ventum-table-filters ";
-            cardParent.body.appendChild(div);
+            try {
+                var div = document.createElement("div");
+                div.id = newState.id + "-table-filters";
+                div.className = "ventum-table-filters ";
+                cardParent.body.appendChild(div);
 
-            newState.filterForm = document.createElement("form");
-            newState.filterForm.id = newState.id + "-table-filters-form";
-            newState.filterForm.className = "ventum-table-filters-form";
-            div.appendChild(newState.filterForm);
+                newState.filterForm = document.createElement("form");
+                newState.filterForm.id = newState.id + "-table-filters-form";
+                newState.filterForm.className = "ventum-table-filters-form";
+                div.appendChild(newState.filterForm);
 
-            var formRow = document.createElement("div");
-            formRow.id = newState.id + "-table-filters-form-row";
-            formRow.className = "form-row ventum-table-filters-form-row";
-            newState.filterForm.appendChild(formRow);
+                var formRow = document.createElement("div");
+                formRow.id = newState.id + "-table-filters-form-row";
+                formRow.className = "form-row ventum-table-filters-form-row";
+                newState.filterForm.appendChild(formRow);
 
-            //TODO modificar para que se puedan poner mas de 5 filtros
-            for (let index = 0; index < 5; index++) {
+                //TODO modificar para que se puedan poner mas de 5 filtros
+                for (let index = 0; index < 5; index++) {
+                    var col = document.createElement("div");
+                    col.id = newState.id + "-table-filters-form-col-" + index.toString();
+                    col.className = "col-2";
+                    formRow.appendChild(col);
+                    if (Object.keys(newState.filters).length > index) {
+                        var label = document.createElement("label");
+                        label.id = newState.id + "-table-filters-form-col-" + index.toString() + "-label";
+                        label.innerHTML = newState.filters[index].label;
+                        col.appendChild(label);
+
+                        var inputs = document.createElement("div");
+                        inputs.className = "form-row";
+                        col.appendChild(inputs);
+
+                        var inputsArray = Object.values(newState.filters[index].inputs);
+                        inputsArray.forEach(input => {
+                            var inputCol = document.createElement("div");
+                            switch (inputsArray.length) {
+                                case 1:
+                                    inputCol.className = "col-12";
+                                    break;
+                                case 2:
+                                    inputCol.className = "col-6";
+                                    break;
+                                case 3:
+                                    inputCol.className = "col-4";
+                                    break;
+                                case 4:
+                                    inputCol.className = "col-3";
+                                    break;
+                                default:
+                                    inputCol.className = "col-12";
+                                    break;
+                            }
+                            inputs.appendChild(inputCol);
+
+                            var field = document.createElement("input");
+                            field.ishoveredin = "0";
+                            field.isfocusedin = "0";
+                            field.name = input.name;
+                            field.type = input.type;
+                            field.className = "form-control";
+                            field.placeholder = input.placeholder;
+                            field.value = input.value;
+                            field.required = input.required;
+                            inputCol.appendChild(field);
+                        });
+                    }
+
+                }
                 var col = document.createElement("div");
-                col.id = newState.id + "-table-filters-form-col-" + index.toString();
+                col.id = newState.id + "-table-filters-form-col-" + "6";
                 col.className = "col-2";
+                col.style.textAlign = "center";
                 formRow.appendChild(col);
-                if (Object.keys(newState.filters).length > index) {
-                    var label = document.createElement("label");
-                    label.id = newState.id + "-table-filters-form-col-" + index.toString() + "-label";
-                    label.innerHTML = newState.filters[index].label;
-                    col.appendChild(label);
+                var label = document.createElement("label");
+                label.id = newState.id + "-table-filters-form-col-" + "submit" + "-label";
+                label.innerHTML = "  &nbsp";
+                label.style.position = "relative";
+                label.style.width = '100%';
+                col.appendChild(label);
 
-                    var inputs = document.createElement("div");
-                    inputs.className = "form-row";
-                    col.appendChild(inputs);
+                var inputs = document.createElement("div");
+                inputs.className = "form-row";
+                col.appendChild(inputs);
 
-                    var inputsArray = Object.values(newState.filters[index].inputs);
-                    inputsArray.forEach(input => {
-                        var inputCol = document.createElement("div");
-                        switch (inputsArray.length) {
+                var btns = Object.entries(newState.headerBtns);
+                var btnsCount = 0;
+                btns.forEach(([key, value]) => {
+                    if (value)
+                        btnsCount++;
+                });
+                console.log("header buttons: " + btnsCount.toString());
+                newState.targetedBtns = [];
+                btns.forEach(([key, value]) => {
+                    if (value.enabled) {
+                        if (btnsCount < 3)
+                            value.showLabel = true;
+                        else
+                            value.showLabel = false;
+
+                        var btnDiv = document.createElement("div");
+                        switch (btnsCount) {
                             case 1:
-                                inputCol.className = "col-12";
+                                btnDiv.className += "col-12";
                                 break;
                             case 2:
-                                inputCol.className = "col-6";
+                                btnDiv.className += "col-6";
                                 break;
                             case 3:
-                                inputCol.className = "col-4";
+                                btnDiv.className += "col-4";
                                 break;
                             case 4:
-                                inputCol.className = "col-3";
+                                btnDiv.className += "col-3";
                                 break;
                             default:
-                                inputCol.className = "col-12";
+                                btnDiv.className += "col-12";
                                 break;
                         }
-                        inputs.appendChild(inputCol);
+                        inputs.appendChild(btnDiv);
+                        var btn = buttons.createBtn(value);
+                        btnDiv.appendChild(btn);
+                        btn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            cmd(newState, value.onClick.cmds, null, 0);
+                        });
 
-                        var field = document.createElement("input");
-                        field.ishoveredin = "0";
-                        field.isfocusedin = "0";
-                        field.name = input.name;
-                        field.type = input.type;
-                        field.className = "form-control";
-                        field.placeholder = input.placeholder;
-                        field.value = input.value;
-                        field.required = input.required;
-                        inputCol.appendChild(field);
-                    });
-                }
+                        if (value.targeted) {
+                            newState.targetedBtns.push(btn);
+                            btn.disabled = true;
+                        }
+                    }
+                });
 
+                return div;
+            } catch (error) {
+                console.log(error);
+                throw error;
             }
-            var col = document.createElement("div");
-            col.id = newState.id + "-table-filters-form-col-" + "6";
-            col.className = "col-2";
-            col.style.textAlign = "center";
-            formRow.appendChild(col);
-            var label = document.createElement("label");
-            label.id = newState.id + "-table-filters-form-col-" + "submit" + "-label";
-            label.innerHTML = "  &nbsp";
-            label.style.position = "relative";
-            label.style.width = '100%';
-            col.appendChild(label);
 
-            var inputs = document.createElement("div");
-            inputs.className = "form-row";
-            col.appendChild(inputs);
-
-            var btns = Object.entries(newState.headerButtons);
-            var btnsCount = 0;
-            btns.forEach(([key, value]) => {
-                if (value)
-                    btnsCount++;
-            });
-            console.log("header buttons: " + btnsCount.toString());
-            newState.targetedButtons = [];
-            btns.forEach(([key, value]) => {
-                if (value.enabled) {
-                    if (btnsCount < 3)
-                        value.showLabel = true;
-                    else
-                        value.showLabel = false;
-
-                    var btnDiv = document.createElement("div");
-                    switch (btnsCount) {
-                        case 1:
-                            btnDiv.className += "col-12";
-                            break;
-                        case 2:
-                            btnDiv.className += "col-6";
-                            break;
-                        case 3:
-                            btnDiv.className += "col-4";
-                            break;
-                        case 4:
-                            btnDiv.className += "col-3";
-                            break;
-                        default:
-                            btnDiv.className += "col-12";
-                            break;
-                    }
-                    inputs.appendChild(btnDiv);
-                    var btn = buttons.createBtn(value);
-                    btnDiv.appendChild(btn);
-                    btn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        cmd(newState, value.onClick.cmds, null, 0);
-                    });
-
-                    if (value.targeted) {
-                        newState.targetedButtons.push(btn);
-                        btn.disabled = true;
-                    }
-                }
-            });
-
-            return div;
         };
         const createContent = () => {
-            var table = document.createElement("table");
-            table.id = newState.id + "-table-content";
-            //Ahora uso table-sm pero deberÃ­a adaptarse a la contenedor...
-            table.className = "table table-sm table-striped table-hover ventum-table-content";
-            cardParent.body.appendChild(table);
+            try {
+                var table = document.createElement("table");
+                table.id = newState.id + "-table-content";
+                //Ahora uso table-sm pero deberÃ­a adaptarse a la contenedor...
+                table.className = "table table-sm table-striped table-hover ventum-table-content";
+                cardParent.body.appendChild(table);
 
-            //Creo los headers
-            var thead = document.createElement("thead");
-            thead.id = newState.id + "-table-headers";
-            thead.className = "thead-dark";
-            table.appendChild(thead);
-            var tr = document.createElement("tr");
-            tr.id = newState.id + "-table-headers-tr";
-            tr.className = "";
-            thead.appendChild(tr);
+                //Creo los headers
+                var thead = document.createElement("thead");
+                thead.id = newState.id + "-table-headers";
+                thead.className = "thead-dark";
+                table.appendChild(thead);
+                var tr = document.createElement("tr");
+                tr.id = newState.id + "-table-headers-tr";
+                tr.className = "";
+                thead.appendChild(tr);
 
-            if (true) {
-                var th = document.createElement("th");
-                th.id = newState.id + "-table-headers-th";
-                th.className = "";
-                th.innerHTML = " &nbsp";
-                thead.appendChild(th);
+                Object.keys(newState.headers).forEach(key => {
+                    var th = document.createElement("th");
+                    th.id = newState.id + "-table-headers-th";
+                    th.className = "";
+                    th.innerHTML = newState.headers[key].label;
+                    thead.appendChild(th);
+                });
+
+                //Creo las filas
+                var tbody = document.createElement("tbody");
+                tbody.id = newState.id + "-table-body";
+                tbody.className = "";
+                newState.rowsRoot = tbody;
+                table.appendChild(tbody);
+
+                return table;
+            } catch (error) {
+                console.log(error);
+                throw error;
             }
 
-            Object.keys(newState.headers).forEach(key => {
-                var th = document.createElement("th");
-                th.id = newState.id + "-table-headers-th";
-                th.className = "";
-                th.innerHTML = newState.headers[key].label;
-                thead.appendChild(th);
-            });
-
-            //Creo las filas
-            var tbody = document.createElement("tbody");
-            tbody.id = newState.id + "-table-body";
-            tbody.className = "";
-            newState.rowsRoot = tbody;
-            table.appendChild(tbody);
-
-            return table;
         };
         const createFooter = () => {
-            var nav = document.createElement("nav");
-            nav.id = newState.id + "-card-footer-nav";
-            nav.className = "ventum-table-footer";
-            cardParent.footer.appendChild(nav);
+            try {
+                var nav = document.createElement("nav");
+                nav.id = newState.id + "-card-footer-nav";
+                nav.className = "ventum-table-footer";
+                cardParent.footer.appendChild(nav);
 
-            var ul = document.createElement("ul");
-            ul.id = newState.id + "-card-footer-ul";
-            ul.className = "pagination ventum-table-footer-ul";
-            nav.appendChild(ul);
-            newState.paginationRoot = ul;
+                var ul = document.createElement("ul");
+                ul.id = newState.id + "-card-footer-ul";
+                ul.className = "pagination ventum-table-footer-ul";
+                nav.appendChild(ul);
+                newState.paginationRoot = ul;
 
-            return nav;
+
+                return nav;
+            } catch (error) {
+                console.log(error);
+                throw error;
+            }
+
         };
 
         var newState = utils.fillObjWithDflt(data, dfltState);
         const cardParent = card.create({ title: newState.title }, parent);
 
-        var filters = createFilters();
-        var content = createContent();
-        var footer = createFooter();
+        createFilters();
+        createContent();
+        createFooter();
 
         console.log("states: " + states.push(newState).toString());
 

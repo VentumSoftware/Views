@@ -1,4 +1,5 @@
 import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
+import category from 'https://ventumdashboard.s3.amazonaws.com/dashboard/category.js';
 import table from 'https://ventumdashboard.s3.amazonaws.com/dashboard/table/table.js';
 import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.js';
 
@@ -20,103 +21,7 @@ const dfltState = {
 
 var state = {};
 
-//--------------------------------- Private Functions ------------------------------------
-
-const getDivs = (parent, cols) => {
-    if (!cols) cols = 1;
-    var divs = [];
-
-    const margins = 20;
-    var row = document.createElement("div");
-    row.className = "row";
-    row.style.position = 'relative';
-    row.style.left = margins + 'px';
-    row.style.right = margins + 'px';
-    row.style.top = margins + 'px';
-    row.style.bottom = margins + 'px';
-    row.style.marginLeft = '0px';
-    row.style.marginRight = '0px';
-    row.style.width = ((parent.offsetWidth - margins * 2) * 100 / parent.offsetWidth) + '%';
-    row.style.height = 'auto';
-    parent.appendChild(row);
-
-
-    for (let index = 0; index < cols; index++) {
-        const internalMargins = 5;
-        var col = document.createElement("div");
-        col.className = "col-" + (12 / cols).toString();
-        col.style.position = 'relative';
-        col.style.padding = internalMargins + 'px';
-        col.style.height = 'auto';
-        row.appendChild(col);
-        divs.push(col);
-    }
-
-    return divs;
-};
-
-const mainCard = (parent) => {
-    const margins = 20;
-    var tableRoot = document.createElement("div");
-    tableRoot.style.position = 'relative';
-    tableRoot.style.left = margins + 'px';
-    tableRoot.style.right = margins + 'px';
-    tableRoot.style.top = margins + 'px';
-    tableRoot.style.bottom = margins + 'px';
-    tableRoot.style.width = (parent.offsetWidth - margins * 2) * 100 / parent.offsetWidth + '%';
-    tableRoot.style.height = 'auto';
-    // tableRoot.style.height = (parent.offsetHeight - margins * 2) * 100 / parent.offsetHeight + '%';
-    parent.appendChild(tableRoot);
-    return tableRoot;
-};
-
-const createRow = (parent) => {
-    const margins = 20;
-    var row = document.createElement("div");
-    row.style.position = 'relative';
-    row.style.left = margins + 'px';
-    row.style.right = margins + 'px';
-    row.style.top = margins + 'px';
-    row.style.bottom = margins + 'px';
-    row.style.marginBottom = "20px";
-    row.style.width = (parent.offsetWidth - margins) * 100 / parent.offsetWidth + '%';
-    row.style.height = 'auto';
-    row.className += " row";
-    // tableRoot.style.height = (parent.offsetHeight - margins * 2) * 100 / parent.offsetHeight + '%';
-    parent.appendChild(row);
-    return row;
-};
-
-const createCol = (parent) => {
-    const margins = 0;
-    var col = document.createElement("div");
-    col.style.position = 'relative';
-    col.style.left = margins + 'px';
-    col.style.right = margins + 'px';
-    col.style.top = margins + 'px';
-    col.style.bottom = margins + 'px';
-    col.style.width = (parent.offsetWidth - margins * 2) * 100 / parent.offsetWidth + '%';
-    col.style.height = 'auto';
-    col.className += " col";
-    // tableRoot.style.height = (parent.offsetHeight - margins * 2) * 100 / parent.offsetHeight + '%';
-    parent.appendChild(col);
-    return col;
-};
-
 //--------------------------------- Public Interface ------------------------------------
-
-//Vuelve a cargar la vista seleccionada
-const reloadCat = () => {
-    selectCategory(state.selectedCat);
-}
-
-//Hace un post al endpoint indicado en el payload con el estado de la categoria como body
-const post = (invokerState, payload) => {
-    var body = {
-        tablesState: table.states,
-        formsStates: form.states,
-    }
-};
 
 const selectCategory = (cat) => {
     try {
@@ -129,27 +34,7 @@ const selectCategory = (cat) => {
         text.style.color = "green";
         state.contentDiv.innerHTML = "";
 
-        table.resetStates();
-
-        Object.values(cat.content.rows).forEach(row => {
-            var rowDiv = createRow(state.contentDiv);
-            Object.values(row.cols).forEach(col => {
-                var colDiv = createCol(rowDiv);
-                Object.values(col).forEach(element => {
-                    switch (element.type) {
-                        case "table":
-                            table.create(element.payload, colDiv);
-                            break;
-                        case "form":
-                            form.create(element.payload, colDiv);
-                            break;
-                        default:
-                            break;
-                    }
-                });
-            });
-        });
-
+        category.create(cat, state.contentDiv);
         state.selectedCat = cat;
     } catch (error) {
         console.log("Error with selected cat! " + error);
@@ -384,4 +269,4 @@ const create = (data) => {
     return nav;
 };
 
-export default { create, post, reloadCat };
+export default { create, logOut, selectCategory };

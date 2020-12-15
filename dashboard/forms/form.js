@@ -9,22 +9,23 @@ const dfltState = {
     title: "Form",
     fetchPath: "/api/aggregate",
     inputs: {},
-    footerButtons: {
-        empty0: {
+    footerBtns: {
+        0: {
             display: "none",
             disabled: "true",
             type: "none",
             label: "",
             onClick: {}
         },
-        empty1: {
+        1: {
             display: "none",
             disabled: "true",
             type: "none",
             label: "",
             onClick: {}
         }
-    }
+    },
+    parent: null
 };
 
 var states = [];
@@ -35,8 +36,19 @@ var states = [];
 // dismissModal
 const cmd = (state, cmds, res, pos) => {
 
+    const parentCmd = (state, payload, res) => {
+        switch (state.parentState.type) {
+            case "modal":
+                payload.cmds = payload.cmds || res;
+                return modal.cmd(state.parentState, payload.cmds, res, 0);
+            default:
+                return new Promise((resolve, reject) => {
+                    reject("Error with type: " + key);
+                })
+        }
+    };
 
-    const pushForm = (state, payload) => {
+    const pushForm = (state, payload, res) => {
         return new Promise((success, failed) => {
             try {
                 console.log("cmd: pushForm. Payload: " + JSON.stringify(payload));
@@ -67,36 +79,57 @@ const cmd = (state, cmds, res, pos) => {
         });
     };
 
-    const dismissModal = (state, payload) => {
-        return new Promise((success, failed) => {
-            try {
-                console.log("cmd: dismissModal. Payload: " + JSON.stringify(payload));
-                const modalData = modal.getData();
-                console.log("cmodalData: " + JSON.stringify(modalData));
-                modal.close();
-                success(modalData);
-            } catch (error) {
-                console.log(error);
-                failed(error);
-            }
+    // const dismissModal = (state, payload, res) => {
+    //     return new Promise((success, failed) => {
+    //         try {
+    //             console.log("cmd: dismissModal. Payload: " + JSON.stringify(payload));
+    //             const modalData = modal.getData();
+    //             console.log("cmodalData: " + JSON.stringify(modalData));
+    //             modal.close();
+    //             success(modalData);
+    //         } catch (error) {
+    //             console.log(error);
+    //             failed(error);
+    //         }
+    //     });
+    // };
+
+    const getData = (state, payload, res) => {
+        return new Promise((resolve, reject) => {
+            resolve(state.inputs);
+        });
+    };
+
+    const getState = (state, payload, res) => {
+        return new Promise((resolve, reject) => {
+            resolve(state);
         });
     };
 
     console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
 
-    try {
+    return new Promise((resolve, reject) => {
         //A: Si ya ejecute todos los comandos termino
         if (Object.keys(cmds).length <= pos) {
-            return;
+            resolve(res);
         } else {
             var c = null;
             var command = cmds[pos];
             switch (command.type) {
+                case "parent-cmd":
+                    c = () => parentCmd(state, command.payload, res);
+                    break;
                 case "push-form":
-                    c = () => pushForm(state, command.payload);
+                    c = () => pushForm(state, command.payload, res);
                     break;
                 case "dissmis-modal":
-                    c = () => dismissModal(state, command.payload);
+                    c = () => dismissModal(state, command.payload, res);
+                    break;
+                case "get-state":
+                    c = () => getState(state, command.payload, res);
+                    break;
+                case "get-data":
+                    c = () => getData(state, command.payload, res);
                     break;
                 default:
                     console.log(`Cmd not found: ${command.type}`);
@@ -108,11 +141,13 @@ const cmd = (state, cmds, res, pos) => {
                 .then((res) => {
                     cmd(state, cmds, res, pos + 1);
                 })
-                .catch(err => console.log(err));
+                .then((res) => resolve(res))
+                .catch(err => {
+                    console.log(err);
+                    reject(err);
+                });
         }
-    } catch (error) {
-        console.log(error);
-    }
+    })
 };
 
 const removeState = (state) => {}
@@ -126,7 +161,7 @@ const resetStates = () => {
     states = [];
 }
 
-const create = (data, parent) => {
+const create = (data, parent, parentState) => {
 
     const createContent = () => {
         try {
@@ -171,7 +206,7 @@ const create = (data, parent) => {
                 });
             });
 
-            var btns = Object.entries(newState.footerButtons);
+            var btns = Object.entries(newState.footerBtns);
             var btnsCount = 0;
             btns.forEach(([key, value]) => {
                 if (value)
@@ -228,6 +263,7 @@ const create = (data, parent) => {
     };
 
     var newState = utils.fillObjWithDflt(data, dfltState);
+    newState.parentState = parentState;
     const cardParent = card.create({ title: newState.title }, parent);
 
     createContent();

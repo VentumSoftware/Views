@@ -13,8 +13,10 @@ const createBtn = (data) => {
         if (data.display == "none")
             btn.style.display = "none";
 
-        if (data.showLabel)
-            btn.innerHTML = data.showLabel;
+        if (data.showLabel) {
+            btn.innerHTML = data.label;
+        }
+
 
         switch (data.type) {
             case "filter":

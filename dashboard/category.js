@@ -1,351 +1,109 @@
+import dashboard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/dashboard.js';
+import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
+import card from 'https://ventumdashboard.s3.amazonaws.com/dashboard/card/card.js';
+import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.js';
+import modal from 'https://ventumdashboard.s3.amazonaws.com/dashboard/modal/modal.js';
+import buttons from 'https://ventumdashboard.s3.amazonaws.com/dashboard/buttons/buttons.js';
+import table from 'https://ventumdashboard.s3.amazonaws.com/dashboard/table/table.js';
+
 //--------------------------------- Category --------------------------------------------
 
 var dfltState = {
-    name: "Form",
-    access: {
-        names: {
-            1: "Admin"
-        },
-        roles: {
-            0: "Admin"
-        }
-    },
+    id: "noId",
+    name: "No Name",
+    access: {},
     postUrl: null,
     content: {
         rows: {
             //Rows
             0: {
-                cols: {
-                    //Columns
-                    0: {
-                        //Columns elements
-                        0: {
-                            type: "form",
-                            payload: {
-                                title: "INTI",
-                                cols: {
-                                    0: {
-                                        0: {
-                                            type: "text",
-                                            label: "DNI",
-                                            placeholder: "DNI"
-                                        },
-                                        1: {
-                                            type: "text",
-                                            label: "Nombre",
-                                            placeholder: "Nombre"
-                                        },
-                                        2: {
-                                            type: "text",
-                                            label: "Apellido",
-                                            placeholder: "Apellido"
-                                        },
-                                        3: {
-                                            type: "date",
-                                            label: "Fecha N.",
-                                            placeholder: ""
-                                        },
-                                        4: {
-                                            type: "text",
-                                            label: "Empresa",
-                                            placeholder: "Empresa"
-                                        },
-                                    },
-                                    1: {
-                                        0: {
-                                            type: "text",
-                                            label: "Sector",
-                                            placeholder: "Sector"
-                                        },
-                                        1: {
-                                            type: "text",
-                                            label: "Posición",
-                                            placeholder: "Posición"
-                                        },
-                                        2: {
-                                            type: "text",
-                                            label: "Mail",
-                                            placeholder: "Mail"
-                                        },
-                                        3: {
-                                            type: "text",
-                                            label: "Teléfono",
-                                            placeholder: ""
-                                        },
-                                        4: {
-                                            type: "text",
-                                            label: "Dirección",
-                                            placeholder: "Dirección"
-                                        },
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    1: {
-                        //Columns elements
-                        0: {
-                            type: "form",
-                            payload: {
-                                title: "INTI",
-                                cols: {
-                                    0: {
-                                        0: {
-                                            type: "text",
-                                            label: "DNI",
-                                            placeholder: "DNI"
-                                        },
-                                        1: {
-                                            type: "text",
-                                            label: "Nombre",
-                                            placeholder: "Nombre"
-                                        },
-                                        2: {
-                                            type: "text",
-                                            label: "Apellido",
-                                            placeholder: "Apellido"
-                                        },
-                                        3: {
-                                            type: "date",
-                                            label: "Fecha N.",
-                                            placeholder: ""
-                                        },
-                                        4: {
-                                            type: "text",
-                                            label: "Empresa",
-                                            placeholder: "Empresa"
-                                        },
-                                    },
-                                    1: {
-                                        0: {
-                                            type: "text",
-                                            label: "Sector",
-                                            placeholder: "Sector"
-                                        },
-                                        1: {
-                                            type: "text",
-                                            label: "Posición",
-                                            placeholder: "Posición"
-                                        },
-                                        2: {
-                                            type: "text",
-                                            label: "Mail",
-                                            placeholder: "Mail"
-                                        },
-                                        3: {
-                                            type: "text",
-                                            label: "Teléfono",
-                                            placeholder: ""
-                                        },
-                                        4: {
-                                            type: "text",
-                                            label: "Dirección",
-                                            placeholder: "Dirección"
-                                        },
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                cols: {}
             },
-            1: {
-                cols: {
-                    //Columns
-                    0: {
-                        //Columns elements
-                        0: {
-                            type: "table",
-                            payload: {
-                                title: "INTI",
-                                fetchPath: "/api/aggregate/Masterbus-IOT/INTI",
-                                headers: {
-                                    0: {
-                                        name: "paquete.Direccion",
-                                        label: "Dirección",
-                                    },
-                                    1: {
-                                        name: "paquete.ID",
-                                        label: "ID",
-                                    },
-                                    2: {
-                                        name: "paquete.Fecha",
-                                        label: "Fecha",
-                                    },
-                                    3: {
-                                        name: "paquete.Hora",
-                                        label: "Hora",
-                                    },
-                                    4: {
-                                        name: "paquete.Latitud",
-                                        label: "Latitud",
-                                    },
-                                    5: {
-                                        name: "paquete.Longitud",
-                                        label: "Longitud",
-                                    },
-                                    6: {
-                                        name: "paquete.Sensor1",
-                                        label: "Comb.(S1)",
-                                    },
-                                    7: {
-                                        name: "paquete.Sensor2",
-                                        label: "RPMs (S2)",
-                                    },
-                                    8: {
-                                        name: "paquete.Accel",
-                                        label: "Aceleración",
-                                    },
-                                    9: {
-                                        name: "paquete.Velocidad",
-                                        label: "Velocidad",
-                                    }
-                                },
-                                filters: {
-                                    0: {
-                                        label: "Desde",
-                                        inputs: {
-                                            desde: {
-                                                name: "fecha-desde",
-                                                type: "date",
-                                                placeholder: "Desde",
-                                                value: "",
-                                                required: "",
-                                                stage: {
-                                                    type: "match",
-                                                    var: "paquete.Fecha",
-                                                    op: "$gte",
-                                                    transform: "date"
-                                                }
-                                            }
-                                        }
-                                    },
-                                    1: {
-                                        label: "Hasta",
-                                        inputs: {
-                                            desde: {
-                                                name: "fecha-hasta",
-                                                type: "date",
-                                                placeholder: "Hasta",
-                                                value: "",
-                                                required: "",
-                                                stage: {
-                                                    type: "match",
-                                                    var: "paquete.Fecha",
-                                                    op: "$lte",
-                                                    transform: "date"
-                                                }
-                                            }
-                                        }
-                                    },
-                                    2: {
-                                        label: "ID",
-                                        inputs: {
-                                            desde: {
-                                                name: "ID",
-                                                type: "text",
-                                                placeholder: "ID",
-                                                value: "",
-                                                required: "",
-                                                stage: {
-                                                    type: "match",
-                                                    var: "paquete.ID",
-                                                }
-                                            }
-                                        }
-                                    },
-                                    3: {
-                                        label: "Aceleración",
-                                        inputs: {
-                                            desde: {
-                                                name: "aceleracion-desde",
-                                                type: "text",
-                                                placeholder: "Desde",
-                                                value: "",
-                                                required: "",
-                                                stage: {
-                                                    type: "match",
-                                                    var: "paquete.Accel",
-                                                    op: "$gte",
-                                                }
-                                            },
-                                            hasta: {
-                                                name: "aceleracion-hasta",
-                                                type: "text",
-                                                placeholder: "Hasta",
-                                                value: "",
-                                                required: "",
-                                                stage: {
-                                                    type: "match",
-                                                    var: "paquete.Accel",
-                                                    op: "$lte",
-                                                }
-                                            }
-                                        }
-                                    },
-                                    4: {
-                                        label: "Velocidad",
-                                        inputs: {
-                                            desde: {
-                                                name: "velocidad-desde",
-                                                type: "number",
-                                                placeholder: "Desde",
-                                                value: "",
-                                                required: "",
-                                                stage: {
-                                                    type: "match",
-                                                    var: "paquete.Velocidad",
-                                                    op: "$gte",
-                                                }
-                                            },
-                                            hasta: {
-                                                name: "velocidad-hasta",
-                                                type: "number",
-                                                placeholder: "Hasta",
-                                                value: "",
-                                                required: "",
-                                                stage: {
-                                                    type: "match",
-                                                    var: "paquete.Velocidad",
-                                                    op: "$lte",
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                finalStages: {
-                                    0: '{"$sort":{"paquete.Fecha":-1,"paquete.Hora":-1}}'
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         },
     }
 };
 
 var states = [];
 
+//--------------------------------- Private Functions ------------------------------------
+
+const createRow = (parent) => {
+    const margins = 20;
+    var row = document.createElement("div");
+    row.style.position = 'relative';
+    row.style.left = margins + 'px';
+    row.style.right = margins + 'px';
+    row.style.top = margins + 'px';
+    row.style.bottom = margins + 'px';
+    row.style.marginBottom = "20px";
+    row.style.width = (parent.offsetWidth - margins) * 100 / parent.offsetWidth + '%';
+    row.style.height = 'auto';
+    row.className += " row";
+    // tableRoot.style.height = (parent.offsetHeight - margins * 2) * 100 / parent.offsetHeight + '%';
+    parent.appendChild(row);
+    return row;
+};
+
+const createCol = (parent) => {
+    const margins = 0;
+    var col = document.createElement("div");
+    col.style.position = 'relative';
+    col.style.left = margins + 'px';
+    col.style.right = margins + 'px';
+    col.style.top = margins + 'px';
+    col.style.bottom = margins + 'px';
+    col.style.width = (parent.offsetWidth - margins * 2) * 100 / parent.offsetWidth + '%';
+    col.style.height = 'auto';
+    col.className += " col";
+    // tableRoot.style.height = (parent.offsetHeight - margins * 2) * 100 / parent.offsetHeight + '%';
+    parent.appendChild(col);
+    return col;
+};
+
 //--------------------------------- Public Interface ------------------------------------
 
 const cmd = (state, cmds, res, pos) => {
+
+    const parentCmd = (state, payload, res) => {
+        switch (state.parentState.type) {
+            case "modal":
+                payload.cmds = payload.cmds || res;
+                return modal.cmd(state.parentState, payload.cmds, res, 0);
+            default:
+                return new Promise((resolve, reject) => {
+                    reject("Error with type: " + key);
+                })
+        }
+    };
+
+    //Vuelve a cargar la vista seleccionada
+    const reloadCat = (state, payload, res) => {
+        selectCategory(state.selectedCat);
+    };
+
+    //Hace un post al endpoint indicado en el payload con el estado de la categoria como body
+    const post = (invokerState, payload, res) => {
+        var body = {
+            tablesState: table.states,
+            formsStates: form.states,
+        }
+    };
 
     console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
 
     try {
         //A: Si ya ejecute todos los comandos termino
         if (Object.keys(cmds).length <= pos) {
-            return;
+            resolve(res);
         } else {
             var c = null;
             var command = cmds[pos];
             switch (command.type) {
-                case "submit":
-                    // c = () => pushForm(state, command.payload);
+                case "reload":
+                    c = () => reloadCat(state, command.payload);
                     break;
-                case "dissmis-modal":
-                    // c = () => dismissModal(state, command.payload);
+                case "post":
+                    c = () => post(state, command.payload);
                     break;
                 default:
                     console.log(`Cmd not found: ${command.type}`);
@@ -357,7 +115,11 @@ const cmd = (state, cmds, res, pos) => {
                 .then((res) => {
                     cmd(state, cmds, res, pos + 1);
                 })
-                .catch(err => console.log(err));
+                .then((res) => resolve(res))
+                .catch(err => {
+                    console.log(err);
+                    reject(err);
+                });
         }
     } catch (error) {
         console.log(error);
@@ -376,61 +138,29 @@ const resetStates = () => {
 };
 
 const create = (data, parent) => {
-
-    const navBar = () => {
-        var navbarDiv = document.createElement("div");
-        navbarDiv.id = state.id + "-content-navbar-div";
-        navbarDiv.className = 'ventum-content-navbar-div row';
-
-        var empty = document.createElement("div");
-        empty.id = state.id + "-content-navbar-div-exit";
-        empty.className = 'col-11';
-        navbarDiv.appendChild(empty);
-
-        var exit = document.createElement("div");
-        exit.id = state.id + "-content-navbar-div-exit";
-        exit.style.position = "relative";
-        exit.className = 'col-1 d-flex content-center';
-        navbarDiv.appendChild(exit);
-        var exitBtn = document.createElement("button");
-        exitBtn.id = state.id + "-content-navbar-div-exit";
-        exitBtn.className = "btn btn-danger btn-sm";
-        exitBtn.style.color = "white";
-        exitBtn.style.marginTop = "10%";
-        exitBtn.style.marginBottom = "10%";
-        exitBtn.innerHTML = "Log Out";
-        exitBtn.addEventListener('click', () => {
-            logOut(state.logOut);
-        });
-        exit.appendChild(exitBtn);
-        return navbarDiv;
-    };
-
-    const separatorLine = () => {
-        var line = document.createElement("div");
-        line.className = 'ventum-content-separator-line';
-
-        return line;
-    };
     try {
-        var content = document.createElement("div");
-        content.id = state.id + "-content";
-        content.className = 'ventum-content '; //overflow-auto
-        content.style.overflowY = "auto";
-        content.style.overflowX = "hidden";
-        content.appendChild(navBar());
-        content.appendChild(separatorLine());
-        var mainContent = document.createElement("div");
-        mainContent.id = state.id + "-content-main";
-        mainContent.className = 'ventum-main-content';
-        mainContent.style.height = '91%';
-        content.appendChild(mainContent);
-        return content;
+        table.resetStates();
+        Object.values(data.content.rows).forEach(row => {
+            var rowDiv = createRow(parent);
+            Object.values(row.cols).forEach(col => {
+                var colDiv = createCol(rowDiv);
+                Object.values(col).forEach(element => {
+                    switch (element.type) {
+                        case "table":
+                            table.create(element.payload, colDiv);
+                            break;
+                        case "form":
+                            form.create(element.payload, colDiv);
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            });
+        });
     } catch (error) {
-        console.log("Error creating sidebar: " + error);
-        return null;
+        console.log("Error creating category! " + error);
     }
-
 };
 
-export default { create, resetStates, removeState, states };
+export default { create, resetStates, removeState, cmd };
