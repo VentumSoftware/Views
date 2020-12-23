@@ -776,51 +776,53 @@ const cmd = (state, cmds, res, pos) => {
                 console.log("header buttons: " + btnsCount.toString());
 
                 btns.forEach(([key, value]) => {
-                    if (value.enabled) {
-                        if (btnsCount < 7)
-                            value.showLabel = true;
-                        else
-                            value.showLabel = false;
+                    if (btnsCount < 7)
+                        value.showLabel = true;
+                    else
+                        value.showLabel = false;
 
-                        var btnDiv = document.createElement("div");
-                        switch (btnsCount) {
-                            case 1:
-                                btnDiv.className += "col-12";
-                                break;
-                            case 2:
-                                btnDiv.className += "col-6";
-                                break;
-                            case 3:
-                                btnDiv.className += "col-4";
-                                break;
-                            case 4:
-                                btnDiv.className += "col-3";
-                                break;
-                            case 5:
-                                btnDiv.className += "col-2";
-                                break;
-                            case 6:
-                                btnDiv.className += "col-2";
-                                break;
-                            default:
-                                btnDiv.className += "col-12";
-                                break;
-                        }
-                        divBtns.appendChild(btnDiv);
-                        var btn = buttons.createBtn(value);
-                        btnDiv.appendChild(btn);
-                        btnDiv.style.alignSelf = "center";
-                        btnDiv.style.minWidth = "fit-content";
-                        btn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            cmd(state, value.onClick.cmds, null, 0);
-                        });
-
-                        if (value.targeted) {
-                            state.targetedBtns.push(btn);
-                            btn.disabled = true;
-                        }
+                    var btnDiv = document.createElement("div");
+                    switch (btnsCount) {
+                        case 1:
+                            btnDiv.className += "col-12";
+                            break;
+                        case 2:
+                            btnDiv.className += "col-6";
+                            break;
+                        case 3:
+                            btnDiv.className += "col-4";
+                            break;
+                        case 4:
+                            btnDiv.className += "col-3";
+                            break;
+                        case 5:
+                            btnDiv.className += "col-2";
+                            break;
+                        case 6:
+                            btnDiv.className += "col-2";
+                            break;
+                        default:
+                            btnDiv.className += "col-12";
+                            break;
                     }
+                    divBtns.appendChild(btnDiv);
+                    var btn = buttons.createBtn(value);
+                    btnDiv.appendChild(btn);
+                    btnDiv.style.alignSelf = "center";
+                    btnDiv.style.minWidth = "fit-content";
+                    if (!value.enabled) {
+                        btn.style.display = "none";
+                    }
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        cmd(state, value.onClick.cmds, null, 0);
+                    });
+
+                    if (value.targeted) {
+                        state.targetedBtns.push(btn);
+                        btn.disabled = true;
+                    }
+
                 });
 
             } catch (error) {
