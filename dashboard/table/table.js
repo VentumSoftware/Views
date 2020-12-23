@@ -1023,17 +1023,47 @@ const create = (data, parent) => {
                                     break;
                             }
                             inputs.appendChild(inputCol);
+                            if(input.type == "dropdown"){
+                                
+                                var dropdownView = document.createElement("div");
+                                dropdownView.className = "dropdown";
+                                inputCol.appendChild(dropdownView);
 
-                            var field = document.createElement("input");
-                            field.ishoveredin = "0";
-                            field.isfocusedin = "0";
-                            field.name = input.name;
-                            field.type = input.type;
-                            field.className = "form-control";
-                            field.placeholder = input.placeholder;
-                            field.value = input.value;
-                            field.required = input.required;
-                            inputCol.appendChild(field);
+                                var dropdownBtn = document.createElement("button");
+                                dropdownBtn.className = "btn btn-secondary dropdown-toggle";
+                                dropdownBtn.type = "button";
+                                dropdownBtn.id = input.name;
+                                dropdownBtn['data-toggle']="dropdown";
+                                dropdownBtn['aria-haspopup']="true";
+                                dropdownBtn['aria-expanded']="false";
+                                dropdownBtn.innerHTML = input.label;
+                                dropdownView.appendChild(dropdownBtn);
+
+                                var dropdownMenu = document.createElement("div");
+                                dropdownMenu.className = "dropdown-menu";
+                                dropdownMenu['aria-labelledby'] = input.name;
+                                dropdownView.appendChild(dropdownMenu);
+
+                                Object.values(input.options).forEach(option =>{
+                                    var dropdownLink = document.createElement("a");
+                                    dropdownLink.href = "#";
+                                    dropdownLink.innerHTML = option;
+                                    dropdownView.appendChild(dropdownLink);
+                                });
+                                
+
+                            } else {
+                                var field = document.createElement("input");
+                                field.ishoveredin = "0";
+                                field.isfocusedin = "0";
+                                field.name = input.name;
+                                field.type = input.type;
+                                field.className = "form-control";
+                                field.placeholder = input.placeholder;
+                                field.value = input.value;
+                                field.required = input.required;
+                                inputCol.appendChild(field);
+                            }
                         });
                     }
 
