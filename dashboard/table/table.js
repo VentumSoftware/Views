@@ -1,7 +1,5 @@
-import dashboard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/dashboard.js';
 import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
 import card from 'https://ventumdashboard.s3.amazonaws.com/dashboard/card/card.js';
-import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.js';
 import modal from 'https://ventumdashboard.s3.amazonaws.com/dashboard/modal/modal.js';
 import buttons from 'https://ventumdashboard.s3.amazonaws.com/dashboard/buttons/buttons.js';
 
@@ -11,226 +9,7 @@ const dfltState = {
     fetchPath: "/api/aggregate",
     headers: {},
     filters: {},
-    headerBtns: {
-        // filter: {
-        //     enabled: "true",
-        //     type: "filter",
-        //     label: "filtrar",
-        //     onClick: {
-        //         cmds: {
-        //             0: {
-        //                 type: "filter",
-        //                 payload: {}
-        //             }
-        //         }
-        //     }
-        // },
-        // erase: {
-        //     enabled: "true",
-        //     type: "erase",
-        //     label: "filtrar",
-        //     targeted: true, // Solo se habilita si tengo seleccionado elementos de la tabla
-        //     onClick: {
-        //         cmds: {
-        //             0: {
-        //                 type: "erase",
-        //                 payload: {}
-        //             }
-        //         }
-        //     }
-        // },
-        // edit: {
-        //     enabled: "true",
-        //     type: "edit",
-        //     label: "editar",
-        //     targeted: true, // Solo se habilita si tengo seleccionado elementos de la tabla
-        //     onClick: {
-        //         cmds: {
-        //             1: {
-        //                 type: "modal",
-        //                 form: {
-        //                     title: "INTI",
-        //                     cols: {
-        //                         0: {
-        //                             0: {
-        //                                 type: "text",
-        //                                 label: "DNI",
-        //                                 placeholder: "DNI"
-        //                             },
-        //                             1: {
-        //                                 type: "text",
-        //                                 label: "Nombre",
-        //                                 placeholder: "Nombre"
-        //                             },
-        //                             2: {
-        //                                 type: "text",
-        //                                 label: "Apellido",
-        //                                 placeholder: "Apellido"
-        //                             },
-        //                             3: {
-        //                                 type: "date",
-        //                                 label: "Fecha N.",
-        //                                 placeholder: ""
-        //                             },
-        //                             4: {
-        //                                 type: "text",
-        //                                 label: "Empresa",
-        //                                 placeholder: "Empresa"
-        //                             },
-        //                         },
-        //                         1: {
-        //                             0: {
-        //                                 type: "text",
-        //                                 label: "Sector",
-        //                                 placeholder: "Sector"
-        //                             },
-        //                             1: {
-        //                                 type: "text",
-        //                                 label: "Posición",
-        //                                 placeholder: "Posición"
-        //                             },
-        //                             2: {
-        //                                 type: "text",
-        //                                 label: "Mail",
-        //                                 placeholder: "Mail"
-        //                             },
-        //                             3: {
-        //                                 type: "text",
-        //                                 label: "Teléfono",
-        //                                 placeholder: ""
-        //                             },
-        //                             4: {
-        //                                 type: "text",
-        //                                 label: "Dirección",
-        //                                 placeholder: "Dirección"
-        //                             },
-        //                         }
-        //                     },
-        //                     footerBtns: {
-        //                         cancel: {
-        //                             enabled: "true",
-        //                             type: "edit",
-        //                             label: "editar",
-        //                             onClick: {}
-        //                         },
-        //                         acept: {
-        //                             enabled: "true",
-        //                             type: "edit",
-        //                             label: "editar",
-        //                             onClick: {}
-        //                         }
-        //                     }
-        //                 },
-        //             }
-        //         }
-        //     }
-        // },
-        // add: {
-        //     enabled: "true",
-        //     type: "add",
-        //     label: "agregar",
-        //     onClick: {
-        //         cmds: {
-        //             0: {
-        //                 type: "modal",
-        //                 payload: {
-        //                     form: {
-        //                         title: "Usuario",
-        //                         cols: {
-        //                             0: {
-        //                                 0: {
-        //                                     type: "text",
-        //                                     label: "DNI",
-        //                                     placeholder: "DNI"
-        //                                 },
-        //                                 1: {
-        //                                     type: "text",
-        //                                     label: "Nombre",
-        //                                     placeholder: "Nombre"
-        //                                 },
-        //                                 2: {
-        //                                     type: "text",
-        //                                     label: "Apellido",
-        //                                     placeholder: "Apellido"
-        //                                 },
-        //                                 3: {
-        //                                     type: "date",
-        //                                     label: "Fecha N.",
-        //                                     placeholder: ""
-        //                                 },
-        //                                 4: {
-        //                                     type: "text",
-        //                                     label: "Empresa",
-        //                                     placeholder: "Empresa"
-        //                                 },
-        //                             },
-        //                             1: {
-        //                                 0: {
-        //                                     type: "text",
-        //                                     label: "Sector",
-        //                                     placeholder: "Sector"
-        //                                 },
-        //                                 1: {
-        //                                     type: "text",
-        //                                     label: "Posición",
-        //                                     placeholder: "Posición"
-        //                                 },
-        //                                 2: {
-        //                                     type: "text",
-        //                                     label: "Mail",
-        //                                     placeholder: "Mail"
-        //                                 },
-        //                                 3: {
-        //                                     type: "text",
-        //                                     label: "Teléfono",
-        //                                     placeholder: ""
-        //                                 },
-        //                                 4: {
-        //                                     type: "text",
-        //                                     label: "Dirección",
-        //                                     placeholder: "Dirección"
-        //                                 },
-        //                             }
-        //                         },
-        //                         footerButtons: {
-        //                             cancel: {
-        //                                 enabled: "true",
-        //                                 type: "cancel",
-        //                                 label: "Cancelar",
-        //                                 onClick: {
-        //                                     cmds: {
-        //                                         0: {
-        //                                             type: "return",
-        //                                             payload: {
-        //                                                 response: "false"
-        //                                             }
-        //                                         }
-        //                                     }
-        //                                 }
-        //                             },
-        //                             accept: {
-        //                                 enabled: "true",
-        //                                 type: "accept",
-        //                                 label: "Aceptar",
-        //                                 onClick: {
-        //                                     cmds: {
-        //                                         0: {
-        //                                             type: "return",
-        //                                             payload: {
-        //                                                 response: "true"
-        //                                             }
-        //                                         }
-        //                                     }
-        //                                 }
-        //                             },
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-    },
+    headerBtns: {},
     initialStages: {},
     finalStages: {},
     footerBtns: {},
@@ -775,13 +554,30 @@ const cmd = (state, cmds, res, pos) => {
                 });
                 console.log("header buttons: " + btnsCount.toString());
 
+                //Si tengo un solo boton agrego uno invisible para correrlo a la derecha
+                if (btnsCount == 1) {
+                    btns = [
+                        [0, {
+                            enabled: false,
+                            type: "filter",
+                            label: "filtrar",
+                            onClick: {
+                                cmds: {}
+                            }
+                        }],
+                        [1, btns[0][1]]
+                    ]
+                    btnsCount++;
+                }
+
                 btns.forEach(([key, value]) => {
-                    if (btnsCount < 7)
+                    if (btnsCount < 4)
                         value.showLabel = true;
                     else
                         value.showLabel = false;
 
                     var btnDiv = document.createElement("div");
+
                     switch (btnsCount) {
                         case 1:
                             btnDiv.className += "col-12";
@@ -805,6 +601,7 @@ const cmd = (state, cmds, res, pos) => {
                             btnDiv.className += "col-12";
                             break;
                     }
+
                     divBtns.appendChild(btnDiv);
                     var btn = buttons.createBtn(value);
                     btnDiv.appendChild(btn);
@@ -1023,8 +820,8 @@ const create = (data, parent) => {
                                     break;
                             }
                             inputs.appendChild(inputCol);
-                            if(input.type == "dropdown"){
-                                
+                            if (input.type == "dropdown") {
+
                                 var dropdownView = document.createElement("div");
                                 dropdownView.className = "dropdown";
                                 inputCol.appendChild(dropdownView);
@@ -1033,9 +830,9 @@ const create = (data, parent) => {
                                 dropdownBtn.className = "btn btn-secondary dropdown-toggle";
                                 dropdownBtn.type = "button";
                                 dropdownBtn.id = input.name;
-                                dropdownBtn['data-toggle']="dropdown";
-                                dropdownBtn['aria-haspopup']="true";
-                                dropdownBtn['aria-expanded']="false";
+                                dropdownBtn['data-toggle'] = "dropdown";
+                                dropdownBtn['aria-haspopup'] = "true";
+                                dropdownBtn['aria-expanded'] = "false";
                                 dropdownBtn.innerHTML = input.label;
                                 dropdownView.appendChild(dropdownBtn);
 
@@ -1044,13 +841,13 @@ const create = (data, parent) => {
                                 dropdownMenu['aria-labelledby'] = input.name;
                                 dropdownView.appendChild(dropdownMenu);
 
-                                Object.values(input.options).forEach(option =>{
+                                Object.values(input.options).forEach(option => {
                                     var dropdownLink = document.createElement("a");
                                     dropdownLink.href = "#";
                                     dropdownLink.innerHTML = option;
                                     dropdownView.appendChild(dropdownLink);
                                 });
-                                
+
 
                             } else {
                                 var field = document.createElement("input");
@@ -1068,6 +865,8 @@ const create = (data, parent) => {
                     }
 
                 }
+
+                //Dibujo columna con los botones del header
                 var col = document.createElement("div");
                 col.id = newState.id + "-table-filters-form-col-" + "6";
                 col.className = "col-2";
@@ -1084,6 +883,7 @@ const create = (data, parent) => {
                 inputs.className = "form-row";
                 col.appendChild(inputs);
 
+                //Dibujo cada boton del header
                 var btns = Object.entries(newState.headerBtns);
                 var btnsCount = 0;
                 btns.forEach(([key, value]) => {

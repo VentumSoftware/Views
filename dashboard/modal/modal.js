@@ -19,6 +19,7 @@ var state = null;
 var root = null;
 var modalDialog = null;
 var modalContent = null;
+var spinnerDiv = null;
 
 //-----------------------------------------------------------------------------------------------
 
@@ -57,6 +58,40 @@ const cmd = (state, cmds, res, pos) => {
         });
     };
 
+    const showSpinner = (state, payload, res) => {
+        //<div class="d-flex justify-content-center"></div>
+
+        var justifyDiv = document.createElement("div");
+        justifyDiv.className = "d-flex justify-content-center";
+        parent.appendChild(justifyDiv);
+
+        var spinnerBorder = document.createElement("div");
+        spinnerBorder.className = "spinner-border text-light";
+        spinnerBorder.role = "status";
+        justifyDiv.appendChild(spinnerBorder);
+
+        var span = document.createElement("div");
+        span.className = "sr-only";
+        span.innerHTML = "Loading...";
+        spinnerBorder.appendChild(span);
+    };
+
+    const hideSpinner = (state, payload, res) => {
+        var justifyDiv = document.createElement("div");
+        justifyDiv.className = "d-flex justify-content-center";
+        parent.appendChild(justifyDiv);
+
+        var spinnerBorder = document.createElement("div");
+        spinnerBorder.className = "spinner-border text-light";
+        spinnerBorder.role = "status";
+        justifyDiv.appendChild(spinnerBorder);
+
+        var span = document.createElement("div");
+        span.className = "sr-only";
+        span.innerHTML = "Loading...";
+        spinnerBorder.appendChild(span);
+    };
+
     const returnCorrectCmd = (state, payload, res) => {
         return new Promise((resolve, reject) => {
             returnCorrect(state, payload.res);
@@ -90,6 +125,12 @@ const cmd = (state, cmds, res, pos) => {
                 case "getSubStates":
                     c = () => getSubStates(state, command.payload, res);
                     break;
+                case "showSpinner":
+                    c = () => showSpinner(state, command.payload, res);
+                    break;
+                case "hideSpinner":
+                    c = () => hideSpinner(state, command.payload, res);
+                    break;
                 case "return-correct":
                     c = () => returnCorrectCmd(state, command.payload, res);
                     break;
@@ -114,24 +155,6 @@ const cmd = (state, cmds, res, pos) => {
         }
     })
 };
-
-const spinner = (payload, parent) => {
-    //<div class="d-flex justify-content-center"></div>
-
-    var justifyDiv = document.createElement("div");
-    justifyDiv.className = "d-flex justify-content-center";
-    parent.appendChild(justifyDiv);
-
-    var spinnerBorder = document.createElement("div");
-    spinnerBorder.className = "spinner-border text-light";
-    spinnerBorder.role = "status";
-    justifyDiv.appendChild(spinnerBorder);
-
-    var span = document.createElement("div");
-    span.className = "sr-only";
-    span.innerHTML = "Loading...";
-    spinnerBorder.appendChild(span);
-}
 
 const show = (invokerState, data) => {
 

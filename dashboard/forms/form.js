@@ -9,22 +9,7 @@ const dfltState = {
     title: "Form",
     fetchPath: "/api/aggregate",
     inputs: {},
-    footerBtns: {
-        0: {
-            display: "none",
-            disabled: "true",
-            type: "none",
-            label: "",
-            onClick: {}
-        },
-        1: {
-            display: "none",
-            disabled: "true",
-            type: "none",
-            label: "",
-            onClick: {}
-        }
-    },
+    footerBtns: {},
     parent: null
 };
 
@@ -196,13 +181,66 @@ const create = (data, parent, parentState) => {
                     // inputSubDiv.className = "form-group";
                     // inputDiv.appendChild(inputSubDiv);
                     var inputIn = document.createElement("input");
-                    inputIn.className = "form-control";
-                    inputIn.placeholder = input.placeholder;
-                    inputDiv.appendChild(inputIn);
-                    newState.inputs[input.label] = null;
+                    newState.inputs[input.label] = input.value;
+
+                    //readonly class="form-control-plaintext" id="staticEmail" value="email@example.com"
+                    switch (input.type) {
+                        case "text":
+                            inputIn.className = "form-control";
+                            inputIn.placeholder = input.placeholder;
+                            break;
+                        case "date":
+                            inputIn.className = "form-control";
+                            inputIn.placeholder = input.placeholder;
+                            inputIn.type = "date"
+                            break;
+                        case "fixed":
+                            inputIn.readOnly = true;
+                            inputIn.className = "form-control-plaintext";
+                            inputIn.value = input.value;
+                            break;
+                        case "fixed-hour":
+                            inputIn.readOnly = true;
+                            inputIn.className = "form-control-plaintext";
+                            //TODO: VER SI HAY UN MEMORY LEAK ACA, O SI TENGO Q GUARDAR LA REF PARA MATARLO
+                            var d = new Date();
+                            var n = `${("0" + d.getHours()).slice(-2)}:${("0" + d.getMinutes()).slice(-2)}:${("0" + d.getSeconds()).slice(-2)}`;
+                            inputIn.value = n;
+                            newState.inputs[input.label] = inputIn.value;
+                            setInterval(() => {
+                                var d = new Date();
+                                var n = `${("0" + d.getHours()).slice(-2)}:${("0" + d.getMinutes()).slice(-2)}:${("0" + d.getSeconds()).slice(-2)}`;
+                                inputIn.value = n;
+                                newState.inputs[input.label] = inputIn.value;
+                            }, 1000);
+                            break;
+                        case "fixed-date":
+                            inputIn.readOnly = true;
+                            inputIn.className = "form-control-plaintext";
+                            var d = new Date();
+                            var n = `${(d.getUTCFullYear())}/${("0" + (d.getUTCMonth() + 1)).slice(-2)}/${("0" + d.getUTCDate()).slice(-2)}`;
+                            inputIn.value = n;
+                            newState.inputs[input.label] = inputIn.value;
+                            setInterval(() => {
+                                var d = new Date();
+                                var n = `${(d.getUTCFullYear())}/${("0" + (d.getUTCMonth() + 1)).slice(-2)}/${("0" + d.getUTCDate()).slice(-2)}`;
+                                inputIn.value = n;
+                                newState.inputs[input.label] = inputIn.value;
+                            }, 1000);
+                            break;
+                        default:
+                            inputIn.className = "form-control";
+                            inputIn.placeholder = input.placeholder;
+                            break;
+                    }
+
                     inputIn.addEventListener('change', (event) => {
                         newState.inputs[input.label] = event.target.value;
                     });
+
+                    inputDiv.appendChild(inputIn);
+
+
                 });
             });
 
