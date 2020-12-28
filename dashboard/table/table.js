@@ -833,7 +833,7 @@ const create = (data, parent) => {
                                 dropdownBtn['data-toggle'] = "dropdown";
                                 dropdownBtn['aria-haspopup'] = "true";
                                 dropdownBtn['aria-expanded'] = "false";
-                                dropdownBtn.innerHTML = input.label;
+                                dropdownBtn.innerHTML = input.placeholder;
                                 dropdownView.appendChild(dropdownBtn);
 
                                 var dropdownMenu = document.createElement("div");
@@ -845,7 +845,7 @@ const create = (data, parent) => {
                                     var dropdownLink = document.createElement("a");
                                     dropdownLink.href = "#";
                                     dropdownLink.innerHTML = option;
-                                    dropdownView.appendChild(dropdownLink);
+                                    dropdownMenu.appendChild(dropdownLink);
                                 });
 
 
