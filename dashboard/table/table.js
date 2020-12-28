@@ -830,19 +830,19 @@ const create = (data, parent) => {
                                 dropdownBtn.className = "btn btn-secondary dropdown-toggle";
                                 dropdownBtn.type = "button";
                                 dropdownBtn.id = input.name;
-                                dropdownBtn['data-toggle'] = "dropdown";
-                                dropdownBtn['aria-haspopup'] = "true";
-                                dropdownBtn['aria-expanded'] = "false";
+                                dropdownBtn.setAttribute('data-toggle',"dropdown");
+                                dropdownBtn.setAttribute('aria-haspopup',"true");
+                                dropdownBtn.setAttribute('aria-expanded',"false");
                                 dropdownBtn.innerHTML = input.placeholder;
                                 dropdownView.appendChild(dropdownBtn);
 
                                 var dropdownMenu = document.createElement("div");
                                 dropdownMenu.className = "dropdown-menu";
-                                dropdownMenu['aria-labelledby'] = input.name;
+                                dropdownMenu.setAttribute('aria-labelledby',input.name);
                                 dropdownView.appendChild(dropdownMenu);
 
                                 Object.values(input.options).forEach(option => {
-                                    var dropdownLink = document.createElement("a");
+                                    var dropdownLink = document.createElement("button");
                                     dropdownLink.href = "#";
                                     dropdownLink.innerHTML = option;
                                     dropdownMenu.appendChild(dropdownLink);

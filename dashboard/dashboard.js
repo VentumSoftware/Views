@@ -138,41 +138,108 @@ const create = (data) => {
         };
 
         const createCat = (cat) => {
-            var catDiv = document.createElement("div");
-            catDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-div";
-            catDiv.className = 'ventum-sidebar-main-category';
+            console.log(cat);
+            if(cat.name == "INTI-MQTT"){
+                console.log(cat.name);
+                var catDiv = document.createElement("div");
+                catDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-div";
+                catDiv.className = 'ventum-sidebar-main-category';
 
-            var logoDiv = document.createElement("div");
-            logoDiv.id = state.id + "-" + cat.name + +"-sidebar-main-category-logo-div";
-            logoDiv.className = 'ventum-sidebar-main-category-logo';
+                var logoDiv = document.createElement("div");
+                logoDiv.id = state.id + "-" + cat.name + +"-sidebar-main-category-logo-div";
+                logoDiv.className = 'ventum-sidebar-main-category-logo';
 
-            var logo = document.createElement("i");
-            logo.id = state.id + "-" + cat.name + "-sidebar-main-category-logo-icon";
-            logo.className = 'icon-compass icon-2x ventum-sidebar-main-category-logo-i';
+                var logo = document.createElement("i");
+                logo.id = state.id + "-" + cat.name + "-sidebar-main-category-logo-icon";
+                logo.className = 'icon-compass icon-2x ventum-sidebar-main-category-logo-i';
 
-            logoDiv.appendChild(logo);
-            catDiv.appendChild(logoDiv);
+                logoDiv.appendChild(logo);
+                catDiv.appendChild(logoDiv);
 
-            var nameDiv = document.createElement("div");
-            nameDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-name-div";
-            nameDiv.className = 'ventum-sidebar-main-category-name';
+                var nameDiv = document.createElement("div");
+                nameDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-name-div";
+                nameDiv.className = 'ventum-sidebar-main-category-name';
 
-            var nameText = document.createElement("button");
-            nameText.id = state.id + "-" + cat.name + "-sidebar-main-category-name-text";
-            nameText.className = 'ventum-sidebar-main-category-name-text';
-            nameText.innerHTML = cat.name;
+                /*var nameText = document.createElement("button");
+                nameText.id = state.id + "-" + cat.name + "-sidebar-main-category-name-text";
+                nameText.className = 'ventum-sidebar-main-category-name-text';
+                nameText.innerHTML = cat.name;*/
 
-            nameText.onclick = (e) => {
-                e.preventDefault();
-                console.log("Category selected: " + cat.name);
-                selectCategory(cat);
-            };
+                var nameText = document.createElement("button");
+                nameText.className = 'ventum-sidebar-main-category-name-text dropdown-toggle';
+                nameText.type = "button";
+                nameText.id = state.id + "-" + cat.name + "-sidebar-main-category-name-text";
+                nameText.setAttribute('data-toggle',"dropdown");
+                nameText.setAttribute('aria-haspopup',"true");
+                nameText.setAttribute('aria-expanded',"false");
+                nameText.innerHTML = cat.name;
+                nameDiv.appendChild(nameText);
 
-            nameDiv.appendChild(nameText);
-            catDiv.appendChild(nameDiv);
+                //---------- MENU DEL DROPDOWN ----------------//
+                var nameMenu = document.createElement("div");
+                nameMenu.className = "dropdown-menu";
+                nameMenu.setAttribute('aria-labelledby',state.id + "-" + cat.name + "-sidebar-main-category-name-text");
+                nameDiv.appendChild(nameMenu);
+                //----------ELEMENTOS DEL MENU------------------------//
+                Object.values(cat.content.options).forEach(option => {
+                    var nameLink = document.createElement("button");
+                    nameLink.href = "#";
+                    nameLink.innerHTML = option;
+                    nameMenu.appendChild(nameLink);
+                    nameLink.onclick = (e) => {
+                        e.preventDefault();
+                        console.log("Option selected: " + cat.name);
+                        selectCategory(cat);
+                    };
+                });
 
-            return catDiv;
+                nameText.onclick = (e) => {
+                    e.preventDefault();
+                    console.log("Category selected: " + cat.name);
+                    //selectCategory(cat);
+                };
 
+                nameDiv.appendChild(nameText);
+                catDiv.appendChild(nameDiv);
+
+                return catDiv;
+            } else {
+                var catDiv = document.createElement("div");
+                catDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-div";
+                catDiv.className = 'ventum-sidebar-main-category';
+
+                var logoDiv = document.createElement("div");
+                logoDiv.id = state.id + "-" + cat.name + +"-sidebar-main-category-logo-div";
+                logoDiv.className = 'ventum-sidebar-main-category-logo';
+
+                var logo = document.createElement("i");
+                logo.id = state.id + "-" + cat.name + "-sidebar-main-category-logo-icon";
+                logo.className = 'icon-compass icon-2x ventum-sidebar-main-category-logo-i';
+
+                logoDiv.appendChild(logo);
+                catDiv.appendChild(logoDiv);
+
+                var nameDiv = document.createElement("div");
+                nameDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-name-div";
+                nameDiv.className = 'ventum-sidebar-main-category-name';
+
+                var nameText = document.createElement("button");
+                nameText.id = state.id + "-" + cat.name + "-sidebar-main-category-name-text";
+                nameText.className = 'ventum-sidebar-main-category-name-text';
+                nameText.innerHTML = cat.name;
+
+                nameText.onclick = (e) => {
+                    e.preventDefault();
+                    console.log("Category selected: " + cat.name);
+                    selectCategory(cat);
+                };
+
+                nameDiv.appendChild(nameText);
+                catDiv.appendChild(nameDiv);
+
+                return catDiv;
+            }
+            
         };
 
         try {
