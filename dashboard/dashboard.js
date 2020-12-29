@@ -138,9 +138,8 @@ const create = (data) => {
         };
 
         const createCat = (cat) => {
-            console.log(cat);
-            if(cat.name == "INTI-MQTT"){
-                console.log(cat.name);
+            if(cat[0] != undefined){
+                console.log(cat[0]);
                 var catDiv = document.createElement("div");
                 catDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-div";
                 catDiv.className = 'ventum-sidebar-main-category';
@@ -181,16 +180,21 @@ const create = (data) => {
                 nameMenu.setAttribute('aria-labelledby',state.id + "-" + cat.name + "-sidebar-main-category-name-text");
                 nameDiv.appendChild(nameMenu);
                 //----------ELEMENTOS DEL MENU------------------------//
-                Object.values(cat.content.options).forEach(option => {
-                    var nameLink = document.createElement("button");
-                    nameLink.href = "#";
-                    nameLink.innerHTML = option;
-                    nameMenu.appendChild(nameLink);
-                    nameLink.onclick = (e) => {
-                        e.preventDefault();
-                        console.log("Option selected: " + cat.name);
-                        selectCategory(cat);
-                    };
+                Object.entries(cat).forEach(option => {
+                    if(Number.isInteger(option[0])){
+                        var subCat = option[1];
+                        var nameLink = document.createElement("button");
+                        nameLink.href = "#";
+                        nameLink.className = "dropdown-item";
+                        nameLink.innerHTML = option;
+                        nameMenu.appendChild(nameLink);
+                        nameLink.onclick = (e) => {
+                            e.preventDefault();
+                            console.log("Option selected: " + subCat.name);
+                            selectCategory(subCat);
+                        };
+                    }
+                    
                 });
 
                 nameText.onclick = (e) => {
