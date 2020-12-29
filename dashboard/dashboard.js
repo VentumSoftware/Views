@@ -138,7 +138,7 @@ const create = (data) => {
         };
 
         const createCat = (cat) => {
-            if(cat[0] != undefined){
+            if (cat[0] != undefined) {
                 console.log(cat[0]);
                 var catDiv = document.createElement("div");
                 catDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-div";
@@ -168,20 +168,20 @@ const create = (data) => {
                 nameText.className = 'ventum-sidebar-main-category-name-text dropdown-toggle';
                 nameText.type = "button";
                 nameText.id = state.id + "-" + cat.name + "-sidebar-main-category-name-text";
-                nameText.setAttribute('data-toggle',"dropdown");
-                nameText.setAttribute('aria-haspopup',"true");
-                nameText.setAttribute('aria-expanded',"false");
+                nameText.setAttribute('data-toggle', "dropdown");
+                nameText.setAttribute('aria-haspopup', "true");
+                nameText.setAttribute('aria-expanded', "false");
                 nameText.innerHTML = cat.name;
                 nameDiv.appendChild(nameText);
 
                 //---------- MENU DEL DROPDOWN ----------------//
                 var nameMenu = document.createElement("div");
                 nameMenu.className = "dropdown-menu";
-                nameMenu.setAttribute('aria-labelledby',state.id + "-" + cat.name + "-sidebar-main-category-name-text");
+                nameMenu.setAttribute('aria-labelledby', state.id + "-" + cat.name + "-sidebar-main-category-name-text");
                 nameDiv.appendChild(nameMenu);
                 //----------ELEMENTOS DEL MENU------------------------//
                 Object.entries(cat).forEach(option => {
-                    if(Number.isInteger(option[0])){
+                    if (Number.isInteger(option[0])) {
                         var subCat = option[1];
                         var nameLink = document.createElement("button");
                         nameLink.href = "#";
@@ -194,7 +194,7 @@ const create = (data) => {
                             selectCategory(subCat);
                         };
                     }
-                    
+
                 });
 
                 nameText.onclick = (e) => {
@@ -243,7 +243,7 @@ const create = (data) => {
 
                 return catDiv;
             }
-            
+
         };
 
         try {
@@ -258,8 +258,9 @@ const create = (data) => {
             sidebar.appendChild(separatorSpace(3));
             Object.keys(state.categories).forEach(key => {
                 var access = state.categories[key].access;
-                if (Object.values(access.names).includes(state.user.name) || Object.values(access.roles).includes(state.user.role))
-                    sidebar.appendChild(createCat(state.categories[key]));
+                // if (Object.values(access.names).includes(state.user.name) || Object.values(access.roles).includes(state.user.role))
+                //     sidebar.appendChild(createCat(state.categories[key]));
+                sidebar.appendChild(createCat(state.categories[key]));
             });
 
             return sidebar;
