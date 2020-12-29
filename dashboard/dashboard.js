@@ -25,13 +25,14 @@ var state = {};
 
 const selectCategory = (cat) => {
     try {
-        var index = Object.keys(state.categories).indexOf(cat.name);
+        console.log("Category LOG:" + cat);
+        /*var index = Object.keys(state.categories).indexOf(cat.name);
         var text = document.getElementById(state.id + "-" + cat.name + "-sidebar-main-category-name-text");
 
         Array.prototype.forEach.call(document.getElementsByClassName('ventum-sidebar-main-category-name-text'), (node) => {
             node.style.color = "";
         });
-        text.style.color = "green";
+        text.style.color = "green";*/
         state.contentDiv.innerHTML = "";
 
         category.create(cat, state.contentDiv);
@@ -164,6 +165,7 @@ const create = (data) => {
                 nameText.className = 'ventum-sidebar-main-category-name-text';
                 nameText.innerHTML = cat.name;*/
 
+                //DROPDOWN BUTTON - CATEGORY
                 var nameText = document.createElement("button");
                 nameText.className = 'ventum-sidebar-main-category-name-text dropdown-toggle';
                 nameText.type = "button";
@@ -181,18 +183,22 @@ const create = (data) => {
                 nameDiv.appendChild(nameMenu);
                 //----------ELEMENTOS DEL MENU------------------------//
                 Object.entries(cat).forEach(option => {
-                    if (Number.isInteger(option[0])) {
+                    console.log(option);
+                    console.log(option[0]);
+                    if (!Number.isNaN(parseInt(option[0]))) {
                         var subCat = option[1];
                         var nameLink = document.createElement("button");
                         nameLink.href = "#";
                         nameLink.className = "dropdown-item";
-                        nameLink.innerHTML = option;
+                        nameLink.innerHTML = subCat.name;
                         nameMenu.appendChild(nameLink);
                         nameLink.onclick = (e) => {
                             e.preventDefault();
                             console.log("Option selected: " + subCat.name);
                             selectCategory(subCat);
                         };
+                    }else {
+                        console.log("Error al renderizar elemento");
                     }
 
                 });
