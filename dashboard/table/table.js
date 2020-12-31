@@ -187,7 +187,6 @@ const cmd = (state, cmds, res, pos) => {
 
                         var result = "";
                         var stageDef = getStageDefinition();
-                        console.log(stageDef);
                         if (stageDef != null) {
                             switch (stageDef.type) {
                                 case "match":
@@ -195,13 +194,21 @@ const cmd = (state, cmds, res, pos) => {
                                         case "date":
                                             value = formatDateToQuery(value);
                                             break;
+                                        case "number":
+                                            result += `{"$addFields":{"paquete.vel":{"$toInt": "$paquete.Velocidad"}}},`;
+                                            value = parseInt(value);
+                                            break;
                                         default:
                                             break;
                                     }
                                     var op = "";
                                     switch (typeof(stageDef.op)) {
                                         case 'string':
-                                            op = `{"${stageDef.op}":"${value}"}`;
+                                            if(stageDef.transform == "number"){
+                                                op =  `{"${stageDef.op}":${value}}`;
+                                            }else {
+                                                op = `{"${stageDef.op}":"${value}"}`;
+                                            }                                            
                                             break;
                                         case 'undefined':
                                             op = `"${value}"`;
@@ -237,7 +244,7 @@ const cmd = (state, cmds, res, pos) => {
                 var pipeline = buildPipeline(filters);
 
                 return new Promise((resolve, reject) => {
-                    const options = `{"collation":{"locale":"en_US","numericOrdering":true},"allowDiskUse" : true}`;
+                    const options = `{"collation":{"locale":"en_US","numericOrdering":"true"},"allowDiskUse":"true"}`;
                     fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
                             referrerPolicy: "origin-when-cross-origin",
                             credentials: 'include',
@@ -284,6 +291,10 @@ const cmd = (state, cmds, res, pos) => {
                             switch (stageDef.type) {
                                 case "match":
                                     switch (stageDef.transform) {
+                                        case "number":
+                                            result += `{"$addFields":{"paquete.vel":{"$toInt": "$paquete.Velocidad"}}},`;
+                                            value = parseInt(value);
+                                            break;
                                         case "date":
                                             value = formatDateToQuery(value);
                                             break;
@@ -293,7 +304,11 @@ const cmd = (state, cmds, res, pos) => {
                                     var op = "";
                                     switch (typeof(stageDef.op)) {
                                         case 'string':
-                                            op = `{"${stageDef.op}":"${value}"}`;
+                                            if(stageDef.transform == "number"){
+                                                op =  `{"${stageDef.op}":${value}}`;
+                                            }else {
+                                                op = `{"${stageDef.op}":"${value}"}`;
+                                            }                                            
                                             break;
                                         case 'undefined':
                                             op = `"${value}"`;
@@ -329,8 +344,8 @@ const cmd = (state, cmds, res, pos) => {
                 var pipeline = buildPipeline(filters);
 
                 return new Promise((resolve, reject) => {
-                    // const options = `{"collation":{"locale":"en_US","numericOrdering":true}, "allowDiskUse" : true}`;
-                    const options = `{"allowDiskUse" : "true"}`;
+                    //const options = `{"collation":{"locale":"en_US","numericOrdering":"true"}, "allowDiskUse" : "true"}`;
+                    const options = `{"collation":{"locale":"en_US","numericOrdering":"true"},"allowDiskUse":"true"}`;
                     fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
                             referrerPolicy: "origin-when-cross-origin",
                             credentials: 'include',
