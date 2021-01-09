@@ -125,7 +125,7 @@ const cmd = (state, cmds, res, pos) => {
 const create = (newState, parentState) => {
     newState = utils.fillObjWithDflt(newState, dfltState);
     newState.parentState = parentState;
-    Object.values(categories).forEach(cat => {
+    Object.values(newState.categories).forEach(cat => {
         category.create(cat, newState);
     });
     states.push(newState);
