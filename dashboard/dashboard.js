@@ -430,9 +430,9 @@ const show = (state) => {
     document.body.appendChild(nav);
     state.contentDiv = content.getElementsByClassName('ventum-main-content')[0];
 
-    var catPath = categories[0].name;
-    if (categories[0]["subCategories"] != null)
-        catPath += "/" + categories[0]["subCategories"].name;
+    var catPath = state.categories[0].name;
+    if (state.categories[0]["subCategories"] != null)
+        catPath += "/" + state.categories[0]["subCategories"].name;
     
     var cmds = {
         0: {
