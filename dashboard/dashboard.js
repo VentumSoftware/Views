@@ -129,10 +129,11 @@ const create = (newState, parentState) => {
         category.create(cat, newState);
     });
     states.push(newState);
+    return newState;
 };
 
 
-const show = (state, parent) => {
+const show = (state) => {
 
     const createNav = () => {
         var nav = document.createElement("div");
