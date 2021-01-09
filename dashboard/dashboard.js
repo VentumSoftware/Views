@@ -1,11 +1,9 @@
 import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
 import category from 'https://ventumdashboard.s3.amazonaws.com/dashboard/category.js';
-import table from 'https://ventumdashboard.s3.amazonaws.com/dashboard/table/table.js';
-import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.js';
 
-//--------------------------------- Dashboard --------------------------------------------
-
+//Dflt Dashboards State
 const dfltState = {
+    parentState: null,
     contentDiv: null, //Contenedor donde voy a dibujar cada pantalla...
     id: "id",
     company: {
@@ -19,35 +17,122 @@ const dfltState = {
     selectedCat: null
 };
 
-var state = {};
+//Each state represents a Dashboard
+var states = [];
 
-//--------------------------------- Public Interface ------------------------------------
+//Commands that can be executed by this Component (Dashboard)
+const cmd = (state, cmds, res, pos) => {
 
-const selectCategory = (cat) => {
-    try {
-        console.log("Category LOG:" + cat);
-        /*var index = Object.keys(state.categories).indexOf(cat.name);
-        var text = document.getElementById(state.id + "-" + cat.name + "-sidebar-main-category-name-text");
-
-        Array.prototype.forEach.call(document.getElementsByClassName('ventum-sidebar-main-category-name-text'), (node) => {
-            node.style.color = "";
+    const clearContent = (state, payload, res) => {
+        return new Promise((resolve, reject) => {
+            state.contentDiv.innerHTML = null;
+            resolve();
         });
-        text.style.color = "green";*/
-        state.contentDiv.innerHTML = "";
+    };
 
-        category.create(cat, state.contentDiv);
-        state.selectedCat = cat;
-    } catch (error) {
-        console.log("Error with selected cat! " + error);
-    }
+    const ifStatement = (state, payload, res) => {
+
+        return new Promise((resolve, reject) => {
+            if (eval(payload.condition)) {
+                console.log("condicion cumplida!");
+            } else {
+                console.log("condicion NO cumplida!");
+            }
+            resolve("ok");
+        });
+    };
+
+    const selectCategory = (state, payload, res) => {
+        return new Promise((resolve, reject) => {
+            try {
+                console.log("Category LOG:" + payload.catPath);
+                var dirs = payload.catPath.split('/');
+                var cat = state.categories[dirs[0]];
+                if (dirs[1] != null)
+                    cat = cat.subCategories[dirs[1]];
+
+                clearContent(state, null, null)
+                    .then(() => {
+                        category.create(cat, state.contentDiv);
+                        state.selectedCat = cat;
+                        resolve(cat);
+                    })
+                    .catch();
+                /*var index = Object.keys(state.categories).indexOf(cat.name);
+                var text = document.getElementById(state.id + "-" + cat.name + "-sidebar-main-category-name-text");
+        
+                Array.prototype.forEach.call(document.getElementsByClassName('ventum-sidebar-main-category-name-text'), (node) => {
+                    node.style.color = "";
+                });
+                text.style.color = "green";*/
+            } catch (error) {
+                console.log("Error with selected cat! " + error);
+                reject(error);
+            }
+        }); 
+    };
+    
+    const logOut = (state, payload, res) => {
+        return new Promise((resolve, reject) => {
+            document.cookie = "access-token=; expires=0; path=/";
+            location.reload();
+            resolve("logOut");
+        }); 
+    };
+
+    console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
+
+    return new Promise((resolve, reject) => {
+        //A: Si ya ejecuté todos los comandos termino
+        if (Object.keys(cmds).length <= pos) {
+            resolve(res);
+        } else {
+            var c = null;
+            var command = cmds[pos];
+            switch (command.type) {
+                case "parent-cmd":
+                    c = () => parentCmd(state, command.payload, res);
+                    break;
+                case "if":
+                    c = () => ifStatement(state, command.payload, res);
+                    break;
+                case "select-category":
+                    c = () => selectCategory(state, command.payload, res);
+                    break;
+                case "log-out":
+                    c = () => logOut(state, command.payload, res);
+                    break;
+                default:
+                    console.log(`Cmd not found: ${command.type}`);
+                    c = () => new Promise((res, rej) => { rej(`Cmd not found: ${command.type}`) });
+                    break;
+            }
+
+            c()
+                .then((res) => {
+                    cmd(state, cmds, res, pos + 1);
+                })
+                .then((res) => resolve(res))
+                .catch(err => {
+                    console.log(err);
+                    reject(err);
+                });
+        }
+    })
 };
 
-const logOut = () => {
-    document.cookie = "access-token=; expires=0; path=/";
-    location.reload();
+//Creates a new Dashboard
+const create = (newState, parentState) => {
+    newState = utils.fillObjWithDflt(newState, dfltState);
+    newState.parentState = parentState;
+    Object.values(categories).forEach(cat => {
+        category.create(cat, newState);
+    });
+    states.push(newState);
 };
 
-const create = (data) => {
+
+const show = (state, parent) => {
 
     const createNav = () => {
         var nav = document.createElement("div");
@@ -314,6 +399,7 @@ const create = (data) => {
 
             return line;
         };
+
         try {
             var content = document.createElement("div");
             content.id = state.id + "-content";
@@ -335,16 +421,30 @@ const create = (data) => {
 
     };
 
-    state = utils.fillObjWithDflt(data, dfltState);
     var nav = createNav();
     var sidebar = createSidebar();
     nav.appendChild(sidebar);
     var content = createContent();
     nav.appendChild(content);
-
     document.body.appendChild(nav);
     state.contentDiv = content.getElementsByClassName('ventum-main-content')[0];
-    return nav;
+
+    var catPath = categories[0].name;
+    if (categories[0]["subCategories"] != null)
+        catPath += "/" + categories[0]["subCategories"].name;
+    
+    var cmds = {
+        0: {
+            type: "select-category",
+            payload: {
+                catPath: catPath
+            }
+        }
+    }
+
+    cmd(state, cmds, null, 0);
+    selectCategory(catPath, state);
+
 };
 
-export default { create, logOut, selectCategory };
+export default { create, show, cmd};

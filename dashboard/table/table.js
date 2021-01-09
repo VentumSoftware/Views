@@ -38,6 +38,15 @@ const formatDateToQuery = (date) => {
 // filter, edit, erase, add, dismissModal, post, update, modal
 const cmd = (state, cmds, res, pos) => {
 
+    // const resetStates = () => {
+    //     if (states.length > 0) {
+    //         states.forEach((el) => {
+    //             el = null;
+    //         })
+    //     }
+    //     states = [];
+    // };
+
     const parentCmd = (state, payload, res) => {
         switch (state.parentState.type) {
             case "modal":
@@ -754,52 +763,49 @@ const cmd = (state, cmds, res, pos) => {
     });
 };
 
-const resetStates = () => {
-    if (states.length > 0) {
-        states.forEach((el) => {
-            el = null;
-        })
-    }
-    states = [];
+const create = (newState, parentState) => {
+    newState = utils.fillObjWithDflt(newState, dfltState);
+    newState.parentState = parentState;
+    states.push(newState);
+    return newState;
 };
 
-const create = (data, parent) => {
+const show = (state, parent) => {
     try {
-
         const createFilters = () => {
             try {
                 var div = document.createElement("div");
-                div.id = newState.id + "-table-filters";
+                div.id = state.id + "-table-filters";
                 div.className = "ventum-table-filters ";
                 cardParent.body.appendChild(div);
 
-                newState.filterForm = document.createElement("form");
-                newState.filterForm.id = newState.id + "-table-filters-form";
-                newState.filterForm.className = "ventum-table-filters-form";
-                div.appendChild(newState.filterForm);
+                state.filterForm = document.createElement("form");
+                state.filterForm.id = state.id + "-table-filters-form";
+                state.filterForm.className = "ventum-table-filters-form";
+                div.appendChild(state.filterForm);
 
                 var formRow = document.createElement("div");
-                formRow.id = newState.id + "-table-filters-form-row";
+                formRow.id = state.id + "-table-filters-form-row";
                 formRow.className = "form-row ventum-table-filters-form-row";
-                newState.filterForm.appendChild(formRow);
+                state.filterForm.appendChild(formRow);
 
                 //TODO modificar para que se puedan poner mas de 5 filtros
                 for (let index = 0; index < 5; index++) {
                     var col = document.createElement("div");
-                    col.id = newState.id + "-table-filters-form-col-" + index.toString();
+                    col.id = state.id + "-table-filters-form-col-" + index.toString();
                     col.className = "col-2";
                     formRow.appendChild(col);
-                    if (Object.keys(newState.filters).length > index) {
+                    if (Object.keys(state.filters).length > index) {
                         var label = document.createElement("label");
-                        label.id = newState.id + "-table-filters-form-col-" + index.toString() + "-label";
-                        label.innerHTML = newState.filters[index].label;
+                        label.id = state.id + "-table-filters-form-col-" + index.toString() + "-label";
+                        label.innerHTML = state.filters[index].label;
                         col.appendChild(label);
 
                         var inputs = document.createElement("div");
                         inputs.className = "form-row";
                         col.appendChild(inputs);
 
-                        var inputsArray = Object.values(newState.filters[index].inputs);
+                        var inputsArray = Object.values(state.filters[index].inputs);
                         inputsArray.forEach(input => {
                             var inputCol = document.createElement("div");
                             switch (inputsArray.length) {
@@ -868,12 +874,12 @@ const create = (data, parent) => {
 
                 //Dibujo columna con los botones del header
                 var col = document.createElement("div");
-                col.id = newState.id + "-table-filters-form-col-" + "6";
+                col.id = state.id + "-table-filters-form-col-" + "6";
                 col.className = "col-2";
                 col.style.textAlign = "center";
                 formRow.appendChild(col);
                 var label = document.createElement("label");
-                label.id = newState.id + "-table-filters-form-col-" + "submit" + "-label";
+                label.id = state.id + "-table-filters-form-col-" + "submit" + "-label";
                 label.innerHTML = "  &nbsp";
                 label.style.position = "relative";
                 label.style.width = '100%';
@@ -884,14 +890,14 @@ const create = (data, parent) => {
                 col.appendChild(inputs);
 
                 //Dibujo cada boton del header
-                var btns = Object.entries(newState.headerBtns);
+                var btns = Object.entries(state.headerBtns);
                 var btnsCount = 0;
                 btns.forEach(([key, value]) => {
                     if (value)
                         btnsCount++;
                 });
                 console.log("header buttons: " + btnsCount.toString());
-                newState.targetedBtns = [];
+                state.targetedBtns = [];
                 btns.forEach(([key, value]) => {
                     if (value.enabled) {
                         if (btnsCount < 3)
@@ -922,11 +928,11 @@ const create = (data, parent) => {
                         btnDiv.appendChild(btn);
                         btn.addEventListener('click', (e) => {
                             e.preventDefault();
-                            cmd(newState, value.onClick.cmds, null, 0);
+                            cmd(state, value.onClick.cmds, null, 0);
                         });
 
                         if (value.targeted) {
-                            newState.targetedBtns.push(btn);
+                            state.targetedBtns.push(btn);
                             btn.disabled = true;
                         }
                     }
@@ -942,34 +948,34 @@ const create = (data, parent) => {
         const createContent = () => {
             try {
                 var table = document.createElement("table");
-                table.id = newState.id + "-table-content";
+                table.id = state.id + "-table-content";
                 //Ahora uso table-sm pero deberÃ­a adaptarse a la contenedor...
                 table.className = "table table-sm table-striped table-hover ventum-table-content";
                 cardParent.body.appendChild(table);
 
                 //Creo los headers
                 var thead = document.createElement("thead");
-                thead.id = newState.id + "-table-headers";
+                thead.id = state.id + "-table-headers";
                 thead.className = "thead-dark";
                 table.appendChild(thead);
                 var tr = document.createElement("tr");
-                tr.id = newState.id + "-table-headers-tr";
+                tr.id = state.id + "-table-headers-tr";
                 tr.className = "";
                 thead.appendChild(tr);
 
-                Object.keys(newState.headers).forEach(key => {
+                Object.keys(state.headers).forEach(key => {
                     var th = document.createElement("th");
-                    th.id = newState.id + "-table-headers-th";
+                    th.id = state.id + "-table-headers-th";
                     th.className = "";
-                    th.innerHTML = newState.headers[key].label;
+                    th.innerHTML = state.headers[key].label;
                     thead.appendChild(th);
                 });
 
                 //Creo las filas
                 var tbody = document.createElement("tbody");
-                tbody.id = newState.id + "-table-body";
+                tbody.id = state.id + "-table-body";
                 tbody.className = "";
-                newState.rowsRoot = tbody;
+                state.rowsRoot = tbody;
                 table.appendChild(tbody);
 
                 return table;
@@ -982,17 +988,15 @@ const create = (data, parent) => {
         const createFooter = () => {
             try {
                 var nav = document.createElement("nav");
-                nav.id = newState.id + "-card-footer-nav";
+                nav.id = state.id + "-card-footer-nav";
                 nav.className = "ventum-table-footer";
                 cardParent.footer.appendChild(nav);
 
                 var ul = document.createElement("ul");
-                ul.id = newState.id + "-card-footer-ul";
+                ul.id = state.id + "-card-footer-ul";
                 ul.className = "pagination ventum-table-footer-ul";
                 nav.appendChild(ul);
-                newState.paginationRoot = ul;
-
-
+                state.paginationRoot = ul;
                 return nav;
             } catch (error) {
                 console.log(error);
@@ -1001,24 +1005,18 @@ const create = (data, parent) => {
 
         };
 
-        var newState = utils.fillObjWithDflt(data, dfltState);
-        const cardParent = card.create({ title: newState.title }, parent);
+        const cardParent = card.create({ title: state.title }, parent);
 
         createFilters();
         createContent();
         createFooter();
 
-        console.log("states: " + states.push(newState).toString());
-
-        cmd(newState, { 0: { type: "update", payload: {} } }, null, 0);
-
-        return newState;
+        cmd(state, { 0: { type: "update", payload: {} } }, null, 0);
 
     } catch (error) {
-        console.log("failed to create table: " + error.toString());
-        return null;
+        console.log("failed to show table: " + error.toString());
     }
 
 };
 
-export default { create, resetStates, cmd, states };
+export default { create, show, cmd};

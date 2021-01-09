@@ -15,10 +15,8 @@ const dfltState = {
 
 var states = [];
 
-
 //-----------------------------------------------------------------------------------------------
 
-// dismissModal
 const cmd = (state, cmds, res, pos) => {
 
     const parentCmd = (state, payload, res) => {
@@ -135,28 +133,23 @@ const cmd = (state, cmds, res, pos) => {
     })
 };
 
-const removeState = (state) => {}
+const create = (newState, parentState) => {
+    newState = utils.fillObjWithDflt(newState, dfltState);
+    newState.parentState = parentState;
+    states.push(newState);
+    return newState;
+};
 
-const resetStates = () => {
-    if (states.length > 0) {
-        states.forEach((el) => {
-            el = null;
-        })
-    }
-    states = [];
-}
-
-const create = (data, parent, parentState) => {
-
-    const createContent = () => {
+const show = (state, parent) => {
+    const drawForm = () => {
         try {
             var form = document.createElement("form");
-            form.id = newState.id + "-form";
+            form.id = state.id + "-form";
             form.style.margin = "20px";
             cardParent.body.appendChild(form);
 
             var row = document.createElement("div");
-            row.id = newState.id + "-row";
+            row.id = state.id + "-row";
             row.className = "row";
             form.appendChild(row);
 
@@ -181,7 +174,7 @@ const create = (data, parent, parentState) => {
                     // inputSubDiv.className = "form-group";
                     // inputDiv.appendChild(inputSubDiv);
                     var inputIn = document.createElement("input");
-                    newState.inputs[input.label] = input.value;
+                    state.inputs[input.label] = input.value;
 
                     //readonly class="form-control-plaintext" id="staticEmail" value="email@example.com"
                     switch (input.type) {
@@ -206,7 +199,7 @@ const create = (data, parent, parentState) => {
                             var d = new Date();
                             var n = `${("0" + d.getHours()).slice(-2)}:${("0" + d.getMinutes()).slice(-2)}:${("0" + d.getSeconds()).slice(-2)}`;
                             inputIn.value = n;
-                            newState.inputs[input.label] = inputIn.value;
+                            state.inputs[input.label] = inputIn.value;
                             setInterval(() => {
                                 var d = new Date();
                                 var n = `${("0" + d.getHours()).slice(-2)}:${("0" + d.getMinutes()).slice(-2)}:${("0" + d.getSeconds()).slice(-2)}`;
@@ -220,7 +213,7 @@ const create = (data, parent, parentState) => {
                             var d = new Date();
                             var n = `${(d.getUTCFullYear())}/${("0" + (d.getUTCMonth() + 1)).slice(-2)}/${("0" + d.getUTCDate()).slice(-2)}`;
                             inputIn.value = n;
-                            newState.inputs[input.label] = inputIn.value;
+                            state.inputs[input.label] = inputIn.value;
                             setInterval(() => {
                                 var d = new Date();
                                 var n = `${(d.getUTCFullYear())}/${("0" + (d.getUTCMonth() + 1)).slice(-2)}/${("0" + d.getUTCDate()).slice(-2)}`;
@@ -235,7 +228,7 @@ const create = (data, parent, parentState) => {
                     }
 
                     inputIn.addEventListener('change', (event) => {
-                        newState.inputs[input.label] = event.target.value;
+                        state.inputs[input.label] = event.target.value;
                     });
 
                     inputDiv.appendChild(inputIn);
@@ -244,7 +237,7 @@ const create = (data, parent, parentState) => {
                 });
             });
 
-            var btns = Object.entries(newState.footerBtns);
+            var btns = Object.entries(state.footerBtns);
             var btnsCount = 0;
             btns.forEach(([key, value]) => {
                 if (value)
@@ -286,11 +279,11 @@ const create = (data, parent, parentState) => {
                         break;
                 }
                 btnsRow.appendChild(btnDiv);
-                var btn = buttons.createBtn(value, newState);
+                var btn = buttons.createBtn(value, state);
                 btnDiv.appendChild(btn);
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    cmd(newState, value.onClick.cmds, null, 0);
+                    cmd(state, value.onClick.cmds, null, 0);
                 });
             });
             return form;
@@ -299,16 +292,8 @@ const create = (data, parent, parentState) => {
             console.log(error);
         }
     };
-
-    var newState = utils.fillObjWithDflt(data, dfltState);
-    newState.parentState = parentState;
     const cardParent = card.create({ title: newState.title }, parent);
-
-    createContent();
-
-    console.log("states: " + states.push(newState).toString());
-
-    return newState;
+    drawForm();
 };
 
-export default { create, resetStates, removeState, states };
+export default { create, show, cmd };
