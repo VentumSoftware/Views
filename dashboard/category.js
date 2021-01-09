@@ -108,7 +108,7 @@ const create = (newState, parentState) => {
             Object.values(col).forEach(element => {
                 switch (element.type) {
                     case "wizard":
-                        wizard.create(element.payload, newState);
+                        //wizard.create(element.payload, newState);
                         break;
                     case "table":
                         table.create(element.payload, newState);
