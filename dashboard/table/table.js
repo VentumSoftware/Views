@@ -33,6 +33,67 @@ const formatDateToQuery = (date) => {
     return (dateToFormat[0] + dateToFormat[1] + dateToFormat[2]);
 };
 
+
+function formatToDate(value) {
+    let year =[], month=[], day=[], hours=[], minutes=[], seconds=[];
+    let formattedDate;
+    try {        
+        for(let i = 0; i<value.length; i++){
+            switch (true) {
+                case (i<4):
+                    year.push(value[i]);            
+                    break;
+                case (i<6):
+                    month.push(value[i]);            
+                    break;
+                case (i<8):
+                    day.push(value[i]);            
+                    break;
+                case (i<10):
+                    hours.push(value[i]);            
+                    break;
+                case (i<12):
+                    minutes.push(value[i]);            
+                    break;
+                case (i<14):
+                    seconds.push(value[i]);            
+                    break;              
+                default:
+                    break;
+                }
+            }
+        formattedDate = `${year.join('')}-${month.join('')}-${day.join('')} ${hours.join('')}:${minutes.join('')}:${seconds.join('')}`; 
+        const fecha = new Date(formattedDate);
+        if(Number.isNaN(fecha.getTime())){
+            console.log('Invalid date: ' + fecha + ". Instead, value "+ value +" will be returned.");
+            return(value);
+        }else{
+            return(fecha);
+        }
+    } catch (error) {
+        console.log('Error al formatear fecha: '+ error);
+        return null;   
+    }
+    
+}
+
+const formatValue = (value) => {
+    const formattedValue = formatToDate(value); //formatToDate() devuelve un objeto Date en formato ISOString
+    if(typeof formattedValue == 'object' && formattedValue !== null){       
+        try {
+            let newTime = new Date();
+            let globalTime = formattedValue.getTime();
+            let localeTime = new Date(newTime.setTime(globalTime + (-3 * 60 * 60 * 1000))); //Setea el valor ISOString a Hora Argentina UTC-3
+            return (localeTime.toISOString().split('.')[0]);    
+        } catch (error) {
+            console.log(error);
+            return value;
+        }
+    }else {
+        console.log("ERROR: "+value);
+    }
+}
+
 //------------------------------ Públicos -----------------------------------------------------------------
 
 // filter, edit, erase, add, dismissModal, post, update, modal
@@ -196,7 +257,6 @@ const cmd = (state, cmds, res, pos) => {
 
                         var result = "";
                         var stageDef = getStageDefinition();
-                        console.log(stageDef);
                         if (stageDef != null) {
                             switch (stageDef.type) {
                                 case "match":
@@ -204,13 +264,21 @@ const cmd = (state, cmds, res, pos) => {
                                         case "date":
                                             value = formatDateToQuery(value);
                                             break;
+                                        case "number":
+                                            result += `{"$addFields":{"paquete.vel":{"$toInt": "$paquete.Velocidad"}}},`;
+                                            value = parseInt(value);
+                                            break;
                                         default:
                                             break;
                                     }
                                     var op = "";
                                     switch (typeof(stageDef.op)) {
                                         case 'string':
-                                            op = `{"${stageDef.op}":"${value}"}`;
+                                            if(stageDef.transform == "number"){
+                                                op =  `{"${stageDef.op}":${value}}`;
+                                            }else {
+                                                op = `{"${stageDef.op}":"${value}"}`;
+                                            }                                            
                                             break;
                                         case 'undefined':
                                             op = `"${value}"`;
@@ -246,7 +314,7 @@ const cmd = (state, cmds, res, pos) => {
                 var pipeline = buildPipeline(filters);
 
                 return new Promise((resolve, reject) => {
-                    const options = `{"collation":{"locale":"en_US","numericOrdering":true},"allowDiskUse" : true}`;
+                    const options = `{"collation":{"locale":"en_US","numericOrdering":"true"},"allowDiskUse":"true"}`;
                     fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
                             referrerPolicy: "origin-when-cross-origin",
                             credentials: 'include',
@@ -293,6 +361,10 @@ const cmd = (state, cmds, res, pos) => {
                             switch (stageDef.type) {
                                 case "match":
                                     switch (stageDef.transform) {
+                                        case "number":
+                                            result += `{"$addFields":{"paquete.vel":{"$toInt": "$paquete.Velocidad"}}},`;
+                                            value = parseInt(value);
+                                            break;
                                         case "date":
                                             value = formatDateToQuery(value);
                                             break;
@@ -302,7 +374,11 @@ const cmd = (state, cmds, res, pos) => {
                                     var op = "";
                                     switch (typeof(stageDef.op)) {
                                         case 'string':
-                                            op = `{"${stageDef.op}":"${value}"}`;
+                                            if(stageDef.transform == "number"){
+                                                op =  `{"${stageDef.op}":${value}}`;
+                                            }else {
+                                                op = `{"${stageDef.op}":"${value}"}`;
+                                            }                                            
                                             break;
                                         case 'undefined':
                                             op = `"${value}"`;
@@ -338,8 +414,8 @@ const cmd = (state, cmds, res, pos) => {
                 var pipeline = buildPipeline(filters);
 
                 return new Promise((resolve, reject) => {
-                    // const options = `{"collation":{"locale":"en_US","numericOrdering":true}, "allowDiskUse" : true}`;
-                    const options = `{"allowDiskUse" : "true"}`;
+                    //const options = `{"collation":{"locale":"en_US","numericOrdering":"true"}, "allowDiskUse" : "true"}`;
+                    const options = `{"collation":{"locale":"en_US","numericOrdering":"true"},"allowDiskUse":"true"}`;
                     fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
                             referrerPolicy: "origin-when-cross-origin",
                             credentials: 'include',
@@ -683,9 +759,17 @@ const cmd = (state, cmds, res, pos) => {
                     Object.keys(state.headers).forEach(headerKey => {
                         var th = document.createElement("th");
                         var cellValue = getCellValue(row, state.headers[headerKey].name.split('.'));
-                        cellValue = cellValue || state.emptyCellChar;
-                        th.innerHTML = cellValue;
-                        tr.appendChild(th);
+                        if(!Number.isNaN(cellValue) && cellValue.length == 14){
+                            cellValue = formatValue(cellValue);
+                            cellValue = cellValue || state.emptyCellChar;
+                            th.innerHTML = cellValue;
+                            tr.appendChild(th);
+                        } else {
+                            cellValue = cellValue || state.emptyCellChar;
+                            th.innerHTML = cellValue;
+                            tr.appendChild(th);
+                        }
+                        
                     });
                 });
             } catch (error) {
