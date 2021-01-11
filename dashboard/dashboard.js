@@ -25,8 +25,13 @@ const cmd = (state, cmds, res, pos) => {
 
     const clearContent = (state, payload, res) => {
         return new Promise((resolve, reject) => {
-            state.contentDiv.innerHTML = null;
-            resolve();
+            try {
+                state.contentDiv.innerHTML = null;
+                console.log("ClearContent!");
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
         });
     };
 
@@ -48,23 +53,51 @@ const cmd = (state, cmds, res, pos) => {
                 console.log("Category LOG:" + payload.catPath);
                 var dirs = payload.catPath.split('/');
                 var cat = state.categories[dirs[0]];
+
                 if (dirs[1] != null)
                     cat = cat.subCategories[dirs[1]];
 
+                var index = Object.keys(state.categories).indexOf(dirs[0]);
+                
+                for (let i = 0; i < index; index++) {
+                    if (state.categories[i].subCategories != null)
+                        index += 2 + state.categories[i].subCategories.length;
+                }
+
+                console.log("index: " + index.toString());
+
+                var sidebar = document.getElementById(state.id + "-sidebar");
+                sidebar.childNodes.forEach(child => {
+                    child.childNodes.forEach(grandChild => {
+                        grandChild.childNodes[0].style.color = "";
+                    });
+                });
+
+                var sidebar = document.getElementById(state.id + "-sidebar");
+                //el "+5" es por los elementos de arriba del sidebar: nombreEmpresa, usuario, lineas y espacios
+
+                var selected = sidebar.childNodes[index + 5];
+                console.log(selected);
+
+                selected.childNodes.forEach(child => {
+                    child.childNodes[0].style.color = "green";
+                });
+
+                if (dirs[1] != null) {
+                    
+                }
+
                 clearContent(state, null, null)
                     .then(() => {
-                        category.create(cat, state.contentDiv);
-                        state.selectedCat = cat;
+                        console.log("show selected Cat: " + JSON.stringify(cat));
+                        category.show(cat, state.contentDiv);
+                        state.selectedCat =  payload.catPath;
                         resolve(cat);
                     })
-                    .catch();
-                /*var index = Object.keys(state.categories).indexOf(cat.name);
-                var text = document.getElementById(state.id + "-" + cat.name + "-sidebar-main-category-name-text");
-        
-                Array.prototype.forEach.call(document.getElementsByClassName('ventum-sidebar-main-category-name-text'), (node) => {
-                    node.style.color = "";
-                });
-                text.style.color = "green";*/
+                    .catch(err => {
+                        console.log(err);
+                    });
+
             } catch (error) {
                 console.log("Error with selected cat! " + error);
                 reject(error);
@@ -225,115 +258,182 @@ const show = (state) => {
         };
 
         const createCat = (cat) => {
-            if (cat[0] != undefined) {
-                console.log(cat[0]);
-                var catDiv = document.createElement("div");
-                catDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-div";
-                catDiv.className = 'ventum-sidebar-main-category';
 
-                var logoDiv = document.createElement("div");
-                logoDiv.id = state.id + "-" + cat.name + +"-sidebar-main-category-logo-div";
-                logoDiv.className = 'ventum-sidebar-main-category-logo';
+            var catDiv = document.createElement("div");
+            catDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-div";
+            catDiv.className = 'ventum-sidebar-main-category';
 
-                var logo = document.createElement("i");
-                logo.id = state.id + "-" + cat.name + "-sidebar-main-category-logo-icon";
-                logo.className = 'icon-compass icon-2x ventum-sidebar-main-category-logo-i';
+            var logoDiv = document.createElement("div");
+            logoDiv.id = state.id + "-" + cat.name + +"-sidebar-main-category-logo-div";
+            logoDiv.className = 'ventum-sidebar-main-category-logo';
 
-                logoDiv.appendChild(logo);
-                catDiv.appendChild(logoDiv);
+            var logo = document.createElement("i");
+            logo.id = state.id + "-" + cat.name + "-sidebar-main-category-logo-icon";
+            logo.className = 'icon-compass icon-2x ventum-sidebar-main-category-logo-i';
 
-                var nameDiv = document.createElement("div");
-                nameDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-name-div";
-                nameDiv.className = 'ventum-sidebar-main-category-name';
+            logoDiv.appendChild(logo);
+            catDiv.appendChild(logoDiv);
 
-                /*var nameText = document.createElement("button");
-                nameText.id = state.id + "-" + cat.name + "-sidebar-main-category-name-text";
-                nameText.className = 'ventum-sidebar-main-category-name-text';
-                nameText.innerHTML = cat.name;*/
+            var nameDiv = document.createElement("div");
+            nameDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-name-div";
+            nameDiv.className = 'ventum-sidebar-main-category-name';
 
-                //DROPDOWN BUTTON - CATEGORY
-                var nameText = document.createElement("button");
-                nameText.className = 'ventum-sidebar-main-category-name-text dropdown-toggle';
-                nameText.type = "button";
-                nameText.id = state.id + "-" + cat.name + "-sidebar-main-category-name-text";
-                nameText.setAttribute('data-toggle', "dropdown");
-                nameText.setAttribute('aria-haspopup', "true");
-                nameText.setAttribute('aria-expanded', "false");
-                nameText.innerHTML = cat.name;
-                nameDiv.appendChild(nameText);
+            var nameText = document.createElement("button");
+            nameText.id = state.id + "-" + cat.name + "-sidebar-main-category-name-text";
+            nameText.className = 'ventum-sidebar-main-category-name-text';
+            nameText.innerHTML = cat.name;
 
-                //---------- MENU DEL DROPDOWN ----------------//
-                var nameMenu = document.createElement("div");
-                nameMenu.className = "dropdown-menu";
-                nameMenu.setAttribute('aria-labelledby', state.id + "-" + cat.name + "-sidebar-main-category-name-text");
-                nameDiv.appendChild(nameMenu);
-                //----------ELEMENTOS DEL MENU------------------------//
-                Object.entries(cat).forEach(option => {
-                    console.log(option);
-                    console.log(option[0]);
-                    if (!Number.isNaN(parseInt(option[0]))) {
-                        var subCat = option[1];
-                        var nameLink = document.createElement("button");
-                        nameLink.href = "#";
-                        nameLink.className = "dropdown-item";
-                        nameLink.innerHTML = subCat.name;
-                        nameMenu.appendChild(nameLink);
-                        nameLink.onclick = (e) => {
-                            e.preventDefault();
-                            console.log("Option selected: " + subCat.name);
-                            selectCategory(subCat);
-                        };
-                    }else {
-                        console.log("Error al renderizar elemento");
-                    }
+            nameDiv.appendChild(nameText);
+            catDiv.appendChild(nameDiv);
+            sidebar.appendChild(catDiv);
 
+            if (cat.subCategories != undefined) {
+                
+                var topSpace = document.createElement("div");
+                topSpace.id = state.id + "-sidebar-main-subCategory-topSpace";
+                topSpace.className = 'ventum-sidebar-main-category';
+                topSpace.style.backgroundColor =  "rgba(31, 31, 31, 1)";
+                topSpace.style.height = "1%";
+                sidebar.appendChild(topSpace);
+
+                Object.values(cat.subCategories).forEach(subCat => {
+                    var subCatDiv = document.createElement("div");
+                    subCatDiv.id = state.id + "-" + subCat.name + "-sidebar-main-subCategory-div";
+                    subCatDiv.className = 'ventum-sidebar-main-category';
+                    subCatDiv.style.backgroundColor =  "rgba(31, 31, 31, 1)";
+                    subCatDiv.style.textAlignLast = "start";
+                    subCatDiv.style.height = "4%";
+                    subCatDiv.style.fontSize = ".85rem";
+
+                    var subCatNameDiv = document.createElement("div");
+                    subCatNameDiv.id = state.id + "-" + subCat.name + "-sidebar-main-subCategory-name-div";
+                    subCatNameDiv.className = 'ventum-sidebar-main-category-name';
+                    subCatNameDiv.style.marginLeft = "25%";
+
+                    var subCatNameText = document.createElement("button");
+                    subCatNameText.id = state.id + "-" + subCat.name + "-sidebar-main-subCategory-name-text";
+                    subCatNameText.className = 'ventum-sidebar-main-category-name-text';
+                    subCatNameText.innerHTML = subCat.name;
+
+                    subCatNameDiv.appendChild(subCatNameText);
+                    subCatDiv.appendChild(subCatNameDiv);
+                    sidebar.appendChild(subCatDiv);
+
+                    subCatNameText.onclick = (e) => {
+                        e.preventDefault();
+                        var categories = state.categories;
+                        var catPath = Object.keys(categories).find(key => categories[key] === cat);
+                        var subCategories = state.categories[catPath].subCategories;
+                        var subPath = Object.keys(subCategories).find(key => subCategories[key] === subCat)
+                        catPath += `/${subPath}`;
+                        console.log("catPath: " + catPath);
+                        var cmds = {
+                            0: {
+                                type: "select-category",
+                                payload: {
+                                    catPath: catPath
+                                }
+                            }
+                        }
+                    
+                        cmd(state, cmds, null, 0);
+                    };
                 });
 
+                var bottomSpace = document.createElement("div");
+                bottomSpace.id = state.id + "-sidebar-main-subCategory-bottomSpace";
+                bottomSpace.className = 'ventum-sidebar-main-category';
+                bottomSpace.style.backgroundColor =  "rgba(31, 31, 31, 1)";
+                bottomSpace.style.height = "1%";
+                sidebar.appendChild(bottomSpace);
+
                 nameText.onclick = (e) => {
                     e.preventDefault();
-                    console.log("Category selected: " + cat.name);
-                    //selectCategory(cat);
+                    var catPath = Object.keys(state.categories).find(key => state.categories[key] === cat)
+                    console.log("expand: " + catPath);
+                    // var cmds = {
+                    //     0: {
+                    //         type: "select-category",
+                    //         payload: {
+                    //             catPath: catPath
+                    //         }
+                    //     }
+                    // }
+                
+                    // cmd(state, cmds, null, 0);
                 };
 
-                nameDiv.appendChild(nameText);
-                catDiv.appendChild(nameDiv);
+                // //DROPDOWN BUTTON - CATEGORY
+                // var nameText = document.createElement("button");
+                // nameText.className = 'ventum-sidebar-main-category-name-text dropdown-toggle';
+                // nameText.type = "button";
+                // nameText.id = state.id + "-" + cat.name + "-sidebar-main-category-name-text";
+                // nameText.setAttribute('data-toggle', "dropdown");
+                // nameText.setAttribute('aria-haspopup', "true");
+                // nameText.setAttribute('aria-expanded', "false");
+                // nameText.innerHTML = cat.name;
+                // nameDiv.appendChild(nameText);
 
-                return catDiv;
+                // //---------- MENU DEL DROPDOWN ----------------//
+                // var nameMenu = document.createElement("div");
+                // nameMenu.className = "dropdown-menu";
+                // nameMenu.setAttribute('aria-labelledby', state.id + "-" + cat.name + "-sidebar-main-category-name-text");
+                // nameDiv.appendChild(nameMenu);
+                // //----------ELEMENTOS DEL MENU------------------------//
+                // Object.entries(cat).forEach(option => {
+                //     console.log(option);
+                //     console.log(option[0]);
+                //     if (!Number.isNaN(parseInt(option[0]))) {
+                //         var subCat = option[1];
+                //         var nameLink = document.createElement("button");
+                //         nameLink.href = "#";
+                //         nameLink.className = "dropdown-item";
+                //         nameLink.innerHTML = subCat.name;
+                //         nameMenu.appendChild(nameLink);
+                //         nameLink.onclick = (e) => {
+                //             e.preventDefault();
+                //             console.log("Option selected: " + subCat.name);
+                //             selectCategory(subCat);
+                //         };
+                //     }else {
+                //         console.log("Error al renderizar elemento");
+                //     }
+
+                // });
+
+                // nameText.onclick = (e) => {
+                //     e.preventDefault();
+                //     var cmds = {
+                //         0: {
+                //             type: "select-category",
+                //             payload: {
+                //                 catPath: "0"
+                //             }
+                //         }
+                //     }
+                
+                //     cmd(state, cmds, null, 0);
+                //     console.log("Category selected: " + cat.name);
+                //     //selectCategory(cat);
+                // };
+
+                
             } else {
-                var catDiv = document.createElement("div");
-                catDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-div";
-                catDiv.className = 'ventum-sidebar-main-category';
-
-                var logoDiv = document.createElement("div");
-                logoDiv.id = state.id + "-" + cat.name + +"-sidebar-main-category-logo-div";
-                logoDiv.className = 'ventum-sidebar-main-category-logo';
-
-                var logo = document.createElement("i");
-                logo.id = state.id + "-" + cat.name + "-sidebar-main-category-logo-icon";
-                logo.className = 'icon-compass icon-2x ventum-sidebar-main-category-logo-i';
-
-                logoDiv.appendChild(logo);
-                catDiv.appendChild(logoDiv);
-
-                var nameDiv = document.createElement("div");
-                nameDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-name-div";
-                nameDiv.className = 'ventum-sidebar-main-category-name';
-
-                var nameText = document.createElement("button");
-                nameText.id = state.id + "-" + cat.name + "-sidebar-main-category-name-text";
-                nameText.className = 'ventum-sidebar-main-category-name-text';
-                nameText.innerHTML = cat.name;
-
                 nameText.onclick = (e) => {
                     e.preventDefault();
-                    console.log("Category selected: " + cat.name);
-                    selectCategory(cat);
+                    var catPath = Object.keys(state.categories).find(key => state.categories[key] === cat)
+                    console.log("catPath: " + catPath);
+                    var cmds = {
+                        0: {
+                            type: "select-category",
+                            payload: {
+                                catPath: catPath
+                            }
+                        }
+                    }
+                
+                    cmd(state, cmds, null, 0);
                 };
-
-                nameDiv.appendChild(nameText);
-                catDiv.appendChild(nameDiv);
-
-                return catDiv;
             }
 
         };
@@ -350,9 +450,7 @@ const show = (state) => {
             sidebar.appendChild(separatorSpace(3));
             Object.keys(state.categories).forEach(key => {
                 var access = state.categories[key].access;
-                // if (Object.values(access.names).includes(state.user.name) || Object.values(access.roles).includes(state.user.role))
-                //     sidebar.appendChild(createCat(state.categories[key]));
-                sidebar.appendChild(createCat(state.categories[key]));
+                createCat(state.categories[key]);
             });
 
             return sidebar;
@@ -438,13 +536,12 @@ const show = (state) => {
         0: {
             type: "select-category",
             payload: {
-                catPath: catPath
+                catPath: "0"
             }
         }
     }
 
     cmd(state, cmds, null, 0);
-    selectCategory(catPath, state);
 
 };
 

@@ -69,7 +69,7 @@
     order: 1;
     flex: .25;
     text-align: center;
-    align-self: center;
+    /*align-self: center;*/
 }
 
 .ventum-sidebar-company-logo-i {
@@ -80,7 +80,7 @@
     order: 2;
     flex: .75;
     text-align: left;
-    align-self: center;
+    /*align-self: center;*/
 }
 
 .ventum-sidebar-company-name-text {

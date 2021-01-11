@@ -3,6 +3,7 @@ import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
 import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.js';
 import modal from 'https://ventumdashboard.s3.amazonaws.com/dashboard/modal/modal.js';
 import table from 'https://ventumdashboard.s3.amazonaws.com/dashboard/table/table.js';
+import wizard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/wizard/wizard.js';
 
 //--------------------------------- Category --------------------------------------------
 
@@ -108,7 +109,7 @@ const create = (newState, parentState) => {
             Object.values(col).forEach(element => {
                 switch (element.type) {
                     case "wizard":
-                        //wizard.create(element.payload, newState);
+                        wizard.create(element.payload, newState);
                         break;
                     case "table":
                         table.create(element.payload, newState);
@@ -160,6 +161,8 @@ const show = (state, parent) => {
         return col;
     };
 
+
+    console.log("Category show: " + JSON.stringify(state));
     try {
         Object.values(state.content.rows).forEach(row => {
             var rowDiv = createRow(parent);
@@ -183,7 +186,7 @@ const show = (state, parent) => {
             });
         });
     } catch (error) {
-        console.log("Error creating category! " + error);
+        console.log("Error showing category! " + error);
     }
 };
 

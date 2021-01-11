@@ -1089,6 +1089,7 @@ const show = (state, parent) => {
 
         };
 
+        console.log("Table show: " + JSON.stringify(state));
         const cardParent = card.create({ title: state.title }, parent);
 
         createFilters();

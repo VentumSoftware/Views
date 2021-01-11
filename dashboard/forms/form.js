@@ -153,10 +153,11 @@ const show = (state, parent) => {
             row.className = "row";
             form.appendChild(row);
 
-            Object.values(data.cols).forEach(col => {
+            Object.values(state.cols).forEach(col => {
                 var inputCol = document.createElement("div");
                 inputCol.className = "col";
                 row.appendChild(inputCol);
+                state.inputs = {};
                 Object.values(col).forEach(input => {
                     var inputRow = document.createElement("div");
                     inputRow.className = "row";
@@ -195,7 +196,7 @@ const show = (state, parent) => {
                         case "fixed-hour":
                             inputIn.readOnly = true;
                             inputIn.className = "form-control-plaintext";
-                            //TODO: VER SI HAY UN MEMORY LEAK ACA, O SI TENGO Q GUARDAR LA REF PARA MATARLO
+                            //TODO: VER SI HAY UN MEMORY LEAK ACÁ, O SI TENGO Q GUARDAR LA REF PARA MATARLO
                             var d = new Date();
                             var n = `${("0" + d.getHours()).slice(-2)}:${("0" + d.getMinutes()).slice(-2)}:${("0" + d.getSeconds()).slice(-2)}`;
                             inputIn.value = n;
@@ -204,7 +205,7 @@ const show = (state, parent) => {
                                 var d = new Date();
                                 var n = `${("0" + d.getHours()).slice(-2)}:${("0" + d.getMinutes()).slice(-2)}:${("0" + d.getSeconds()).slice(-2)}`;
                                 inputIn.value = n;
-                                newState.inputs[input.label] = inputIn.value;
+                                state.inputs[input.label] = inputIn.value;
                             }, 1000);
                             break;
                         case "fixed-date":
@@ -218,7 +219,7 @@ const show = (state, parent) => {
                                 var d = new Date();
                                 var n = `${(d.getUTCFullYear())}/${("0" + (d.getUTCMonth() + 1)).slice(-2)}/${("0" + d.getUTCDate()).slice(-2)}`;
                                 inputIn.value = n;
-                                newState.inputs[input.label] = inputIn.value;
+                                state.inputs[input.label] = inputIn.value;
                             }, 1000);
                             break;
                         default:
@@ -292,7 +293,8 @@ const show = (state, parent) => {
             console.log(error);
         }
     };
-    const cardParent = card.create({ title: newState.title }, parent);
+    console.log("Form show: " + JSON.stringify(state));
+    const cardParent = card.create({ title: state.title }, parent);
     drawForm();
 };
 
