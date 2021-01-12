@@ -133,9 +133,11 @@ const cmd = (state, cmds, res, pos) => {
     })
 };
 
-const create = (newState, parentState) => {
+const create = (newState, path) => {
     newState = utils.fillObjWithDflt(newState, dfltState);
-    newState.parentState = parentState;
+    newState.path = path;
+    newState.type = "form";
+    //console.log("Form new State: " + JSON.stringify(newState));
     states.push(newState);
     return newState;
 };

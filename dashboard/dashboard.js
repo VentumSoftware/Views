@@ -155,12 +155,15 @@ const cmd = (state, cmds, res, pos) => {
 };
 
 //Creates a new Dashboard
-const create = (newState, parentState) => {
+const create = (newState, path = "dashboard") => {
     newState = utils.fillObjWithDflt(newState, dfltState);
-    newState.parentState = parentState;
-    Object.values(newState.categories).forEach(cat => {
-        category.create(cat, newState);
+    newState.type = "dashboard";
+    newState.path = path;
+    newState.childs = {};
+    Object.entries(newState.categories).forEach(cat => {
+        newState.childs[cat[0].toString()] = category.create(cat[1], path + "/" + cat[0]);
     });
+    console.log("Dashboard new State: " + JSON.stringify(newState));
     states.push(newState);
     return newState;
 };
@@ -545,4 +548,4 @@ const show = (state) => {
 
 };
 
-export default { create, show, cmd};
+export default { create, show, cmd };

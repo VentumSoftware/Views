@@ -847,9 +847,11 @@ const cmd = (state, cmds, res, pos) => {
     });
 };
 
-const create = (newState, parentState) => {
+const create = (newState, path) => {
     newState = utils.fillObjWithDflt(newState, dfltState);
-    newState.parentState = parentState;
+    newState.path = path;
+    newState.type = "table";
+    //console.log("Table new State: " + JSON.stringify(newState));
     states.push(newState);
     return newState;
 };

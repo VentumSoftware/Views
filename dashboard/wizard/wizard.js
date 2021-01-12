@@ -91,22 +91,25 @@ const cmd = (state, cmds, res, pos) => {
     }
 };
 
-const create = (newState, parentState) => {
+const create = (newState, path) => {
     newState = utils.fillObjWithDflt(newState, dfltState);
-    newState.parentState = parentState;
-    Object.values(newState.pages).forEach(page => {
-        Object.values(page.content.rows).forEach(row => {
-            Object.values(row.cols).forEach(col => {
-                Object.values(col).forEach(element => {
-                    switch (element.type) {
+    newState.type = "wizard";
+    newState.path = path;
+    newState.childs = {};
+    Object.entries(newState.pages).forEach(page => {
+        Object.entries(page[1].content.rows).forEach(row => {
+            Object.entries(row[1].cols).forEach(col => {
+                Object.entries(col[1]).forEach(element => {
+                    var subPath = "page" + page[0] + "-row" + row[0] + "-col" + col[0] + "-pos" + element[0];
+                    switch (element[1].type) {
                         case "wizard":
-                            wizard.create(element.payload, newState);
+                            newState.childs[subPath] = wizard.create(element[1].payload, path + "/" + subPath);
                             break;
                         case "table":
-                            table.create(element.payload, newState);
+                            newState.childs[subPath] = table.create(element[1].payload, path + "/" + subPath);
                             break;
                         case "form":
-                            form.create(element.payload, newState);
+                            newState.childs[subPath] = form.create(element[1].payload, path + "/" + subPath);
                             break;
                         default:
                             break;
@@ -115,7 +118,9 @@ const create = (newState, parentState) => {
             });
         });
     });
+    //console.log("Wizard new State: " + JSON.stringify(newState));
     states.push(newState);
+    return newState;
 };
 
 const show = (state, parent) => {

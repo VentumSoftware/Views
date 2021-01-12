@@ -10,7 +10,7 @@ const views = {
                     script.type = "module";
                     var innerHTML = `import dashboard from "https://ventumdashboard.s3.amazonaws.com/dashboard/dashboard.js";
                     `;
-                    innerHTML += `var dashboardState = dashboard.create((${JSON.stringify(data)}));
+                    innerHTML += `var dashboardState = dashboard.create(${JSON.stringify(data)}, "dashboard");
                     `;
                     innerHTML += `dashboard.show(dashboardState);
                     `;

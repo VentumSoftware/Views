@@ -1,4 +1,3 @@
-import dashboard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/dashboard.js';
 import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
 import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.js';
 import modal from 'https://ventumdashboard.s3.amazonaws.com/dashboard/modal/modal.js';
@@ -16,9 +15,11 @@ var dfltState = {
         rows: {
             //Rows
             0: {
-                cols: {}
-            },
-        },
+                cols: {
+                    0: {}
+                }
+            }
+        }
     }
 };
 
@@ -101,29 +102,41 @@ const cmd = (state, cmds, res, pos) => {
     }
 };
 
-const create = (newState, parentState) => {
+const create = (newState, path) => {
     newState = utils.fillObjWithDflt(newState, dfltState);
-    newState.parentState = parentState;
-    Object.values(newState.content.rows).forEach(row => {
-        Object.values(row.cols).forEach(col => {
-            Object.values(col).forEach(element => {
-                switch (element.type) {
-                    case "wizard":
-                        wizard.create(element.payload, newState);
-                        break;
-                    case "table":
-                        table.create(element.payload, newState);
-                        break;
-                    case "form":
-                        form.create(element.payload, newState);
-                        break;
-                    default:
-                        break;
-                }
+    newState.type = "wizard";
+    newState.path = path;
+    newState.childs = {};
+
+    if (newState.subCategories != null) {
+        
+    } else {
+        Object.entries(newState.content.rows).forEach(row => {
+            Object.entries(row[1].cols).forEach(col => {
+                Object.entries(col[1]).forEach(element => {
+                    var subPath = "row" + row[0] + "-col" + col[0] + "-ele" + element[0];
+                    switch (element[1].type) {
+                        case "wizard":
+                            newState.childs[subPath] = wizard.create(element[1].payload, path + "/" + subPath);
+                            break;
+                        case "table":
+                            newState.childs[subPath] = table.create(element[1].payload, path + "/" + subPath);
+                            break;
+                        case "form":
+                            newState.childs[subPath] = form.create(element[1].payload, path + "/" + subPath);
+                            break;
+                        default:
+                            break;
+                    }
+                });
             });
         });
-    });
+    }
+    
+
+    console.log("Category new State: " + JSON.stringify(newState));
     states.push(newState);
+    return newState;
 };
 
 const show = (state, parent) => {
