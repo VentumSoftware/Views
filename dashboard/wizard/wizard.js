@@ -2,7 +2,7 @@ import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
 import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.js';
 import modal from 'https://ventumdashboard.s3.amazonaws.com/dashboard/modal/modal.js';
 import table from 'https://ventumdashboard.s3.amazonaws.com/dashboard/table/table.js';
-
+import wizard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/wizard/wizard.js';
 //--------------------------------- Category --------------------------------------------
 
 var dfltState = {
@@ -92,35 +92,40 @@ const cmd = (state, cmds, res, pos) => {
 };
 
 const create = (newState, path) => {
-    newState = utils.fillObjWithDflt(newState, dfltState);
-    newState.type = "wizard";
-    newState.path = path;
-    newState.childs = {};
-    Object.entries(newState.pages).forEach(page => {
-        Object.entries(page[1].content.rows).forEach(row => {
-            Object.entries(row[1].cols).forEach(col => {
-                Object.entries(col[1]).forEach(element => {
-                    var subPath = "page" + page[0] + "-row" + row[0] + "-col" + col[0] + "-pos" + element[0];
-                    switch (element[1].type) {
-                        case "wizard":
-                            newState.childs[subPath] = wizard.create(element[1].payload, path + "/" + subPath);
-                            break;
-                        case "table":
-                            newState.childs[subPath] = table.create(element[1].payload, path + "/" + subPath);
-                            break;
-                        case "form":
-                            newState.childs[subPath] = form.create(element[1].payload, path + "/" + subPath);
-                            break;
-                        default:
-                            break;
-                    }
-                });
+
+    try{
+        if (newState.type == "wizard") {
+            newState = utils.fillObjWithDflt(newState, dfltState);
+            newState.path = path;
+            newState.selectedPage = Object.keys(newState.pages)[0];
+
+            Object.entries(newState.childs).forEach(child => {
+                switch (child[1].type) {
+                    case "wizard":
+                        newState.childs[child[0]] = wizard.create(child[1], path + "/" + child[0]);
+                        break;
+                    case "table":
+                        newState.childs[child[0]] = table.create(child[1], path + "/" + child[0]);
+                        break;
+                    case "form":
+                        newState.childs[child[0]] = form.create(child[1], path + "/" + child[0]);
+                        break;
+                    default:
+                        console.log("Error creating wizard child, incorrect type: " + child[1].type);
+                        break;
+                }
             });
-        });
-    });
-    //console.log("Wizard new State: " + JSON.stringify(newState));
-    states.push(newState);
-    return newState;
+            //console.log("Wizard new State: " + JSON.stringify(newState));
+            states.push(newState);
+            return newState;
+        } else {
+            console.log("Error creating wizard, incorrect type: " + newState.type);
+            return null;
+        }
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
 };
 
 const show = (state, parent) => {
@@ -159,8 +164,9 @@ const show = (state, parent) => {
     };
 
     console.log("Wizard show: " + JSON.stringify(state));
+    
     try {
-        Object.values(state.pages[state.selectedPage].content.rows).forEach(row => {
+        Object.values(state.pages[state.selectedPage.toString()].content.rows).forEach(row => {
             var rowDiv = createRow(parent);
             Object.values(row.cols).forEach(col => {
                 var colDiv = createCol(rowDiv);
@@ -182,7 +188,8 @@ const show = (state, parent) => {
             });
         });
     } catch (error) {
-        console.log("Error showing category! " + error);
+        console.log(error);
+        return null;
     }
 };
 

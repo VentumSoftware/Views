@@ -212,72 +212,106 @@ const close = () => {
     root.modal('hide');
 }
 
-const create = (data) => {
+const create = (newState, path) => {
 
-    const createModal = () => {
-        var modalRoot = document.createElement("div");
-        modalRoot.id = "modal";
-        modalRoot.className = "modal fade bd-example-modal-lg";
-        modalRoot.tabIndex = "-1";
-        modalRoot.role = "dialog";
-        modalRoot["aria-labelledby"] = "myLargeModalLabel";
-        modalRoot["aria-hidden"] = "true";
-        document.body.appendChild(modalRoot);
+    try{
+        if (newState.type == "modal") {
+            newState = utils.fillObjWithDflt(newState, dfltState);
+            newState.path = path;
 
-        modalDialog = document.createElement("div");
-        modalDialog.className = "modal-dialog modal-lg";
-        modalRoot.appendChild(modalDialog);
-
-        modalContent = document.createElement("div");
-        modalContent.className = "modal-content";
-        modalContent.style.display = "contents";
-        modalDialog.appendChild(modalContent);
-
-        return modalRoot;
-    };
-
-    const drawContent = () => {
-        modalContent.innerHTML = null;
-        subStates = [];
-        //TODO: Hacer esto bien (esta harcodeado ahora el contenido porque no tengo columnas y filas todavia)
-        var tmp = data.content.rows[0].cols[0][0];
-        if (tmp) {
-            var formState = form.create(tmp.payload, modalContent, state);
-            subStates.push(formState);
+            Object.entries(newState.childs).forEach(child => {
+                switch (child[1].type) {
+                    case "wizard":
+                        newState.childs[child[0]] = wizard.create(child[1], path + "/" + child[0]);
+                        break;
+                    case "table":
+                        newState.childs[child[0]] = table.create(child[1], path + "/" + child[0]);
+                        break;
+                    case "form":
+                        newState.childs[child[0]] = form.create(child[1], path + "/" + child[0]);
+                        break;
+                    default:
+                        console.log("Error creating modal child, incorrect type: " + child[1].type);
+                        break;
+                }
+            });
+            //console.log("Table new Modal: " + JSON.stringify(newState));
+            states.push(newState);
+            return newState;
+        } else {
+        console.log("Error modal table, incorrect type: " + newState.type);
+        return null;
         }
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
 
-        if (data.spinner) {
-            spinner(data.spinner, modalContent);
-        }
+
+    // const createModal = () => {
+    //     var modalRoot = document.createElement("div");
+    //     modalRoot.id = "modal";
+    //     modalRoot.className = "modal fade bd-example-modal-lg";
+    //     modalRoot.tabIndex = "-1";
+    //     modalRoot.role = "dialog";
+    //     modalRoot["aria-labelledby"] = "myLargeModalLabel";
+    //     modalRoot["aria-hidden"] = "true";
+    //     document.body.appendChild(modalRoot);
+
+    //     modalDialog = document.createElement("div");
+    //     modalDialog.className = "modal-dialog modal-lg";
+    //     modalRoot.appendChild(modalDialog);
+
+    //     modalContent = document.createElement("div");
+    //     modalContent.className = "modal-content";
+    //     modalContent.style.display = "contents";
+    //     modalDialog.appendChild(modalContent);
+
+    //     return modalRoot;
+    // };
+
+    // const drawContent = () => {
+    //     modalContent.innerHTML = null;
+    //     subStates = [];
+    //     //TODO: Hacer esto bien (esta harcodeado ahora el contenido porque no tengo columnas y filas todavia)
+    //     var tmp = data.content.rows[0].cols[0][0];
+    //     if (tmp) {
+    //         var formState = form.create(tmp.payload, modalContent, state);
+    //         subStates.push(formState);
+    //     }
+
+    //     if (data.spinner) {
+    //         spinner(data.spinner, modalContent);
+    //     }
 
 
 
-    };
+    // };
 
-    returnError("new modal created!"); // Si ya había un modal abierto le devuelvo un error al que lo creó, ya que lo pisé!
+    // returnError("new modal created!"); // Si ya había un modal abierto le devuelvo un error al que lo creó, ya que lo pisé!
 
-    return new Promise((resolve, reject) => {
-        //TODO: Ver si esto no genera un memory leak...
-        subStates = null;
-        state = utils.fillObjWithDflt(data, dfltState);
-        createModal();
-        drawContent();
+    // return new Promise((resolve, reject) => {
+    //     //TODO: Ver si esto no genera un memory leak...
+    //     subStates = null;
+    //     state = utils.fillObjWithDflt(data, dfltState);
+    //     createModal();
+    //     drawContent();
 
-        root = $('#modal');
-        // Para q no se cierre cuando hago click afuera del contenido
-        root.modal({ backdrop: 'static', keyboard: true });
+    //     root = $('#modal');
+    //     // Para q no se cierre cuando hago click afuera del contenido
+    //     root.modal({ backdrop: 'static', keyboard: true });
 
-        //Expongo en el global scope del script los llamados para resolver la promesa del q invokó el modal
-        returnCorrect = (res) => {
-            close();
-            resolve(res);
-        };
-        returnError = (err) => {
-            close();
-            reject(err);
-        };
-    });
+    //     //Expongo en el global scope del script los llamados para resolver la promesa del q invokó el modal
+    //     returnCorrect = (res) => {
+    //         close();
+    //         resolve(res);
+    //     };
+    //     returnError = (err) => {
+    //         close();
+    //         reject(err);
+    //     };
+    // });
 
 };
 
-export default { create, show, close, cmd };
+export default { create, show, cmd };

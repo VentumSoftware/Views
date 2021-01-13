@@ -103,40 +103,42 @@ const cmd = (state, cmds, res, pos) => {
 };
 
 const create = (newState, path) => {
-    newState = utils.fillObjWithDflt(newState, dfltState);
-    newState.type = "wizard";
-    newState.path = path;
-    newState.childs = {};
+    try{
+        if (newState.type == "category") {
+            newState = utils.fillObjWithDflt(newState, dfltState);
+            newState.path = path;
 
-    if (newState.subCategories != null) {
-        
-    } else {
-        Object.entries(newState.content.rows).forEach(row => {
-            Object.entries(row[1].cols).forEach(col => {
-                Object.entries(col[1]).forEach(element => {
-                    var subPath = "row" + row[0] + "-col" + col[0] + "-ele" + element[0];
-                    switch (element[1].type) {
+            if (newState.subCategories != null) {
+            
+            } else {
+                Object.entries(newState.childs).forEach(child => {
+                    switch (child[1].type) {
                         case "wizard":
-                            newState.childs[subPath] = wizard.create(element[1].payload, path + "/" + subPath);
+                            newState.childs[child[0]] = wizard.create(child[1], path + "/" + child[0]);
                             break;
                         case "table":
-                            newState.childs[subPath] = table.create(element[1].payload, path + "/" + subPath);
+                            newState.childs[child[0]] = table.create(child[1], path + "/" + child[0]);
                             break;
                         case "form":
-                            newState.childs[subPath] = form.create(element[1].payload, path + "/" + subPath);
+                            newState.childs[child[0]] = form.create(child[1], path + "/" + child[0]);
                             break;
                         default:
+                            console.log("Error creating category child, incorrect type: " + child[1].type);
                             break;
                     }
                 });
-            });
-        });
+            }
+            //console.log("Category new State: " + JSON.stringify(newState));
+            states.push(newState);
+            return newState;
+        } else {
+        console.log("Error creating category, incorrect type: " + newState.type);
+        return null;
+        }
+    } catch (error) {
+        console.log(error);
+        return null;
     }
-    
-
-    console.log("Category new State: " + JSON.stringify(newState));
-    states.push(newState);
-    return newState;
 };
 
 const show = (state, parent) => {

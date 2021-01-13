@@ -134,12 +134,32 @@ const cmd = (state, cmds, res, pos) => {
 };
 
 const create = (newState, path) => {
-    newState = utils.fillObjWithDflt(newState, dfltState);
-    newState.path = path;
-    newState.type = "form";
-    //console.log("Form new State: " + JSON.stringify(newState));
-    states.push(newState);
-    return newState;
+    try {
+        if (newState.type == "form") {
+            newState = utils.fillObjWithDflt(newState, dfltState);
+            newState.path = path;
+
+            Object.entries(newState.childs).forEach(child => {
+                switch (child[1].type) {
+                    case "modal":
+                        newState.childs[child[0]] = modal.create(child[1], path + "/" + child[0]);
+                        break;
+                    default:
+                        console.log("Error creating form child, incorrect type: " + child[1].type);
+                        break;
+                }
+            });
+            //console.log("Modal new State: " + JSON.stringify(newState));
+            states.push(newState);
+            return newState;
+        } else {
+            console.log("Error creating modal, incorrect type: " + newState.type);
+            return null;
+        }
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
 };
 
 const show = (state, parent) => {

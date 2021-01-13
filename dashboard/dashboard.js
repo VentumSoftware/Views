@@ -156,395 +156,412 @@ const cmd = (state, cmds, res, pos) => {
 
 //Creates a new Dashboard
 const create = (newState, path = "dashboard") => {
-    newState = utils.fillObjWithDflt(newState, dfltState);
-    newState.type = "dashboard";
-    newState.path = path;
-    newState.childs = {};
-    Object.entries(newState.categories).forEach(cat => {
-        newState.childs[cat[0].toString()] = category.create(cat[1], path + "/" + cat[0]);
-    });
-    console.log("Dashboard new State: " + JSON.stringify(newState));
-    states.push(newState);
-    return newState;
+    try {
+        if (newState.type == "dashboard") {
+            newState = utils.fillObjWithDflt(newState, dfltState);
+            newState.path = path;
+    
+            Object.entries(newState.childs).forEach(child => {
+                switch (child[1].type) {
+                    case "category":
+                        newState.childs[child[0]] = category.create(child[1], path + "/" + child[0]);
+                        break;
+                    default:
+                        console.log("Error creating dashboard child, incorrect type: " + child[1].type);
+                        break;
+                }
+            });
+            console.log("Dashboard new State: " + JSON.stringify(newState));
+            states.push(newState);
+            return newState;
+        } else {
+            console.log("Error creating dashboard, incorrect type: " + newState.type);
+            return null;
+        }
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+    
 };
 
 
 const show = (state) => {
 
-    const createNav = () => {
-        var nav = document.createElement("div");
-        nav.id = state.id + "-nav";
-        nav.className = 'ventum-nav '; //overflow-auto
-        nav.style.height = window.innerHeight + "px";
-        nav.style.overflowY = "auto";
-        nav.style.overflowX = "hidden";
-        return nav;
-    };
+    // const createNav = () => {
+    //     var nav = document.createElement("div");
+    //     nav.id = state.id + "-nav";
+    //     nav.className = 'ventum-nav '; //overflow-auto
+    //     nav.style.height = window.innerHeight + "px";
+    //     nav.style.overflowY = "auto";
+    //     nav.style.overflowX = "hidden";
+    //     return nav;
+    // };
 
-    const createSidebar = () => {
+    // const createSidebar = () => {
 
-        const companyInfo = () => {
-            var companyDiv = document.createElement("div");
-            companyDiv.id = state.id + "-sidebar-company-div";
-            companyDiv.className = 'ventum-sidebar-company';
+    //     const companyInfo = () => {
+    //         var companyDiv = document.createElement("div");
+    //         companyDiv.id = state.id + "-sidebar-company-div";
+    //         companyDiv.className = 'ventum-sidebar-company';
 
-            var logoDiv = document.createElement("div");
-            logoDiv.id = state.id + "-sidebar-company-logo-div";
-            logoDiv.className = 'ventum-sidebar-company-logo';
+    //         var logoDiv = document.createElement("div");
+    //         logoDiv.id = state.id + "-sidebar-company-logo-div";
+    //         logoDiv.className = 'ventum-sidebar-company-logo';
 
-            var logo = document.createElement("i");
-            logo.id = state.id + "-sidebar-company-logo-icon";
-            logo.className = 'icon-compass icon-2x ventum-sidebar-company-logo-i';
+    //         var logo = document.createElement("i");
+    //         logo.id = state.id + "-sidebar-company-logo-icon";
+    //         logo.className = 'icon-compass icon-2x ventum-sidebar-company-logo-i';
 
-            logoDiv.appendChild(logo);
-            companyDiv.appendChild(logoDiv);
+    //         logoDiv.appendChild(logo);
+    //         companyDiv.appendChild(logoDiv);
 
-            var nameDiv = document.createElement("div");
-            nameDiv.id = state.id + "-sidebar-company-name-div";
-            nameDiv.className = 'ventum-sidebar-company-name';
+    //         var nameDiv = document.createElement("div");
+    //         nameDiv.id = state.id + "-sidebar-company-name-div";
+    //         nameDiv.className = 'ventum-sidebar-company-name';
 
-            var nameText = document.createElement("button");
-            nameText.id = state.id + "-sidebar-company-name-text";
-            nameText.className = 'ventum-sidebar-company-name-text';
-            nameText.href = "";
-            nameText.innerHTML = state.company.name;
+    //         var nameText = document.createElement("button");
+    //         nameText.id = state.id + "-sidebar-company-name-text";
+    //         nameText.className = 'ventum-sidebar-company-name-text';
+    //         nameText.href = "";
+    //         nameText.innerHTML = state.company.name;
 
-            nameDiv.appendChild(nameText);
-            companyDiv.appendChild(nameDiv);
+    //         nameDiv.appendChild(nameText);
+    //         companyDiv.appendChild(nameDiv);
 
-            return companyDiv;
-        };
+    //         return companyDiv;
+    //     };
 
-        const separatorLine = () => {
-            var line = document.createElement("div");
-            line.className = 'ventum-sidebar-separator-line';
-            return line;
-        };
+    //     const separatorLine = () => {
+    //         var line = document.createElement("div");
+    //         line.className = 'ventum-sidebar-separator-line';
+    //         return line;
+    //     };
 
-        const separatorSpace = (height) => {
-            var companyDiv = document.createElement("div");
-            companyDiv.className = 'ventum-sidebar-separator-space';
-            companyDiv.style.height = (height || 3) + '%';
-            return companyDiv;
-        };
+    //     const separatorSpace = (height) => {
+    //         var companyDiv = document.createElement("div");
+    //         companyDiv.className = 'ventum-sidebar-separator-space';
+    //         companyDiv.style.height = (height || 3) + '%';
+    //         return companyDiv;
+    //     };
 
-        const userInfo = () => {
-            var userDiv = document.createElement("div");
-            userDiv.id = state.id + "-sidebar-user-div";
-            userDiv.className = 'ventum-sidebar-user';
+    //     const userInfo = () => {
+    //         var userDiv = document.createElement("div");
+    //         userDiv.id = state.id + "-sidebar-user-div";
+    //         userDiv.className = 'ventum-sidebar-user';
 
-            var logoDiv = document.createElement("div");
-            logoDiv.id = state.id + "-sidebar-user-logo-div";
-            logoDiv.className = 'ventum-sidebar-user-logo';
+    //         var logoDiv = document.createElement("div");
+    //         logoDiv.id = state.id + "-sidebar-user-logo-div";
+    //         logoDiv.className = 'ventum-sidebar-user-logo';
 
-            var logo = document.createElement("i");
-            logo.id = state.id + "-sidebar-user-logo-icon";
-            logo.className = 'icon-compass icon-2x ventum-sidebar-user-logo-i';
+    //         var logo = document.createElement("i");
+    //         logo.id = state.id + "-sidebar-user-logo-icon";
+    //         logo.className = 'icon-compass icon-2x ventum-sidebar-user-logo-i';
 
-            logoDiv.appendChild(logo);
-            userDiv.appendChild(logoDiv);
+    //         logoDiv.appendChild(logo);
+    //         userDiv.appendChild(logoDiv);
 
-            var nameDiv = document.createElement("div");
-            nameDiv.id = state.id + "-sidebar-user-name-div";
-            nameDiv.className = 'ventum-sidebar-user-name';
+    //         var nameDiv = document.createElement("div");
+    //         nameDiv.id = state.id + "-sidebar-user-name-div";
+    //         nameDiv.className = 'ventum-sidebar-user-name';
 
-            var nameText = document.createElement("button");
-            nameText.id = state.id + "-sidebar-user-name-text";
-            nameText.className = 'ventum-sidebar-user-name-text';
-            nameText.href = "";
-            nameText.innerHTML = state.user.name;
+    //         var nameText = document.createElement("button");
+    //         nameText.id = state.id + "-sidebar-user-name-text";
+    //         nameText.className = 'ventum-sidebar-user-name-text';
+    //         nameText.href = "";
+    //         nameText.innerHTML = state.user.name;
 
-            nameDiv.appendChild(nameText);
-            userDiv.appendChild(nameDiv);
+    //         nameDiv.appendChild(nameText);
+    //         userDiv.appendChild(nameDiv);
 
-            return userDiv;
-        };
+    //         return userDiv;
+    //     };
 
-        const createCat = (cat) => {
+    //     const createCat = (cat) => {
 
-            var catDiv = document.createElement("div");
-            catDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-div";
-            catDiv.className = 'ventum-sidebar-main-category';
+    //         var catDiv = document.createElement("div");
+    //         catDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-div";
+    //         catDiv.className = 'ventum-sidebar-main-category';
 
-            var logoDiv = document.createElement("div");
-            logoDiv.id = state.id + "-" + cat.name + +"-sidebar-main-category-logo-div";
-            logoDiv.className = 'ventum-sidebar-main-category-logo';
+    //         var logoDiv = document.createElement("div");
+    //         logoDiv.id = state.id + "-" + cat.name + +"-sidebar-main-category-logo-div";
+    //         logoDiv.className = 'ventum-sidebar-main-category-logo';
 
-            var logo = document.createElement("i");
-            logo.id = state.id + "-" + cat.name + "-sidebar-main-category-logo-icon";
-            logo.className = 'icon-compass icon-2x ventum-sidebar-main-category-logo-i';
+    //         var logo = document.createElement("i");
+    //         logo.id = state.id + "-" + cat.name + "-sidebar-main-category-logo-icon";
+    //         logo.className = 'icon-compass icon-2x ventum-sidebar-main-category-logo-i';
 
-            logoDiv.appendChild(logo);
-            catDiv.appendChild(logoDiv);
+    //         logoDiv.appendChild(logo);
+    //         catDiv.appendChild(logoDiv);
 
-            var nameDiv = document.createElement("div");
-            nameDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-name-div";
-            nameDiv.className = 'ventum-sidebar-main-category-name';
+    //         var nameDiv = document.createElement("div");
+    //         nameDiv.id = state.id + "-" + cat.name + "-sidebar-main-category-name-div";
+    //         nameDiv.className = 'ventum-sidebar-main-category-name';
 
-            var nameText = document.createElement("button");
-            nameText.id = state.id + "-" + cat.name + "-sidebar-main-category-name-text";
-            nameText.className = 'ventum-sidebar-main-category-name-text';
-            nameText.innerHTML = cat.name;
+    //         var nameText = document.createElement("button");
+    //         nameText.id = state.id + "-" + cat.name + "-sidebar-main-category-name-text";
+    //         nameText.className = 'ventum-sidebar-main-category-name-text';
+    //         nameText.innerHTML = cat.name;
 
-            nameDiv.appendChild(nameText);
-            catDiv.appendChild(nameDiv);
-            sidebar.appendChild(catDiv);
+    //         nameDiv.appendChild(nameText);
+    //         catDiv.appendChild(nameDiv);
+    //         sidebar.appendChild(catDiv);
 
-            if (cat.subCategories != undefined) {
+    //         if (cat.subCategories != undefined) {
                 
-                var topSpace = document.createElement("div");
-                topSpace.id = state.id + "-sidebar-main-subCategory-topSpace";
-                topSpace.className = 'ventum-sidebar-main-category';
-                topSpace.style.backgroundColor =  "rgba(31, 31, 31, 1)";
-                topSpace.style.height = "1%";
-                sidebar.appendChild(topSpace);
+    //             var topSpace = document.createElement("div");
+    //             topSpace.id = state.id + "-sidebar-main-subCategory-topSpace";
+    //             topSpace.className = 'ventum-sidebar-main-category';
+    //             topSpace.style.backgroundColor =  "rgba(31, 31, 31, 1)";
+    //             topSpace.style.height = "1%";
+    //             sidebar.appendChild(topSpace);
 
-                Object.values(cat.subCategories).forEach(subCat => {
-                    var subCatDiv = document.createElement("div");
-                    subCatDiv.id = state.id + "-" + subCat.name + "-sidebar-main-subCategory-div";
-                    subCatDiv.className = 'ventum-sidebar-main-category';
-                    subCatDiv.style.backgroundColor =  "rgba(31, 31, 31, 1)";
-                    subCatDiv.style.textAlignLast = "start";
-                    subCatDiv.style.height = "4%";
-                    subCatDiv.style.fontSize = ".85rem";
+    //             Object.values(cat.subCategories).forEach(subCat => {
+    //                 var subCatDiv = document.createElement("div");
+    //                 subCatDiv.id = state.id + "-" + subCat.name + "-sidebar-main-subCategory-div";
+    //                 subCatDiv.className = 'ventum-sidebar-main-category';
+    //                 subCatDiv.style.backgroundColor =  "rgba(31, 31, 31, 1)";
+    //                 subCatDiv.style.textAlignLast = "start";
+    //                 subCatDiv.style.height = "4%";
+    //                 subCatDiv.style.fontSize = ".85rem";
 
-                    var subCatNameDiv = document.createElement("div");
-                    subCatNameDiv.id = state.id + "-" + subCat.name + "-sidebar-main-subCategory-name-div";
-                    subCatNameDiv.className = 'ventum-sidebar-main-category-name';
-                    subCatNameDiv.style.marginLeft = "25%";
+    //                 var subCatNameDiv = document.createElement("div");
+    //                 subCatNameDiv.id = state.id + "-" + subCat.name + "-sidebar-main-subCategory-name-div";
+    //                 subCatNameDiv.className = 'ventum-sidebar-main-category-name';
+    //                 subCatNameDiv.style.marginLeft = "25%";
 
-                    var subCatNameText = document.createElement("button");
-                    subCatNameText.id = state.id + "-" + subCat.name + "-sidebar-main-subCategory-name-text";
-                    subCatNameText.className = 'ventum-sidebar-main-category-name-text';
-                    subCatNameText.innerHTML = subCat.name;
+    //                 var subCatNameText = document.createElement("button");
+    //                 subCatNameText.id = state.id + "-" + subCat.name + "-sidebar-main-subCategory-name-text";
+    //                 subCatNameText.className = 'ventum-sidebar-main-category-name-text';
+    //                 subCatNameText.innerHTML = subCat.name;
 
-                    subCatNameDiv.appendChild(subCatNameText);
-                    subCatDiv.appendChild(subCatNameDiv);
-                    sidebar.appendChild(subCatDiv);
+    //                 subCatNameDiv.appendChild(subCatNameText);
+    //                 subCatDiv.appendChild(subCatNameDiv);
+    //                 sidebar.appendChild(subCatDiv);
 
-                    subCatNameText.onclick = (e) => {
-                        e.preventDefault();
-                        var categories = state.categories;
-                        var catPath = Object.keys(categories).find(key => categories[key] === cat);
-                        var subCategories = state.categories[catPath].subCategories;
-                        var subPath = Object.keys(subCategories).find(key => subCategories[key] === subCat)
-                        catPath += `/${subPath}`;
-                        console.log("catPath: " + catPath);
-                        var cmds = {
-                            0: {
-                                type: "select-category",
-                                payload: {
-                                    catPath: catPath
-                                }
-                            }
-                        }
+    //                 subCatNameText.onclick = (e) => {
+    //                     e.preventDefault();
+    //                     var categories = state.categories;
+    //                     var catPath = Object.keys(categories).find(key => categories[key] === cat);
+    //                     var subCategories = state.categories[catPath].subCategories;
+    //                     var subPath = Object.keys(subCategories).find(key => subCategories[key] === subCat)
+    //                     catPath += `/${subPath}`;
+    //                     console.log("catPath: " + catPath);
+    //                     var cmds = {
+    //                         0: {
+    //                             type: "select-category",
+    //                             payload: {
+    //                                 catPath: catPath
+    //                             }
+    //                         }
+    //                     }
                     
-                        cmd(state, cmds, null, 0);
-                    };
-                });
+    //                     cmd(state, cmds, null, 0);
+    //                 };
+    //             });
 
-                var bottomSpace = document.createElement("div");
-                bottomSpace.id = state.id + "-sidebar-main-subCategory-bottomSpace";
-                bottomSpace.className = 'ventum-sidebar-main-category';
-                bottomSpace.style.backgroundColor =  "rgba(31, 31, 31, 1)";
-                bottomSpace.style.height = "1%";
-                sidebar.appendChild(bottomSpace);
+    //             var bottomSpace = document.createElement("div");
+    //             bottomSpace.id = state.id + "-sidebar-main-subCategory-bottomSpace";
+    //             bottomSpace.className = 'ventum-sidebar-main-category';
+    //             bottomSpace.style.backgroundColor =  "rgba(31, 31, 31, 1)";
+    //             bottomSpace.style.height = "1%";
+    //             sidebar.appendChild(bottomSpace);
 
-                nameText.onclick = (e) => {
-                    e.preventDefault();
-                    var catPath = Object.keys(state.categories).find(key => state.categories[key] === cat)
-                    console.log("expand: " + catPath);
-                    // var cmds = {
-                    //     0: {
-                    //         type: "select-category",
-                    //         payload: {
-                    //             catPath: catPath
-                    //         }
-                    //     }
-                    // }
+    //             nameText.onclick = (e) => {
+    //                 e.preventDefault();
+    //                 var catPath = Object.keys(state.categories).find(key => state.categories[key] === cat)
+    //                 console.log("expand: " + catPath);
+    //                 // var cmds = {
+    //                 //     0: {
+    //                 //         type: "select-category",
+    //                 //         payload: {
+    //                 //             catPath: catPath
+    //                 //         }
+    //                 //     }
+    //                 // }
                 
-                    // cmd(state, cmds, null, 0);
-                };
+    //                 // cmd(state, cmds, null, 0);
+    //             };
 
-                // //DROPDOWN BUTTON - CATEGORY
-                // var nameText = document.createElement("button");
-                // nameText.className = 'ventum-sidebar-main-category-name-text dropdown-toggle';
-                // nameText.type = "button";
-                // nameText.id = state.id + "-" + cat.name + "-sidebar-main-category-name-text";
-                // nameText.setAttribute('data-toggle', "dropdown");
-                // nameText.setAttribute('aria-haspopup', "true");
-                // nameText.setAttribute('aria-expanded', "false");
-                // nameText.innerHTML = cat.name;
-                // nameDiv.appendChild(nameText);
+    //             // //DROPDOWN BUTTON - CATEGORY
+    //             // var nameText = document.createElement("button");
+    //             // nameText.className = 'ventum-sidebar-main-category-name-text dropdown-toggle';
+    //             // nameText.type = "button";
+    //             // nameText.id = state.id + "-" + cat.name + "-sidebar-main-category-name-text";
+    //             // nameText.setAttribute('data-toggle', "dropdown");
+    //             // nameText.setAttribute('aria-haspopup', "true");
+    //             // nameText.setAttribute('aria-expanded', "false");
+    //             // nameText.innerHTML = cat.name;
+    //             // nameDiv.appendChild(nameText);
 
-                // //---------- MENU DEL DROPDOWN ----------------//
-                // var nameMenu = document.createElement("div");
-                // nameMenu.className = "dropdown-menu";
-                // nameMenu.setAttribute('aria-labelledby', state.id + "-" + cat.name + "-sidebar-main-category-name-text");
-                // nameDiv.appendChild(nameMenu);
-                // //----------ELEMENTOS DEL MENU------------------------//
-                // Object.entries(cat).forEach(option => {
-                //     console.log(option);
-                //     console.log(option[0]);
-                //     if (!Number.isNaN(parseInt(option[0]))) {
-                //         var subCat = option[1];
-                //         var nameLink = document.createElement("button");
-                //         nameLink.href = "#";
-                //         nameLink.className = "dropdown-item";
-                //         nameLink.innerHTML = subCat.name;
-                //         nameMenu.appendChild(nameLink);
-                //         nameLink.onclick = (e) => {
-                //             e.preventDefault();
-                //             console.log("Option selected: " + subCat.name);
-                //             selectCategory(subCat);
-                //         };
-                //     }else {
-                //         console.log("Error al renderizar elemento");
-                //     }
+    //             // //---------- MENU DEL DROPDOWN ----------------//
+    //             // var nameMenu = document.createElement("div");
+    //             // nameMenu.className = "dropdown-menu";
+    //             // nameMenu.setAttribute('aria-labelledby', state.id + "-" + cat.name + "-sidebar-main-category-name-text");
+    //             // nameDiv.appendChild(nameMenu);
+    //             // //----------ELEMENTOS DEL MENU------------------------//
+    //             // Object.entries(cat).forEach(option => {
+    //             //     console.log(option);
+    //             //     console.log(option[0]);
+    //             //     if (!Number.isNaN(parseInt(option[0]))) {
+    //             //         var subCat = option[1];
+    //             //         var nameLink = document.createElement("button");
+    //             //         nameLink.href = "#";
+    //             //         nameLink.className = "dropdown-item";
+    //             //         nameLink.innerHTML = subCat.name;
+    //             //         nameMenu.appendChild(nameLink);
+    //             //         nameLink.onclick = (e) => {
+    //             //             e.preventDefault();
+    //             //             console.log("Option selected: " + subCat.name);
+    //             //             selectCategory(subCat);
+    //             //         };
+    //             //     }else {
+    //             //         console.log("Error al renderizar elemento");
+    //             //     }
 
-                // });
+    //             // });
 
-                // nameText.onclick = (e) => {
-                //     e.preventDefault();
-                //     var cmds = {
-                //         0: {
-                //             type: "select-category",
-                //             payload: {
-                //                 catPath: "0"
-                //             }
-                //         }
-                //     }
+    //             // nameText.onclick = (e) => {
+    //             //     e.preventDefault();
+    //             //     var cmds = {
+    //             //         0: {
+    //             //             type: "select-category",
+    //             //             payload: {
+    //             //                 catPath: "0"
+    //             //             }
+    //             //         }
+    //             //     }
                 
-                //     cmd(state, cmds, null, 0);
-                //     console.log("Category selected: " + cat.name);
-                //     //selectCategory(cat);
-                // };
+    //             //     cmd(state, cmds, null, 0);
+    //             //     console.log("Category selected: " + cat.name);
+    //             //     //selectCategory(cat);
+    //             // };
 
                 
-            } else {
-                nameText.onclick = (e) => {
-                    e.preventDefault();
-                    var catPath = Object.keys(state.categories).find(key => state.categories[key] === cat)
-                    console.log("catPath: " + catPath);
-                    var cmds = {
-                        0: {
-                            type: "select-category",
-                            payload: {
-                                catPath: catPath
-                            }
-                        }
-                    }
+    //         } else {
+    //             nameText.onclick = (e) => {
+    //                 e.preventDefault();
+    //                 var catPath = Object.keys(state.categories).find(key => state.categories[key] === cat)
+    //                 console.log("catPath: " + catPath);
+    //                 var cmds = {
+    //                     0: {
+    //                         type: "select-category",
+    //                         payload: {
+    //                             catPath: catPath
+    //                         }
+    //                     }
+    //                 }
                 
-                    cmd(state, cmds, null, 0);
-                };
-            }
+    //                 cmd(state, cmds, null, 0);
+    //             };
+    //         }
 
-        };
+    //     };
 
-        try {
-            var sidebar = document.createElement("div");
-            sidebar.id = state.id + "-sidebar";
-            sidebar.className = 'ventum-sidebar overflow-auto';
+    //     try {
+    //         var sidebar = document.createElement("div");
+    //         sidebar.id = state.id + "-sidebar";
+    //         sidebar.className = 'ventum-sidebar overflow-auto';
 
-            sidebar.appendChild(companyInfo());
-            sidebar.appendChild(separatorLine());
-            sidebar.appendChild(userInfo());
-            sidebar.appendChild(separatorLine());
-            sidebar.appendChild(separatorSpace(3));
-            Object.keys(state.categories).forEach(key => {
-                var access = state.categories[key].access;
-                createCat(state.categories[key]);
-            });
+    //         sidebar.appendChild(companyInfo());
+    //         sidebar.appendChild(separatorLine());
+    //         sidebar.appendChild(userInfo());
+    //         sidebar.appendChild(separatorLine());
+    //         sidebar.appendChild(separatorSpace(3));
+    //         Object.keys(state.categories).forEach(key => {
+    //             var access = state.categories[key].access;
+    //             createCat(state.categories[key]);
+    //         });
 
-            return sidebar;
-        } catch (error) {
-            console.log("Error creating sidebar: " + error);
-            return null;
-        }
+    //         return sidebar;
+    //     } catch (error) {
+    //         console.log("Error creating sidebar: " + error);
+    //         return null;
+    //     }
 
-    };
+    // };
 
-    const createContent = () => {
+    // const createContent = () => {
 
-        const navBar = () => {
-            var navbarDiv = document.createElement("div");
-            navbarDiv.id = state.id + "-content-navbar-div";
-            navbarDiv.className = 'ventum-content-navbar-div row';
+    //     const navBar = () => {
+    //         var navbarDiv = document.createElement("div");
+    //         navbarDiv.id = state.id + "-content-navbar-div";
+    //         navbarDiv.className = 'ventum-content-navbar-div row';
 
-            var empty = document.createElement("div");
-            empty.id = state.id + "-content-navbar-div-exit";
-            empty.className = 'col-11';
-            navbarDiv.appendChild(empty);
+    //         var empty = document.createElement("div");
+    //         empty.id = state.id + "-content-navbar-div-exit";
+    //         empty.className = 'col-11';
+    //         navbarDiv.appendChild(empty);
 
-            var exit = document.createElement("div");
-            exit.id = state.id + "-content-navbar-div-exit";
-            exit.style.position = "relative";
-            exit.className = 'col-1 d-flex content-center';
-            navbarDiv.appendChild(exit);
-            var exitBtn = document.createElement("button");
-            exitBtn.id = state.id + "-content-navbar-div-exit";
-            exitBtn.className = "btn btn-danger btn-sm";
-            exitBtn.style.color = "white";
-            exitBtn.style.marginTop = "10%";
-            exitBtn.style.marginBottom = "10%";
-            exitBtn.innerHTML = "Log Out";
-            exitBtn.addEventListener('click', () => {
-                logOut(state.logOut);
-            });
-            exit.appendChild(exitBtn);
-            return navbarDiv;
-        };
+    //         var exit = document.createElement("div");
+    //         exit.id = state.id + "-content-navbar-div-exit";
+    //         exit.style.position = "relative";
+    //         exit.className = 'col-1 d-flex content-center';
+    //         navbarDiv.appendChild(exit);
+    //         var exitBtn = document.createElement("button");
+    //         exitBtn.id = state.id + "-content-navbar-div-exit";
+    //         exitBtn.className = "btn btn-danger btn-sm";
+    //         exitBtn.style.color = "white";
+    //         exitBtn.style.marginTop = "10%";
+    //         exitBtn.style.marginBottom = "10%";
+    //         exitBtn.innerHTML = "Log Out";
+    //         exitBtn.addEventListener('click', () => {
+    //             logOut(state.logOut);
+    //         });
+    //         exit.appendChild(exitBtn);
+    //         return navbarDiv;
+    //     };
 
-        const separatorLine = () => {
-            var line = document.createElement("div");
-            line.className = 'ventum-content-separator-line';
+    //     const separatorLine = () => {
+    //         var line = document.createElement("div");
+    //         line.className = 'ventum-content-separator-line';
 
-            return line;
-        };
+    //         return line;
+    //     };
 
-        try {
-            var content = document.createElement("div");
-            content.id = state.id + "-content";
-            content.className = 'ventum-content '; //overflow-auto
-            content.style.overflowY = "auto";
-            content.style.overflowX = "hidden";
-            content.appendChild(navBar());
-            content.appendChild(separatorLine());
-            var mainContent = document.createElement("div");
-            mainContent.id = state.id + "-content-main";
-            mainContent.className = 'ventum-main-content';
-            mainContent.style.height = '91%';
-            content.appendChild(mainContent);
-            return content;
-        } catch (error) {
-            console.log("Error creating sidebar: " + error);
-            return null;
-        }
+    //     try {
+    //         var content = document.createElement("div");
+    //         content.id = state.id + "-content";
+    //         content.className = 'ventum-content '; //overflow-auto
+    //         content.style.overflowY = "auto";
+    //         content.style.overflowX = "hidden";
+    //         content.appendChild(navBar());
+    //         content.appendChild(separatorLine());
+    //         var mainContent = document.createElement("div");
+    //         mainContent.id = state.id + "-content-main";
+    //         mainContent.className = 'ventum-main-content';
+    //         mainContent.style.height = '91%';
+    //         content.appendChild(mainContent);
+    //         return content;
+    //     } catch (error) {
+    //         console.log("Error creating sidebar: " + error);
+    //         return null;
+    //     }
 
-    };
+    // };
 
-    var nav = createNav();
-    var sidebar = createSidebar();
-    nav.appendChild(sidebar);
-    var content = createContent();
-    nav.appendChild(content);
-    document.body.appendChild(nav);
-    state.contentDiv = content.getElementsByClassName('ventum-main-content')[0];
+    // var nav = createNav();
+    // var sidebar = createSidebar();
+    // nav.appendChild(sidebar);
+    // var content = createContent();
+    // nav.appendChild(content);
+    // document.body.appendChild(nav);
+    // state.contentDiv = content.getElementsByClassName('ventum-main-content')[0];
 
-    var catPath = state.categories[0].name;
-    if (state.categories[0]["subCategories"] != null)
-        catPath += "/" + state.categories[0]["subCategories"].name;
+    // var catPath = state.categories[0].name;
+    // if (state.categories[0]["subCategories"] != null)
+    //     catPath += "/" + state.categories[0]["subCategories"].name;
     
-    var cmds = {
-        0: {
-            type: "select-category",
-            payload: {
-                catPath: "0"
-            }
-        }
-    }
+    // var cmds = {
+    //     0: {
+    //         type: "select-category",
+    //         payload: {
+    //             catPath: "0"
+    //         }
+    //     }
+    // }
 
-    cmd(state, cmds, null, 0);
+    // cmd(state, cmds, null, 0);
 
 };
 
