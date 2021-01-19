@@ -11,16 +11,6 @@ var dfltState = {
     name: "No Name",
     access: {},
     postUrl: null,
-    content: {
-        rows: {
-            //Rows
-            0: {
-                cols: {
-                    0: {}
-                }
-            }
-        }
-    }
 };
 
 var states = [];
@@ -109,7 +99,16 @@ const create = (newState, path) => {
             newState.path = path;
 
             if (newState.subCategories != null) {
-            
+                Object.entries(newState.childs).forEach(child => {
+                    switch (child[1].type) {
+                        case "category":
+                            newState.childs[child[0]] = wizard.create(child[1], path + "/" + child[0]);
+                            break;
+                        default:
+                            console.log("Error creating category subcategory, incorrect type: " + child[1].type);
+                            break;
+                    }
+                });
             } else {
                 Object.entries(newState.childs).forEach(child => {
                     switch (child[1].type) {
@@ -184,15 +183,16 @@ const show = (state, parent) => {
             Object.values(row.cols).forEach(col => {
                 var colDiv = createCol(rowDiv);
                 Object.values(col).forEach(element => {
-                    switch (element.type) {
+                    var content = state.childs[element];
+                    switch (content.type) {
                         case "wizard":
-                            wizard.show(element.payload, colDiv);
+                            wizard.show(content, colDiv);
                             break;
                         case "table":
-                            table.show(element.payload, colDiv);
+                            table.show(content, colDiv);
                             break;
                         case "form":
-                            form.show(element.payload, colDiv);
+                            form.show(content, colDiv);
                             break;
                         default:
                             break;

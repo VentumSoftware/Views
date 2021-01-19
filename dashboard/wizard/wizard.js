@@ -166,22 +166,24 @@ const show = (state, parent) => {
     console.log("Wizard show: " + JSON.stringify(state));
     
     try {
-        Object.values(state.pages[state.selectedPage.toString()].content.rows).forEach(row => {
+        Object.values(state.pages[state.selectedPage].rows).forEach(row => {
             var rowDiv = createRow(parent);
             Object.values(row.cols).forEach(col => {
                 var colDiv = createCol(rowDiv);
                 Object.values(col).forEach(element => {
+                    var element = state.childs[element];
                     switch (element.type) {
                         case "wizard":
-                            wizard.show(element.payload, colDiv);
+                            wizard.show(element, colDiv);
                             break;
                         case "table":
-                            table.show(element.payload, colDiv);
+                            table.show(element, colDiv);
                             break;
                         case "form":
-                            form.show(element.payload, colDiv);
+                            form.show(element, colDiv);
                             break;
                         default:
+                            console.log("Incorrect child type for wizard: " + element.type);
                             break;
                     }
                 });
