@@ -2,6 +2,7 @@ import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
 import card from 'https://ventumdashboard.s3.amazonaws.com/dashboard/card/card.js';
 import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.js';
 import dashboard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/dashboard.js';
+import dialogBox from 'https://ventumdashboard.s3.amazonaws.com/dashboard/dialogBox/dialogBox.js';
 
 const dfltState = {
     type: "modal"
@@ -230,6 +231,9 @@ const create = (newState, path) => {
                     case "form":
                         newState.childs[child[0]] = form.create(child[1], path + "/" + child[0]);
                         break;
+                    case "dialog-box":
+                        newState.childs[child[0]] = dialogBox.create(child[1], path + "/" + child[0]);
+                        break;
                     default:
                         console.log("Error creating modal child, incorrect type: " + child[1].type);
                         break;
@@ -239,7 +243,7 @@ const create = (newState, path) => {
             states.push(newState);
             return newState;
         } else {
-        console.log("Error modal table, incorrect type: " + newState.type);
+        console.log("Error modal, incorrect type: " + newState.type);
         return null;
         }
     } catch (error) {

@@ -16,6 +16,7 @@ const views = {
                     `;
                     script.innerHTML = innerHTML;
                     dom.window.document.body.appendChild(script);
+                    console.log("dom: " + dom.serialize());
                     res.send((dom.serialize()));
                 })
                 .catch(err => reject(err));
