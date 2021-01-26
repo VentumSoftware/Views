@@ -37,32 +37,32 @@ const formatDateToQuery = (date) => {
 function formatToDate(value) {
     let year =[], month=[], day=[], hours=[], minutes=[], seconds=[];
     let formattedDate;
-    try {        
+    try {
         for(let i = 0; i<value.length; i++){
             switch (true) {
                 case (i<4):
-                    year.push(value[i]);            
+                    year.push(value[i]);
                     break;
                 case (i<6):
-                    month.push(value[i]);            
+                    month.push(value[i]);
                     break;
                 case (i<8):
-                    day.push(value[i]);            
+                    day.push(value[i]);
                     break;
                 case (i<10):
-                    hours.push(value[i]);            
+                    hours.push(value[i]);
                     break;
                 case (i<12):
-                    minutes.push(value[i]);            
+                    minutes.push(value[i]);
                     break;
                 case (i<14):
-                    seconds.push(value[i]);            
-                    break;              
+                    seconds.push(value[i]);
+                    break;
                 default:
                     break;
                 }
             }
-        formattedDate = `${year.join('')}-${month.join('')}-${day.join('')} ${hours.join('')}:${minutes.join('')}:${seconds.join('')}`; 
+        formattedDate = `${year.join('')}-${month.join('')}-${day.join('')} ${hours.join('')}:${minutes.join('')}:${seconds.join('')}`;
         const fecha = new Date(formattedDate);
         if(Number.isNaN(fecha.getTime())){
             console.log('Invalid date: ' + fecha + ". Instead, value "+ value +" will be returned.");
@@ -72,19 +72,19 @@ function formatToDate(value) {
         }
     } catch (error) {
         console.log('Error al formatear fecha: '+ error);
-        return null;   
+        return null;
     }
-    
+
 }
 
 const formatValue = (value) => {
     const formattedValue = formatToDate(value); //formatToDate() devuelve un objeto Date en formato ISOString
-    if(typeof formattedValue == 'object' && formattedValue !== null){       
+    if(typeof formattedValue == 'object' && formattedValue !== null){
         try {
             let newTime = new Date();
             let globalTime = formattedValue.getTime();
             let localeTime = new Date(newTime.setTime(globalTime + (-3 * 60 * 60 * 1000))); //Setea el valor ISOString a Hora Argentina UTC-3
-            return (localeTime.toISOString().split('.')[0]);    
+            return (localeTime.toISOString().split('.')[0]);
         } catch (error) {
             console.log(error);
             return value;
@@ -278,7 +278,7 @@ const cmd = (state, cmds, res, pos) => {
                                                 op =  `{"${stageDef.op}":${value}}`;
                                             }else {
                                                 op = `{"${stageDef.op}":"${value}"}`;
-                                            }                                            
+                                            }
                                             break;
                                         case 'undefined':
                                             op = `"${value}"`;
@@ -378,7 +378,7 @@ const cmd = (state, cmds, res, pos) => {
                                                 op =  `{"${stageDef.op}":${value}}`;
                                             }else {
                                                 op = `{"${stageDef.op}":"${value}"}`;
-                                            }                                            
+                                            }
                                             break;
                                         case 'undefined':
                                             op = `"${value}"`;
@@ -769,7 +769,7 @@ const cmd = (state, cmds, res, pos) => {
                             th.innerHTML = cellValue;
                             tr.appendChild(th);
                         }
-                        
+
                     });
                 });
             } catch (error) {
