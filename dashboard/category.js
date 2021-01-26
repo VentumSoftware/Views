@@ -3,7 +3,7 @@ import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.
 import modal from 'https://ventumdashboard.s3.amazonaws.com/dashboard/modal/modal.js';
 import table from 'https://ventumdashboard.s3.amazonaws.com/dashboard/table/table.js';
 import wizard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/wizard/wizard.js';
-
+import maps from 'https://ventumdashboard.s3.amazonaws.com/dashboard/maps/maps.js';
 //--------------------------------- Category --------------------------------------------
 
 var dfltState = {
@@ -121,6 +121,9 @@ const create = (newState, path) => {
                         case "form":
                             newState.childs[child[0]] = form.create(child[1], path + "/" + child[0]);
                             break;
+                        case "map":
+                            newState.childs[child[0]] = maps.create(child[1], path + "/" + child[0]);
+                            break;
                         default:
                             console.log("Error creating category child, incorrect type: " + child[1].type);
                             break;
@@ -183,7 +186,9 @@ const show = (state, parent) => {
             Object.values(row.cols).forEach(col => {
                 var colDiv = createCol(rowDiv);
                 Object.values(col).forEach(element => {
+                    console.log("show child: " + element); 
                     var content = state.childs[element];
+                    console.log("content: " + JSON.stringify(content))
                     switch (content.type) {
                         case "wizard":
                             wizard.show(content, colDiv);
@@ -194,7 +199,11 @@ const show = (state, parent) => {
                         case "form":
                             form.show(content, colDiv);
                             break;
+                        case "map":
+                            maps.show(content, colDiv);
+                            break;
                         default:
+                            console.log("no se reconoce el tipo " + content.type)
                             break;
                     }
                 });
