@@ -279,6 +279,7 @@ const show = (state) => {
                     var catCol = document.createElement("div");
                     catCol.id = state.id + "-" + child.name + "-sidebar-main-category-col";
                     catCol.className = 'col';
+                    catCol.style.paddingTop = "5%";
                     parent.appendChild(catCol);
 
                     var catDiv = document.createElement("div");
