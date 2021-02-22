@@ -136,7 +136,19 @@ const cmd = (state, cmds, res, pos) => {
             options.body = JSON.stringify(payload.body || res)
         }
         return fetch(payload.url, options);
-    }
+    };
+
+    const showModal = (state, payload, res) => {
+        return new Promise((resolve, reject) => {
+            try {
+                modal.show(payload, null);
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
+        })
+        
+    };
 
     const updateEditRemoveBtns = (state, payload, res) => {
 
@@ -793,13 +805,13 @@ const cmd = (state, cmds, res, pos) => {
         });
     };
 
-    console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
 
     return new Promise((resolve, reject) => {
         //A: Si ya ejecute todos los comandos termino
         if (Object.keys(cmds).length == pos) {
             resolve();
         } else {
+            console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
             var c = null;
             var command = cmds[pos];
             switch (command.type) {
@@ -813,7 +825,7 @@ const cmd = (state, cmds, res, pos) => {
                     c = () => post(state, command.payload, res);
                     break;
                 case "modal":
-                    c = () => modal.create(command.payload, res);
+                    c = () => showModal(state, command.payload, res);
                     break;
                     //TODO: CONFIRMATION BOX debería ser un template de modal...
                 case "confirmationBox":

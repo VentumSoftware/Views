@@ -317,7 +317,7 @@ const show = (state, parent) => {
     };
     console.log("Form show: " + JSON.stringify(state));
     const cardParent = card.create({ title: state.title }, parent);
-    //drawForm();
+    drawForm();
 };
 
 export default { create, show, cmd };

@@ -4,6 +4,7 @@ import modal from 'https://ventumdashboard.s3.amazonaws.com/dashboard/modal/moda
 import table from 'https://ventumdashboard.s3.amazonaws.com/dashboard/table/table.js';
 import wizard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/wizard/wizard.js';
 import maps from 'https://ventumdashboard.s3.amazonaws.com/dashboard/maps/maps.js';
+
 //--------------------------------- Category --------------------------------------------
 
 var dfltState = {
@@ -55,13 +56,14 @@ const cmd = (state, cmds, res, pos) => {
         }
     };
 
-    console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
+    
 
     try {
         //A: Si ya ejecute todos los comandos termino
         if (Object.keys(cmds).length <= pos) {
             resolve(res);
         } else {
+            console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
             var c = null;
             var command = cmds[pos];
             switch (command.type) {
@@ -145,73 +147,77 @@ const create = (newState, path) => {
 
 const show = (state, parent) => {
 
-    const createRow = (parent) => {
-        const margins = 20;
-        var row = document.createElement("div");
-        row.style.position = 'relative';
-        row.style.left = margins + 'px';
-        row.style.right = margins + 'px';
-        row.style.top = margins + 'px';
-        row.style.bottom = margins + 'px';
-        row.style.marginBottom = "20px";
-        row.style.width = (parent.offsetWidth - margins) * 100 / parent.offsetWidth + '%';
-        row.style.height = 'auto';
-        row.className += " row";
-        // tableRoot.style.height = (parent.offsetHeight - margins * 2) * 100 / parent.offsetHeight + '%';
-        parent.appendChild(row);
-        return row;
-    };
-    
-    const createCol = (parent) => {
-        const margins = 0;
-        var col = document.createElement("div");
-        col.style.position = 'relative';
-        col.style.left = margins + 'px';
-        col.style.right = margins + 'px';
-        col.style.top = margins + 'px';
-        col.style.bottom = margins + 'px';
-        col.style.width = (parent.offsetWidth - margins * 2) * 100 / parent.offsetWidth + '%';
-        col.style.height = 'auto';
-        col.className += " col";
-        // tableRoot.style.height = (parent.offsetHeight - margins * 2) * 100 / parent.offsetHeight + '%';
-        parent.appendChild(col);
-        return col;
-    };
+    const showContent = () => {
 
+        const createRow = (parent) => {
+            const margins = 20;
+            var row = document.createElement("div");
+            row.style.position = 'relative';
+            row.style.left = margins + 'px';
+            row.style.right = margins + 'px';
+            row.style.top = margins + 'px';
+            row.style.bottom = margins + 'px';
+            row.style.marginBottom = "20px";
+            row.style.width = (parent.offsetWidth - margins) * 100 / parent.offsetWidth + '%';
+            row.style.height = 'auto';
+            row.className += " row";
+            // tableRoot.style.height = (parent.offsetHeight - margins * 2) * 100 / parent.offsetHeight + '%';
+            parent.appendChild(row);
+            return row;
+        };
+        
+        const createCol = (parent) => {
+            const margins = 0;
+            var col = document.createElement("div");
+            col.style.position = 'relative';
+            col.style.left = margins + 'px';
+            col.style.right = margins + 'px';
+            col.style.top = margins + 'px';
+            col.style.bottom = margins + 'px';
+            col.style.width = (parent.offsetWidth - margins * 2) * 100 / parent.offsetWidth + '%';
+            col.style.height = 'auto';
+            col.className += " col";
+            // tableRoot.style.height = (parent.offsetHeight - margins * 2) * 100 / parent.offsetHeight + '%';
+            parent.appendChild(col);
+            return col;
+        };
 
-    console.log("Category show: " + JSON.stringify(state));
-    try {
-        Object.values(state.content.rows).forEach(row => {
-            var rowDiv = createRow(parent);
-            Object.values(row.cols).forEach(col => {
-                var colDiv = createCol(rowDiv);
-                Object.values(col).forEach(element => {
-                    console.log("show child: " + element); 
-                    var content = state.childs[element];
-                    console.log("content: " + JSON.stringify(content))
-                    switch (content.type) {
-                        case "wizard":
-                            wizard.show(content, colDiv);
-                            break;
-                        case "table":
-                            table.show(content, colDiv);
-                            break;
-                        case "form":
-                            form.show(content, colDiv);
-                            break;
-                        case "map":
-                            maps.show(content, colDiv);
-                            break;
-                        default:
-                            console.log("no se reconoce el tipo " + content.type)
-                            break;
-                    }
+        try {
+            Object.values(state.content.rows).forEach(row => {
+                var rowDiv = createRow(parent);
+                Object.values(row.cols).forEach(col => {
+                    var colDiv = createCol(rowDiv);
+                    Object.values(col).forEach(element => {
+                        console.log("show child: " + element); 
+                        var content = state.childs[element];
+                        console.log("content: " + JSON.stringify(content))
+                        switch (content.type) {
+                            case "wizard":
+                                wizard.show(content, colDiv);
+                                break;
+                            case "table":
+                                table.show(content, colDiv);
+                                break;
+                            case "form":
+                                form.show(content, colDiv);
+                                break;
+                            case "map":
+                                maps.show(content, colDiv);
+                                break;
+                            default:
+                                console.log("no se reconoce el tipo " + content.type)
+                                break;
+                        }
+                    });
                 });
             });
-        });
-    } catch (error) {
-        console.log("Error showing category! " + error);
-    }
+        } catch (error) {
+            console.log("Error showing category! " + error);
+        }
+    };
+
+    console.log("Category show: " + JSON.stringify(state));
+    showContent();
 };
 
 export default { create, show, cmd };

@@ -89,13 +89,14 @@ const cmd = (state, cmds, res, pos) => {
         });
     };
 
-    console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
+    
 
     return new Promise((resolve, reject) => {
         //A: Si ya ejecute todos los comandos termino
         if (Object.keys(cmds).length <= pos) {
             resolve(res);
         } else {
+            console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
             var c = null;
             var command = cmds[pos];
             switch (command.type) {

@@ -5,27 +5,37 @@ import dashboard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/dashbo
 import dialogBox from 'https://ventumdashboard.s3.amazonaws.com/dashboard/dialogBox/dialogBox.js';
 
 const dfltState = {
-    type: "modal"
+    type: "modal",
+    width: "auto",
+    title: "NO TITLE",
+    text: "",
+    footerBtns: {
+        0: {
+            type: "secondary",
+            label: "Cancelar",
+            onClick: {
+                cmds: {
+                    0: {
+                        type: "close-modal",
+                        payload: {}
+                    }
+                }
+            }
+        },
+        1: {
+            type: "primary",
+            label: "Aceptar",
+            onClick: {
+                cmds: {}
+            }
+        }
+    },
+    childs: {
+        
+    }
 };
-
-//Estados de los elementos del modal: forms, tables, etc...
-var subStates = [];
-
-//Modals prearmados como el "confirmationBox"
-var templates = {
-    confirmationBox: {}
-};
-
-var state = null;
-var root = null;
-var modalDialog = null;
-var modalContent = null;
-var spinnerDiv = null;
 
 //-----------------------------------------------------------------------------------------------
-
-var returnCorrect = (state, res) => {};
-var returnError = (state, err) => {};
 
 const cmd = (state, cmds, res, pos) => {
 
@@ -107,13 +117,12 @@ const cmd = (state, cmds, res, pos) => {
         })
     };
 
-    console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
-
     return new Promise((resolve, reject) => {
         //A: Si ya ejecute todos los comandos termino
         if (Object.keys(cmds).length <= pos) {
             resolve(res);
         } else {
+            console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
             var c = null;
             var command = cmds[pos];
             switch (command.type) {
@@ -157,62 +166,6 @@ const cmd = (state, cmds, res, pos) => {
     })
 };
 
-const show = (invokerState, data) => {
-
-    const spinner = (payload, parent) => {
-        //<div class="d-flex justify-content-center"></div>
-
-        var justifyDiv = document.createElement("div");
-        justifyDiv.className = "d-flex justify-content-center";
-        parent.appendChild(justifyDiv);
-
-        var spinnerBorder = document.createElement("div");
-        spinnerBorder.className = "spinner-border text-light";
-        spinnerBorder.role = "status";
-        justifyDiv.appendChild(spinnerBorder);
-
-        var span = document.createElement("div");
-        span.className = "sr-only";
-        span.innerHTML = "Loading...";
-        spinnerBorder.appendChild(span);
-    }
-
-    return new Promise((resolve, reject) => {
-        const drawContent = () => {
-            modalContent.innerHTML = null;
-            subStates = [];
-            if (data.form) {
-                var formState = form.create(data.form, modalContent);
-                subStates.push(formState);
-            }
-
-            if (data.spinner) {
-                spinner(data.spinner, modalContent);
-            }
-        };
-
-        if (state == null) {
-            create();
-        }
-
-        drawContent();
-        root.modal('show');
-        root.on('hidden.bs.modal', function(e) {
-            e.preventDefault();
-            console.log("modalCerrado");
-            $(e.currentTarget).unbind(); // or $(this)  
-            //sacar state del form 
-            resolve();
-        });
-    });
-};
-
-const close = () => {
-    //TODO: remover subStates acá;
-    console.log("Modal Close!");
-    root.modal('hide');
-}
-
 const create = (newState, path) => {
 
     try{
@@ -252,46 +205,6 @@ const create = (newState, path) => {
     }
 
 
-    // const createModal = () => {
-    //     var modalRoot = document.createElement("div");
-    //     modalRoot.id = "modal";
-    //     modalRoot.className = "modal fade bd-example-modal-lg";
-    //     modalRoot.tabIndex = "-1";
-    //     modalRoot.role = "dialog";
-    //     modalRoot["aria-labelledby"] = "myLargeModalLabel";
-    //     modalRoot["aria-hidden"] = "true";
-    //     document.body.appendChild(modalRoot);
-
-    //     modalDialog = document.createElement("div");
-    //     modalDialog.className = "modal-dialog modal-lg";
-    //     modalRoot.appendChild(modalDialog);
-
-    //     modalContent = document.createElement("div");
-    //     modalContent.className = "modal-content";
-    //     modalContent.style.display = "contents";
-    //     modalDialog.appendChild(modalContent);
-
-    //     return modalRoot;
-    // };
-
-    // const drawContent = () => {
-    //     modalContent.innerHTML = null;
-    //     subStates = [];
-    //     //TODO: Hacer esto bien (esta harcodeado ahora el contenido porque no tengo columnas y filas todavia)
-    //     var tmp = data.content.rows[0].cols[0][0];
-    //     if (tmp) {
-    //         var formState = form.create(tmp.payload, modalContent, state);
-    //         subStates.push(formState);
-    //     }
-
-    //     if (data.spinner) {
-    //         spinner(data.spinner, modalContent);
-    //     }
-
-
-
-    // };
-
     // returnError("new modal created!"); // Si ya había un modal abierto le devuelvo un error al que lo creó, ya que lo pisé!
 
     // return new Promise((resolve, reject) => {
@@ -317,5 +230,125 @@ const create = (newState, path) => {
     // });
 
 };
+
+const show = (state, parent) => {
+
+    // const spinner = (payload, parent) => {
+    //     //<div class="d-flex justify-content-center"></div>
+
+    //     var justifyDiv = document.createElement("div");
+    //     justifyDiv.className = "d-flex justify-content-center";
+    //     parent.appendChild(justifyDiv);
+
+    //     var spinnerBorder = document.createElement("div");
+    //     spinnerBorder.className = "spinner-border text-light";
+    //     spinnerBorder.role = "status";
+    //     justifyDiv.appendChild(spinnerBorder);
+
+    //     var span = document.createElement("div");
+    //     span.className = "sr-only";
+    //     span.innerHTML = "Loading...";
+    //     spinnerBorder.appendChild(span);
+    // }
+
+    const showModal = () => {
+
+        document.getElementById("modal-header").childNodes[0].innerHTML = state.title;
+        
+
+        if (state.width == "auto") {
+            
+        } else {
+            document.getElementById("modal-dialog").width = state.width;
+        }
+
+
+        if (state.content != null) {
+            const showContent = () => {
+
+                const createRow = (parent) => {
+                    const margins = 20;
+                    var row = document.createElement("div");
+                    row.style.position = 'relative';
+                    row.style.left = margins + 'px';
+                    row.style.right = margins + 'px';
+                    row.style.top = margins + 'px';
+                    row.style.bottom = margins + 'px';
+                    row.style.marginBottom = "20px";
+                    row.style.width = (parent.offsetWidth - margins) * 100 / parent.offsetWidth + '%';
+                    row.style.height = 'auto';
+                    row.className += " row";
+                    // tableRoot.style.height = (parent.offsetHeight - margins * 2) * 100 / parent.offsetHeight + '%';
+                    parent.appendChild(row);
+                    return row;
+                };
+                
+                const createCol = (parent) => {
+                    const margins = 0;
+                    var col = document.createElement("div");
+                    col.style.position = 'relative';
+                    col.style.left = margins + 'px';
+                    col.style.right = margins + 'px';
+                    col.style.top = margins + 'px';
+                    col.style.bottom = margins + 'px';
+                    col.style.width = (parent.offsetWidth - margins * 2) * 100 / parent.offsetWidth + '%';
+                    col.style.height = 'auto';
+                    col.className += " col";
+                    // tableRoot.style.height = (parent.offsetHeight - margins * 2) * 100 / parent.offsetHeight + '%';
+                    parent.appendChild(col);
+                    return col;
+                };
+        
+                try {
+                    const body = document.getElementById('modal-body');
+
+                    Object.values(state.content.rows).forEach(row => {
+                        var rowDiv = createRow(body);
+                        Object.values(row.cols).forEach(col => {
+                            var colDiv = createCol(rowDiv);
+                            Object.values(col).forEach(element => {
+                                console.log("show child: " + element); 
+                                var content = state.childs[element];
+                                console.log("content: " + JSON.stringify(content))
+                                switch (content.type) {
+                                    case "wizard":
+                                        wizard.show(content, colDiv);
+                                        break;
+                                    case "table":
+                                        table.show(content, colDiv);
+                                        break;
+                                    case "form":
+                                        form.show(content, colDiv);
+                                        break;
+                                    case "map":
+                                        maps.show(content, colDiv);
+                                        break;
+                                    default:
+                                        console.log("no se reconoce el tipo " + content.type)
+                                        break;
+                                }
+                            });
+                        });
+                    });
+                } catch (error) {
+                    console.log("Error showing modal! " + error);
+                }
+            };
+
+            showContent();
+        } else {
+            document.getElementById("modal-body").innerHTML = state.text;
+        }
+
+
+        $('#modal-root').modal('show');
+    };  
+
+    console.log("Modal show: " + JSON.stringify(state));
+    
+    showModal();
+};
+
+
 
 export default { create, show, cmd };

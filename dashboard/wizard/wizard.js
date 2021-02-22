@@ -9,7 +9,8 @@ var dfltState = {
     id: "noId",
     name: "No Name",
     pages: {},
-    selectedPage: 0
+    selectedPage: 0,
+    parent : null
 };
 
 var states = [];
@@ -18,58 +19,33 @@ var states = [];
 
 const cmd = (state, cmds, res, pos) => {
 
-    const removeState = (state, payload, res) => {};
 
-    const resetStates = (state, payload, res) => {
-        if (states.length > 0) {
-            states.forEach((el) => {
-                el = null;
-            })
-        }
-        states = [];
+    const goTo = (state, payload, res) => {
+        
+        return new Promise((resolve, reject) => {
+            try {
+                state.selectedPage = payload.selectedPage;
+                show(state, null);
+                resolve("ok");
+            } catch (error) {
+                reject(error);
+            }
+            
+        })
     };
-
-    const parentCmd = (state, payload, res) => {
-        switch (state.parentState.type) {
-            case "modal":
-                payload.cmds = payload.cmds || res;
-                return modal.cmd(state.parentState, payload.cmds, res, 0);
-            default:
-                return new Promise((resolve, reject) => {
-                    reject("Error with type: " + key);
-                })
-        }
-    };
-
-    //Vuelve a cargar la vista seleccionada
-    const reloadCat = (state, payload, res) => {
-        selectCategory(state.selectedCat);
-    };
-
-    //Hace un post al endpoint indicado en el payload con el estado de la categoria como body
-    const post = (invokerState, payload, res) => {
-        var body = {
-            tablesState: table.states,
-            formsStates: form.states,
-        }
-    };
-
-    console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
 
     try {
         //A: Si ya ejecute todos los comandos termino
         if (Object.keys(cmds).length <= pos) {
             resolve(res);
         } else {
+            console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
             var c = null;
             var command = cmds[pos];
             switch (command.type) {
-                case "reload":
-                    c = () => reloadCat(state, command.payload);
-                    break;
-                case "post":
-                    c = () => post(state, command.payload);
-                    break;
+                case "go-to":
+                    c = () => goTo(state, command.payload, res);
+                    break
                 default:
                     console.log(`Cmd not found: ${command.type}`);
                     c = () => new Promise((res, rej) => { rej(`Cmd not found: ${command.type}`) });
@@ -166,6 +142,13 @@ const show = (state, parent) => {
     console.log("Wizard show: " + JSON.stringify(state));
     
     try {
+        if (parent == null) {
+            parent = state.parent;
+        } else {
+            state.parent = parent;
+        }
+        
+        parent.innerHTML = null;
         Object.values(state.pages[state.selectedPage].rows).forEach(row => {
             var rowDiv = createRow(parent);
             Object.values(row.cols).forEach(col => {
