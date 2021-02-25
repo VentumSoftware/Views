@@ -6,8 +6,11 @@ import dashboard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/dashbo
 
 const dfltState = {
     id: "noID",
-    title: "Mapa",
-    childs:{}
+    title: "Mapas",
+    childs:{},
+    headers: {},
+    filters: {},
+    headerBtns: {}
 };
 
 var states = [];
@@ -160,15 +163,190 @@ const create = (newState, path) => {
 };
 
 const show = (state, parent) => {
+    const createFilters = () => {
+        try {
+            var div = document.createElement("div");
+            div.id = state.id + "-map-filters";
+            div.className = "ventum-table-filters ";
+            cardParent.body.appendChild(div);
+
+            state.filterForm = document.createElement("form");
+            state.filterForm.id = state.id + "-map-filters-form";
+            state.filterForm.className = "ventum-table-filters-form";
+            div.appendChild(state.filterForm);
+
+            var formRow = document.createElement("div");
+            formRow.id = state.id + "-map-filters-form-row";
+            formRow.className = "form-row ventum-table-filters-form-row";
+            state.filterForm.appendChild(formRow);
+
+            //TODO modificar para que se puedan poner mas de 5 filtros
+            for (let index = 0; index < 5; index++) {
+                var col = document.createElement("div");
+                col.id = state.id + "-map-filters-form-col-" + index.toString();
+                col.className = "col-2";
+                formRow.appendChild(col);
+                if (Object.keys(state.filters).length > index) {
+                    var label = document.createElement("label");
+                    label.id = state.id + "-map-filters-form-col-" + index.toString() + "-label";
+                    label.innerHTML = state.filters[index].label;
+                    col.appendChild(label);
+
+                    var inputs = document.createElement("div");
+                    inputs.className = "form-row";
+                    col.appendChild(inputs);
+
+                    var inputsArray = Object.values(state.filters[index].inputs);
+                    inputsArray.forEach(input => {
+                        var inputCol = document.createElement("div");
+                        switch (inputsArray.length) {
+                            case 1:
+                                inputCol.className = "col-12";
+                                break;
+                            case 2:
+                                inputCol.className = "col-6";
+                                break;
+                            case 3:
+                                inputCol.className = "col-4";
+                                break;
+                            case 4:
+                                inputCol.className = "col-3";
+                                break;
+                            default:
+                                inputCol.className = "col-12";
+                                break;
+                        }
+                        inputs.appendChild(inputCol);
+                        if (input.type == "dropdown") {
+
+                            var dropdownView = document.createElement("div");
+                            dropdownView.className = "dropdown";
+                            inputCol.appendChild(dropdownView);
+
+                            var dropdownBtn = document.createElement("button");
+                            dropdownBtn.className = "btn btn-secondary dropdown-toggle";
+                            dropdownBtn.type = "button";
+                            dropdownBtn.id = input.name;
+                            dropdownBtn.setAttribute('data-toggle',"dropdown");
+                            dropdownBtn.setAttribute('aria-haspopup',"true");
+                            dropdownBtn.setAttribute('aria-expanded',"false");
+                            dropdownBtn.innerHTML = input.placeholder;
+                            dropdownView.appendChild(dropdownBtn);
+
+                            var dropdownMenu = document.createElement("div");
+                            dropdownMenu.className = "dropdown-menu";
+                            dropdownMenu.setAttribute('aria-labelledby',input.name);
+                            dropdownView.appendChild(dropdownMenu);
+
+                            Object.values(input.options).forEach(option => {
+                                var dropdownLink = document.createElement("button");
+                                dropdownLink.href = "#";
+                                dropdownLink.innerHTML = option;
+                                dropdownMenu.appendChild(dropdownLink);
+                            });
+
+
+                        } else {
+                            var field = document.createElement("input");
+                            field.ishoveredin = "0";
+                            field.isfocusedin = "0";
+                            field.name = input.name;
+                            field.type = input.type;
+                            field.className = "form-control";
+                            field.placeholder = input.placeholder;
+                            field.value = input.value;
+                            field.required = input.required;
+                            inputCol.appendChild(field);
+                        }
+                    });
+                }
+
+            }
+
+            //Dibujo columna con los botones del header
+            var col = document.createElement("div");
+            col.id = state.id + "-table-filters-form-col-" + "6";
+            col.className = "col-2";
+            col.style.textAlign = "center";
+            formRow.appendChild(col);
+            var label = document.createElement("label");
+            label.id = state.id + "-table-filters-form-col-" + "submit" + "-label";
+            label.innerHTML = "  &nbsp";
+            label.style.position = "relative";
+            label.style.width = '100%';
+            col.appendChild(label);
+
+            var inputs = document.createElement("div");
+            inputs.className = "form-row";
+            col.appendChild(inputs);
+
+            //Dibujo cada boton del header
+            var btns = Object.entries(state.headerBtns);
+            var btnsCount = 0;
+            btns.forEach(([key, value]) => {
+                if (value)
+                    btnsCount++;
+            });
+            console.log("header buttons: " + btnsCount.toString());
+            state.targetedBtns = [];
+            btns.forEach(([key, value]) => {
+                if (value.enabled) {
+                    if (btnsCount < 3)
+                        value.showLabel = true;
+                    else
+                        value.showLabel = false;
+
+                    var btnDiv = document.createElement("div");
+                    switch (btnsCount) {
+                        case 1:
+                            btnDiv.className += "col-12";
+                            break;
+                        case 2:
+                            btnDiv.className += "col-6";
+                            break;
+                        case 3:
+                            btnDiv.className += "col-4";
+                            break;
+                        case 4:
+                            btnDiv.className += "col-3";
+                            break;
+                        default:
+                            btnDiv.className += "col-12";
+                            break;
+                    }
+                    inputs.appendChild(btnDiv);
+                    var btn = buttons.createBtn(value);
+                    btnDiv.appendChild(btn);
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        cmd(state, value.onClick.cmds, null, 0);
+                    });
+
+                    if (value.targeted) {
+                        state.targetedBtns.push(btn);
+                        btn.disabled = true;
+                    }
+                }
+            });
+
+            return div;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+
+    };
     const drawMap = () => {
         try {
             var div = document.createElement("div");
+             div.class = "";
             div.id =  state.id + "-map";
             div.style.width="100%";
             var height=screen.height*0.6
             div.style.height=height.toString()+"px";
             div.style.position="relative";
             cardParent.body.appendChild(div);
+
             var origin= JSON.parse(state.origin)
             const map =L.map(div.id).setView(origin,state.zoom);
             L.tileLayer(state.layer).addTo(map);
@@ -179,11 +357,17 @@ const show = (state, parent) => {
             var coords=[e.latlng.lat, e.latlng.lng];
             var marker=L.marker(coords);
             marker.bindPopup('Ubicacion actual');
+            var circle = L.circle(coords, {
+            color: '#8fbbec',
+            fillColor: '#b7c0ca',
+            fillOpacity: 0.1,
+            radius: 3000
+            }).addTo(map);
+
             map.addLayer(marker);
             });
 
-            const marker=L.marker(origin);
-            map.addLayer(marker);
+
 
 
             map.on('dblclick', e =>{
@@ -195,12 +379,6 @@ const show = (state, parent) => {
             })
             map.doubleClickZoom.disable();
 
-            var circle = L.circle(origin, {
-            color: '#8fbbec',
-            fillColor: '#b7c0ca',
-            fillOpacity: 0.1,
-            radius: 3000
-            }).addTo(map);
 
 
             document.getElementById('select-location').addEventListener('change',function(e){
@@ -239,10 +417,27 @@ const show = (state, parent) => {
           console.log(error);
       }
   };
+   const drawCard= () => {
+      try {
+
+           var div = document.createElement("div");
+             div.class = "";
+            div.id =  state.id + "-map";
+            div.style.width="100%";
+            var height=screen.height*0.6
+            div.style.height=height.toString()+"px";
+            div.style.position="relative";
+            div.appendChild(drawMap());
+
+
+      } catch (error) {
+          console.log(error);
+      }
+  };
     console.log("Map show: " + JSON.stringify(state));
     const cardParent = card.create({ title: state.title }, parent);
-     drawSelect();
-    drawMap();
+    createFilters();
+    drawCard();
 
 };
 
