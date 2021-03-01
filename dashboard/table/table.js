@@ -746,8 +746,9 @@ const cmd = (state, cmds, res, pos) => {
 
                 console.log("drawRows data: " + JSON.stringify(data));
                 console.log("drawRows headers: " + JSON.stringify(state.headers));
-                state.rowsRoot.innerHTML = "";
 
+                //Borro lo anterior
+                state.rowsRoot.innerHTML = "";
                 state.rowsCheckboxs = [];
 
                 data.forEach(row => {
@@ -777,7 +778,7 @@ const cmd = (state, cmds, res, pos) => {
                     Object.keys(state.headers).forEach(headerKey => {
                         var th = document.createElement("th");
                         var cellValue = getCellValue(row, state.headers[headerKey].name.split('.'));
-                        if (!Number.isNaN(cellValue) && cellValue.length == 14) {
+                        if (!Number.isNaN(cellValue)) {
                             cellValue = formatValue(cellValue);
                             cellValue = cellValue || state.emptyCellChar;
                             th.innerHTML = cellValue;
