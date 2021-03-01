@@ -328,7 +328,7 @@ const cmd = (state, cmds, res, pos) => {
                 return new Promise((resolve, reject) => {
                     const options = `&options={"collation":{"locale":"en_US","numericOrdering":"true"},"allowDiskUse":"true"}`;
 
-                    var response = fetch(
+                    fetch(
                         path + "?pipeline=" + pipeline + options,
                         {
                             referrerPolicy: "origin-when-cross-origin",
@@ -338,18 +338,15 @@ const cmd = (state, cmds, res, pos) => {
                                 'Content-Type': 'application/json;charset=utf-8',
                             }
                         }
-                    ).catch(e => {
+                    ).then((response) => {
+                        return response.json(); 
+                    }).then((rows) => {
+                        resolve(rows);
+                    }).catch(e => {
                         console.log(e);
                         reject("Failed to get Rows!");
                     });
 
-                    var rows = response.json().catch(e => {
-                        console.log(e);
-                        reject("Failed to parse response!");
-                    });
-
-                    if (rows) resolve(rows);
-                    else reject("Rows is null!");
                 });
             }
 
