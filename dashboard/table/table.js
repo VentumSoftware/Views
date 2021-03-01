@@ -327,15 +327,18 @@ const cmd = (state, cmds, res, pos) => {
 
                 return new Promise((resolve, reject) => {
                     const options = `{"collation":{"locale":"en_US","numericOrdering":"true"},"allowDiskUse":"true"}`;
-                    var rows = await fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
+                    var response = await fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
                         referrerPolicy: "origin-when-cross-origin",
                         credentials: 'include',
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json;charset=utf-8',
                         }
+                    }).catch(e => {
+                        console.log(e);
+                        reject("Failed to get Rows!");
                     });
-                    rows = rows.json().catch(e => {
+                    var rows = await response.json().catch(e => {
                         console.log(e);
                         reject("Failed to get Rows!");
                     });
