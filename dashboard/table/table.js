@@ -35,43 +35,43 @@ const formatDateToQuery = (date) => {
 
 
 function formatToDate(value) {
-    let year =[], month=[], day=[], hours=[], minutes=[], seconds=[];
+    let year = [], month = [], day = [], hours = [], minutes = [], seconds = [];
     let formattedDate;
     try {
-        for(let i = 0; i<value.length; i++){
+        for (let i = 0; i < value.length; i++) {
             switch (true) {
-                case (i<4):
+                case (i < 4):
                     year.push(value[i]);
                     break;
-                case (i<6):
+                case (i < 6):
                     month.push(value[i]);
                     break;
-                case (i<8):
+                case (i < 8):
                     day.push(value[i]);
                     break;
-                case (i<10):
+                case (i < 10):
                     hours.push(value[i]);
                     break;
-                case (i<12):
+                case (i < 12):
                     minutes.push(value[i]);
                     break;
-                case (i<14):
+                case (i < 14):
                     seconds.push(value[i]);
                     break;
                 default:
                     break;
-                }
             }
+        }
         formattedDate = `${year.join('')}-${month.join('')}-${day.join('')} ${hours.join('')}:${minutes.join('')}:${seconds.join('')}`;
         const fecha = new Date(formattedDate);
-        if(Number.isNaN(fecha.getTime())){
-            console.log('Invalid date: ' + fecha + ". Instead, value "+ value +" will be returned.");
-            return(value);
-        }else{
-            return(fecha);
+        if (Number.isNaN(fecha.getTime())) {
+            console.log('Invalid date: ' + fecha + ". Instead, value " + value + " will be returned.");
+            return (value);
+        } else {
+            return (fecha);
         }
     } catch (error) {
-        console.log('Error al formatear fecha: '+ error);
+        console.log('Error al formatear fecha: ' + error);
         return null;
     }
 
@@ -79,7 +79,7 @@ function formatToDate(value) {
 
 const formatValue = (value) => {
     const formattedValue = formatToDate(value); //formatToDate() devuelve un objeto Date en formato ISOString
-    if(typeof formattedValue == 'object' && formattedValue !== null){
+    if (typeof formattedValue == 'object' && formattedValue !== null) {
         try {
             let newTime = new Date();
             let globalTime = formattedValue.getTime();
@@ -89,8 +89,8 @@ const formatValue = (value) => {
             console.log(error);
             return value;
         }
-    }else {
-        console.log("ERROR: "+value);
+    } else {
+        console.log("ERROR: " + value);
     }
 }
 
@@ -147,7 +147,7 @@ const cmd = (state, cmds, res, pos) => {
                 reject(error);
             }
         })
-        
+
     };
 
     const updateEditRemoveBtns = (state, payload, res) => {
@@ -284,11 +284,11 @@ const cmd = (state, cmds, res, pos) => {
                                             break;
                                     }
                                     var op = "";
-                                    switch (typeof(stageDef.op)) {
+                                    switch (typeof (stageDef.op)) {
                                         case 'string':
-                                            if(stageDef.transform == "number"){
-                                                op =  `{"${stageDef.op}":${value}}`;
-                                            }else {
+                                            if (stageDef.transform == "number") {
+                                                op = `{"${stageDef.op}":${value}}`;
+                                            } else {
                                                 op = `{"${stageDef.op}":"${value}"}`;
                                             }
                                             break;
@@ -317,7 +317,7 @@ const cmd = (state, cmds, res, pos) => {
                     Object.keys(state.finalStages).forEach((key) => {
                         result += state.finalStages[key] + ",";
                     })
-                    result += `{"$skip": ${state.selectedPage*10} },{"$limit": 10 }]`; //Ordenamiento descendente por Hora (de nuevo a viejo) -- Hasta 10 resultados.
+                    result += `{"$skip": ${state.selectedPage * 10} },{"$limit": 10 }]`; //Ordenamiento descendente por Hora (de nuevo a viejo) -- Hasta 10 resultados.
                     console.log(result);
                     return result;
                 };
@@ -326,22 +326,28 @@ const cmd = (state, cmds, res, pos) => {
                 var pipeline = buildPipeline(filters);
 
                 return new Promise((resolve, reject) => {
-                    const options = `{"collation":{"locale":"en_US","numericOrdering":"true"},"allowDiskUse":"true"}`;
-                    var response = await fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
-                        referrerPolicy: "origin-when-cross-origin",
-                        credentials: 'include',
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json;charset=utf-8',
+                    const options = `&options={"collation":{"locale":"en_US","numericOrdering":"true"},"allowDiskUse":"true"}`;
+
+                    var response = fetch(
+                        path + "?pipeline=" + pipeline + options,
+                        {
+                            referrerPolicy: "origin-when-cross-origin",
+                            credentials: 'include',
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json;charset=utf-8',
+                            }
                         }
-                    }).catch(e => {
+                    ).catch(e => {
                         console.log(e);
                         reject("Failed to get Rows!");
                     });
-                    var rows = await response.json().catch(e => {
+
+                    var rows = response.json().catch(e => {
                         console.log(e);
-                        reject("Failed to get Rows!");
+                        reject("Failed to parse response!");
                     });
+
                     if (rows) resolve(rows);
                     else reject("Rows is null!");
                 });
@@ -387,11 +393,11 @@ const cmd = (state, cmds, res, pos) => {
                                             break;
                                     }
                                     var op = "";
-                                    switch (typeof(stageDef.op)) {
+                                    switch (typeof (stageDef.op)) {
                                         case 'string':
-                                            if(stageDef.transform == "number"){
-                                                op =  `{"${stageDef.op}":${value}}`;
-                                            }else {
+                                            if (stageDef.transform == "number") {
+                                                op = `{"${stageDef.op}":${value}}`;
+                                            } else {
                                                 op = `{"${stageDef.op}":"${value}"}`;
                                             }
                                             break;
@@ -432,13 +438,13 @@ const cmd = (state, cmds, res, pos) => {
                     //const options = `{"collation":{"locale":"en_US","numericOrdering":"true"}, "allowDiskUse" : "true"}`;
                     const options = `{"collation":{"locale":"en_US","numericOrdering":"true"},"allowDiskUse":"true"}`;
                     fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
-                            referrerPolicy: "origin-when-cross-origin",
-                            credentials: 'include',
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json;charset=utf-8',
-                            }
-                        })
+                        referrerPolicy: "origin-when-cross-origin",
+                        credentials: 'include',
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8',
+                        }
+                    })
                         .then(res => {
                             console.log(res);
                             return res.json();
@@ -603,7 +609,7 @@ const cmd = (state, cmds, res, pos) => {
                 pages.className = "page-item";
                 pages.style["align-self"] = "center";
                 pages.style.float = "right";
-                pages.innerHTML = `${state.selectedPage + 1} de ${Math.trunc(count/10+ 1) } &nbsp`;
+                pages.innerHTML = `${state.selectedPage + 1} de ${Math.trunc(count / 10 + 1)} &nbsp`;
                 pages.style.color = "grey";
                 pages.style.alignSelf = "center";
                 pages.style.minWidth = "fit-content";
@@ -774,7 +780,7 @@ const cmd = (state, cmds, res, pos) => {
                     Object.keys(state.headers).forEach(headerKey => {
                         var th = document.createElement("th");
                         var cellValue = getCellValue(row, state.headers[headerKey].name.split('.'));
-                        if(!Number.isNaN(cellValue) && cellValue.length == 14){
+                        if (!Number.isNaN(cellValue) && cellValue.length == 14) {
                             cellValue = formatValue(cellValue);
                             cellValue = cellValue || state.emptyCellChar;
                             th.innerHTML = cellValue;
@@ -830,7 +836,7 @@ const cmd = (state, cmds, res, pos) => {
                 case "modal":
                     c = () => showModal(state, command.payload, res);
                     break;
-                    //TODO: CONFIRMATION BOX debería ser un template de modal...
+                //TODO: CONFIRMATION BOX debería ser un template de modal...
                 case "confirmationBox":
                     c = () => confirmationBox(state, command.payload, res);
                     break;
@@ -863,7 +869,7 @@ const cmd = (state, cmds, res, pos) => {
 };
 
 const create = (newState, path) => {
-    try{
+    try {
         if (newState.type == "table") {
             newState = utils.fillObjWithDflt(newState, dfltState);
             newState.path = path;
@@ -957,15 +963,15 @@ const show = (state, parent) => {
                                 dropdownBtn.className = "btn btn-secondary dropdown-toggle";
                                 dropdownBtn.type = "button";
                                 dropdownBtn.id = input.name;
-                                dropdownBtn.setAttribute('data-toggle',"dropdown");
-                                dropdownBtn.setAttribute('aria-haspopup',"true");
-                                dropdownBtn.setAttribute('aria-expanded',"false");
+                                dropdownBtn.setAttribute('data-toggle', "dropdown");
+                                dropdownBtn.setAttribute('aria-haspopup', "true");
+                                dropdownBtn.setAttribute('aria-expanded', "false");
                                 dropdownBtn.innerHTML = input.placeholder;
                                 dropdownView.appendChild(dropdownBtn);
 
                                 var dropdownMenu = document.createElement("div");
                                 dropdownMenu.className = "dropdown-menu";
-                                dropdownMenu.setAttribute('aria-labelledby',input.name);
+                                dropdownMenu.setAttribute('aria-labelledby', input.name);
                                 dropdownView.appendChild(dropdownMenu);
 
                                 Object.values(input.options).forEach(option => {
@@ -1141,4 +1147,4 @@ const show = (state, parent) => {
 
 };
 
-export default { create, show, cmd};
+export default { create, show, cmd };
