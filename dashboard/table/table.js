@@ -327,7 +327,7 @@ const cmd = (state, cmds, res, pos) => {
 
                 return new Promise((resolve, reject) => {
                     const options = `{"collation":{"locale":"en_US","numericOrdering":"true"},"allowDiskUse":"true"}`;
-                    var res = await fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
+                    var rows = await fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
                         referrerPolicy: "origin-when-cross-origin",
                         credentials: 'include',
                         method: 'GET',
@@ -335,11 +335,11 @@ const cmd = (state, cmds, res, pos) => {
                             'Content-Type': 'application/json;charset=utf-8',
                         }
                     });
-                    res = res.json().catch(e => {
+                    rows = rows.json().catch(e => {
                         console.log(e);
                         reject("Failed to get Rows!");
                     });
-                    if (res) resolve(res);
+                    if (rows) resolve(rows);
                     else reject("Rows is null!");
                 });
             }
