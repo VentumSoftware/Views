@@ -20,7 +20,7 @@ var states = [];
 
 const cmd = (state, cmds, res, pos) => {
 
-    const removeState = (state, payload, res) => {};
+    const removeState = (state, payload, res) => { };
 
     const resetStates = (state, payload, res) => {
         if (states.length > 0) {
@@ -56,7 +56,7 @@ const cmd = (state, cmds, res, pos) => {
         }
     };
 
-    
+
 
     try {
         //A: Si ya ejecute todos los comandos termino
@@ -95,7 +95,7 @@ const cmd = (state, cmds, res, pos) => {
 };
 
 const create = (newState, path) => {
-    try{
+    try {
         if (newState.type == "category") {
             newState = utils.fillObjWithDflt(newState, dfltState);
             newState.path = path;
@@ -136,8 +136,8 @@ const create = (newState, path) => {
             states.push(newState);
             return newState;
         } else {
-        console.log("Error creating category, incorrect type: " + newState.type);
-        return null;
+            console.log("Error creating category, incorrect type: " + newState.type);
+            return null;
         }
     } catch (error) {
         console.log(error);
@@ -165,7 +165,7 @@ const show = (state, parent) => {
             parent.appendChild(row);
             return row;
         };
-        
+
         const createCol = (parent) => {
             const margins = 0;
             var col = document.createElement("div");
@@ -188,7 +188,7 @@ const show = (state, parent) => {
                 Object.values(row.cols).forEach(col => {
                     var colDiv = createCol(rowDiv);
                     Object.values(col).forEach(element => {
-                        console.log("show child: " + element); 
+                        console.log("show child: " + element);
                         var content = state.childs[element];
                         console.log("content: " + JSON.stringify(content))
                         switch (content.type) {

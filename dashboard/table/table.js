@@ -327,20 +327,20 @@ const cmd = (state, cmds, res, pos) => {
 
                 return new Promise((resolve, reject) => {
                     const options = `{"collation":{"locale":"en_US","numericOrdering":"true"},"allowDiskUse":"true"}`;
-                    fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
-                            referrerPolicy: "origin-when-cross-origin",
-                            credentials: 'include',
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json;charset=utf-8',
-                            }
-                        })
-                        .then(res => res.json())
-                        .then(res => resolve(res))
-                        .catch(err => {
-                            console.log(err);
-                            reject(err)
-                        });
+                    var res = await fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
+                        referrerPolicy: "origin-when-cross-origin",
+                        credentials: 'include',
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8',
+                        }
+                    });
+                    res = res.json().catch(e => {
+                        console.log(e);
+                        reject("Failed to get Rows!");
+                    });
+                    if (res) resolve(res);
+                    else reject("Rows is null!");
                 });
             }
 
