@@ -19,7 +19,7 @@ const dfltState = {
     emptyCellChar: "-",
     selectedPage: 0,
     paginationIndex: 0,
-
+    rowCount: 10
 };
 
 var states = [];
@@ -249,8 +249,6 @@ const cmd = (state, cmds, res, pos) => {
                 const buildPipeline = (filters) => {
 
                     const buildStage = (key, value) => {
-                        console.log(key);
-                        console.log(value);
 
                         const getStageDefinition = () => {
                             var result = null;
@@ -316,20 +314,20 @@ const cmd = (state, cmds, res, pos) => {
                     });
                     Object.keys(state.finalStages).forEach((key) => {
                         result += state.finalStages[key] + ",";
-                    })
-                    result += `{"$skip": ${state.selectedPage * 10} },{"$limit": 10 }]`; //Ordenamiento descendente por Hora (de nuevo a viejo) -- Hasta 10 resultados.
-                    console.log(result);
+                    });
+                    result += `{"$skip": ${state.selectedPage * 10} },{"$limit": ${state.rowCount} }]`; //Ordenamiento descendente por Hora (de nuevo a viejo) -- Hasta 10 resultados.
+                    console.log("Pipeline: " + result);
                     return result;
                 };
-                var path = state.fetchPath;
-                var filters = getFiltersValues();
-                var pipeline = buildPipeline(filters);
-
+                
                 return new Promise((resolve, reject) => {
-                    const options = `&options={"collation":{"locale":"en_US","numericOrdering":"true"},"allowDiskUse":"true"}`;
-
+                    var filters = getFiltersValues();
+                    var pipeline = buildPipeline(filters);
+                    const options = `&options={"collation":{"locale":"en_US","numericOrdering":true},"allowDiskUse":true}`;
+                    const path = state.fetchPath + "?pipeline=" + pipeline + options;
+                    console.log(path);
                     fetch(
-                        path + "?pipeline=" + pipeline + options,
+                        path,
                         {
                             referrerPolicy: "origin-when-cross-origin",
                             credentials: 'include',
@@ -476,6 +474,72 @@ const cmd = (state, cmds, res, pos) => {
                         reject(err);
                     });
             });
+        };
+
+        const drawRows = (data) => {
+            try {
+
+                const getCellValue = (row, path) => {
+                    if (row[path[0]] == null) {
+                        return null;
+                    } else if (path.length > 1) {
+                        var temp = path.shift();
+                        return getCellValue(row[temp], path);
+                    } else {
+                        return row[path[0]];
+                    }
+                }
+
+                console.log("drawRows data: " + JSON.stringify(data));
+                console.log("drawRows headers: " + JSON.stringify(state.headers));
+
+                //Borro lo anterior
+                state.rowsRoot.innerHTML = "";
+                state.rowsCheckboxs = [];
+
+                data.forEach(row => {
+                    var tr = document.createElement("tr");
+                    tr.className = "";
+                    state.rowsRoot.appendChild(tr);
+
+                    var addCheckbox = false;
+                    //Si hay algun boton "targeted" agrego el checkbos a las filas
+                    Object.values(state.headerBtns).forEach((btn) => {
+                        if (btn.targeted)
+                            addCheckbox = true;
+                    });
+                    if (addCheckbox) {
+                        var th = document.createElement("th");
+                        var checkbox = document.createElement("input");
+                        checkbox.type = "checkbox";
+                        checkbox.className = "";
+                        state.rowsCheckboxs.push(checkbox);
+                        checkbox.addEventListener('click', (e) => {
+                            updateEditRemoveBtns(state);
+                        })
+                        th.appendChild(checkbox);
+                        tr.appendChild(th);
+                    }
+
+                    Object.keys(state.headers).forEach(headerKey => {
+                        var th = document.createElement("th");
+                        var cellValue = getCellValue(row, state.headers[headerKey].name.split('.'));
+                        if (!Number.isNaN(cellValue)) {
+                            //cellValue = formatValue(cellValue);
+                            cellValue = cellValue || state.emptyCellChar;
+                            th.innerHTML = cellValue;
+                            tr.appendChild(th);
+                        } else {
+                            cellValue = cellValue || state.emptyCellChar;
+                            th.innerHTML = cellValue;
+                            tr.appendChild(th);
+                        }
+
+                    });
+                });
+            } catch (error) {
+                console.log(error);
+            }
         };
 
         const drawPagination = (state, count) => {
@@ -730,71 +794,7 @@ const cmd = (state, cmds, res, pos) => {
             }
         };
 
-        const drawRows = (data) => {
-            try {
-
-                const getCellValue = (row, path) => {
-                    if (row[path[0]] == null) {
-                        return null;
-                    } else if (path.length > 1) {
-                        var temp = path.shift();
-                        return getCellValue(row[temp], path);
-                    } else {
-                        return row[path[0]];
-                    }
-                }
-
-                console.log("drawRows data: " + JSON.stringify(data));
-                console.log("drawRows headers: " + JSON.stringify(state.headers));
-
-                //Borro lo anterior
-                state.rowsRoot.innerHTML = "";
-                state.rowsCheckboxs = [];
-
-                data.forEach(row => {
-                    var tr = document.createElement("tr");
-                    tr.className = "";
-                    state.rowsRoot.appendChild(tr);
-
-                    var addCheckbox = false;
-                    //Si hay algun boton "targeted" agrego el checkbos a las filas
-                    Object.values(state.headerBtns).forEach((btn) => {
-                        if (btn.targeted)
-                            addCheckbox = true;
-                    });
-                    if (addCheckbox) {
-                        var th = document.createElement("th");
-                        var checkbox = document.createElement("input");
-                        checkbox.type = "checkbox";
-                        checkbox.className = "";
-                        state.rowsCheckboxs.push(checkbox);
-                        checkbox.addEventListener('click', (e) => {
-                            updateEditRemoveBtns(state);
-                        })
-                        th.appendChild(checkbox);
-                        tr.appendChild(th);
-                    }
-
-                    Object.keys(state.headers).forEach(headerKey => {
-                        var th = document.createElement("th");
-                        var cellValue = getCellValue(row, state.headers[headerKey].name.split('.'));
-                        if (!Number.isNaN(cellValue)) {
-                            cellValue = formatValue(cellValue);
-                            cellValue = cellValue || state.emptyCellChar;
-                            th.innerHTML = cellValue;
-                            tr.appendChild(th);
-                        } else {
-                            cellValue = cellValue || state.emptyCellChar;
-                            th.innerHTML = cellValue;
-                            tr.appendChild(th);
-                        }
-
-                    });
-                });
-            } catch (error) {
-                console.log(error);
-            }
-        };
+        
 
         return new Promise((resolve, reject) => {
             state.targetedBtns = [];
@@ -1083,7 +1083,7 @@ const show = (state, parent) => {
                 thead.id = state.id + "-table-headers";
                 thead.className = "thead-dark";
                 table.appendChild(thead);
-                var tr = document.createElement("tr");
+                var tr = document.createElement("th");
                 tr.id = state.id + "-table-headers-tr";
                 tr.className = "";
                 thead.appendChild(tr);
