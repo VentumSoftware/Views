@@ -338,6 +338,73 @@ const show = (state, parent) => {
     };
     const drawMap = () => {
         try {
+                //DIBUJA EL RECORRIDO DE UN SOLO IMEI ----- TODO: DIBUJAR PARA TODOS LOS IMEI
+
+
+        async function getRunCoordsFrom_(imeiNumber){
+
+var res = await fetch("http://localhost:80/rest/inti/recorridos");
+const response = await res.json();
+var coords = coordinatesFrom_(response, imeiNumber);
+return(coords);            
+}
+        async function drawRunOf(imeiNumber){
+                
+         
+            var latlngs = await getRunCoordsFrom_(imeiNumber);
+            console.log(latlngs);
+
+            var polyline = L.polyline(latlngs, {
+                color: 'red',
+                weight: 5,
+                opacity: 1
+
+            })
+            .addTo(map);
+        }    
+
+
+        
+        function coordinatesFrom_(obj, imeiNumber){
+            let listaDeCoords = []
+            console.log(obj);
+            //ITERA SOBRE TODOS LOS ELEMENTOS TRAIDOS. TODO: ITERAR CONDICIONALMENTE.
+            for (const element in obj) {
+                if (Object.hasOwnProperty.call(obj, element) && obj[element].imei === imeiNumber) {                    
+                    var elem = (obj[element]);
+                    console.log(elem);
+                    let run = elem.recorrido;
+                    for (let i = 0; i < run.length; i++) {
+                        const element = run[i];
+                        let position = Object.keys(element).toString();
+                        console.log(position);
+                        switch (position) {
+                            case "inicioPos":
+                                listaDeCoords.push(element.inicioPos);
+                                break;
+                            case "runningPos":
+                                for (let i = 0; i < element.runningPos.length; i++) {
+                                    const elem = element.runningPos[i];
+                                    listaDeCoords.push(elem);
+                                }
+                                break;
+                            case "finalPos":
+                                listaDeCoords.push(element.finalPos);
+                                break;
+                            default:
+                                console.error("Valores incorrectos");
+                                break;
+                        }
+
+                        //listaDeCoords.push([element.inicioPos, element.runningPos, element.finalPos]); 
+                    }
+                    console.log(listaDeCoords);
+                }
+            }
+            return(listaDeCoords);
+            
+        }
+        drawRunOf(25);
             var div = document.createElement("div");
              div.class = "";
             div.id =  state.id + "-map";
