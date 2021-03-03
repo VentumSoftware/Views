@@ -184,12 +184,12 @@ const show = (state, parent) => {
             for (let index = 0; index < 5; index++) {
                 var col = document.createElement("div");
                 col.id = state.id + "-map-filters-form-col-" + index.toString();
-                col.className = "col-2";
+                col.className = "col-6";
                 formRow.appendChild(col);
                 if (Object.keys(state.filters).length > index) {
                     var label = document.createElement("label");
                     label.id = state.id + "-map-filters-form-col-" + index.toString() + "-label";
-                    label.innerHTML = state.filters[index].label;
+                   
                     col.appendChild(label);
 
                     var inputs = document.createElement("div");
@@ -220,32 +220,42 @@ const show = (state, parent) => {
                         if (input.type == "dropdown") {
 
                             var dropdownView = document.createElement("div");
-                            dropdownView.className = "dropdown";
+                            dropdownView.className = "";
                             inputCol.appendChild(dropdownView);
 
-                            var dropdownBtn = document.createElement("button");
-                            dropdownBtn.className = "btn btn-secondary dropdown-toggle";
-                            dropdownBtn.type = "button";
-                            dropdownBtn.id = input.name;
-                            dropdownBtn.setAttribute('data-toggle',"dropdown");
-                            dropdownBtn.setAttribute('aria-haspopup',"true");
-                            dropdownBtn.setAttribute('aria-expanded',"false");
-                            dropdownBtn.innerHTML = input.placeholder;
+                      var dropdownBtn = document.createElement("select");
+                            dropdownBtn.className = "form-control";
+                            dropdownBtn.id="select-location";
+                            dropdownBtn.text = input.name;
                             dropdownView.appendChild(dropdownBtn);
 
-                            var dropdownMenu = document.createElement("div");
-                            dropdownMenu.className = "dropdown-menu";
-                            dropdownMenu.setAttribute('aria-labelledby',input.name);
-                            dropdownView.appendChild(dropdownMenu);
+                            
+                      var dropdownOpt=document.createElement("option");
+                             dropdownBtn.selected=true;
+                             dropdownOpt.text = "Buscar por IMEI";
+                             dropdownOpt.id= "Defecto";
+                              
+                            dropdownBtn.appendChild(dropdownOpt);
 
-                            Object.values(input.options).forEach(option => {
-                                var dropdownLink = document.createElement("button");
-                                dropdownLink.href = "#";
-                                dropdownLink.innerHTML = option;
-                                dropdownMenu.appendChild(dropdownLink);
-                            });
+                  fetch('http://localhost:80/rest/inti/recorridos')
+                            .then(res=>res.json())
+                            .then(data=>{
+                                 console.log(data)
+                                 Object.values(data).forEach(option => {
+
+                                    var dropdownRecorridos=document.createElement("option");
+                                  
+                                    dropdownRecorridos.text = option.imei;
+                                    dropdownRecorridos.id= option.id;
+                                    dropdownRecorridos.value=`${option.recorrido[0].inicioPos[0]},${option.recorrido[0].inicioPos[1]}`;
+                                   dropdownBtn.appendChild(dropdownRecorridos);
+       
+                             
+                             });
+                             });
 
 
+                       
                         } else {
                             var field = document.createElement("input");
                             field.ishoveredin = "0";
@@ -355,8 +365,8 @@ return(coords);
             console.log(latlngs);
 
             var polyline = L.polyline(latlngs, {
-                color: 'red',
-                weight: 5,
+                color: '#75E87A',
+                weight: 3,
                 opacity: 1
 
             })
