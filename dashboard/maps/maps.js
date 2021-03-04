@@ -225,14 +225,14 @@ const show = (state, parent) => {
 
                       var dropdownBtn = document.createElement("select");
                             dropdownBtn.className = "form-control";
-                            dropdownBtn.id="select-location";
+                            dropdownBtn.id=input.id;
                             dropdownBtn.text = input.name;
                             dropdownView.appendChild(dropdownBtn);
 
 
                       var dropdownOpt=document.createElement("option");
                              dropdownBtn.selected=true;
-                             dropdownOpt.text = "Buscar por IMEI";
+                             dropdownOpt.text = input.name;
                              dropdownOpt.id= "Defecto";
 
                             dropdownBtn.appendChild(dropdownOpt);
@@ -274,71 +274,6 @@ const show = (state, parent) => {
 
             }
 
-            //Dibujo columna con los botones del header
-            var col = document.createElement("div");
-            col.id = state.id + "-table-filters-form-col-" + "6";
-            col.className = "col-2";
-            col.style.textAlign = "center";
-            formRow.appendChild(col);
-            var label = document.createElement("label");
-            label.id = state.id + "-table-filters-form-col-" + "submit" + "-label";
-            label.innerHTML = "  &nbsp";
-            label.style.position = "relative";
-            label.style.width = '100%';
-            col.appendChild(label);
-
-            var inputs = document.createElement("div");
-            inputs.className = "form-row";
-            col.appendChild(inputs);
-
-            //Dibujo cada boton del header
-            var btns = Object.entries(state.headerBtns);
-            var btnsCount = 0;
-            btns.forEach(([key, value]) => {
-                if (value)
-                    btnsCount++;
-            });
-            console.log("header buttons: " + btnsCount.toString());
-            state.targetedBtns = [];
-            btns.forEach(([key, value]) => {
-                if (value.enabled) {
-                    if (btnsCount < 3)
-                        value.showLabel = true;
-                    else
-                        value.showLabel = false;
-
-                    var btnDiv = document.createElement("div");
-                    switch (btnsCount) {
-                        case 1:
-                            btnDiv.className += "col-12";
-                            break;
-                        case 2:
-                            btnDiv.className += "col-6";
-                            break;
-                        case 3:
-                            btnDiv.className += "col-4";
-                            break;
-                        case 4:
-                            btnDiv.className += "col-3";
-                            break;
-                        default:
-                            btnDiv.className += "col-12";
-                            break;
-                    }
-                    inputs.appendChild(btnDiv);
-                    var btn = buttons.createBtn(value);
-                    btnDiv.appendChild(btn);
-                    btn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        cmd(state, value.onClick.cmds, null, 0);
-                    });
-
-                    if (value.targeted) {
-                        state.targetedBtns.push(btn);
-                        btn.disabled = true;
-                    }
-                }
-            });
 
             return div;
         } catch (error) {
@@ -490,29 +425,7 @@ return(coords);
             console.log(error);
         }
     };
-    const drawSelect= () => {
-      try {
 
-          var select = document.createElement("select");
-          select.name = "select-location";
-          select.id= "select-location";
-          cardParent.body.appendChild(select);
-
-          Object.keys(state.markers).forEach(marker => {
-          var option = document.createElement("option");
-          option.value = state.markers[marker].coords;
-          option.text = state.markers[marker].name;
-          option.id= state.markers[marker].name;
-          select.appendChild(option);
-
-                })
-
-
-
-      } catch (error) {
-          console.log(error);
-      }
-  };
    const drawCard= () => {
       try {
 
@@ -536,5 +449,3 @@ return(coords);
     drawCard();
 
 };
-
-export default { create, show, cmd };
