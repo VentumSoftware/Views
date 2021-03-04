@@ -30,10 +30,10 @@ const dfltState = {
             }
         }
     },
-    childs: {
-        
-    }
+    childs: {}
 };
+
+var states = [];
 
 //-----------------------------------------------------------------------------------------------
 
@@ -253,7 +253,7 @@ const show = (state, parent) => {
 
     const showModal = () => {
 
-        document.getElementById("modal-header").childNodes[0].innerHTML = state.title;
+        document.getElementById("modal-header").childNodes[1].innerHTML = state.title;
         
 
         if (state.width == "auto") {
@@ -261,7 +261,6 @@ const show = (state, parent) => {
         } else {
             document.getElementById("modal-dialog").width = state.width;
         }
-
 
         if (state.content != null) {
             const showContent = () => {

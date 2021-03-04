@@ -1,0 +1,2759 @@
+{
+  "contentDiv": null,
+  "id": "id",
+  "company": {
+    "name": "Ingesur"
+  },
+  "user": {
+    "name": "Gonzalez N.",
+    "role": "role"
+  },
+  "childs": {
+    "0": {
+      "id": "noId",
+      "name": "ESTADÍSTICAS",
+      "access": {
+        "names": {
+          "1": "Admin"
+        },
+        "roles": {
+          "0": "admin",
+          "1": "client"
+        }
+      },
+      "postUrl": null,
+      "type": "category",
+      "childs": {},
+      "path": "dashboard/0"
+    },
+    "1": {
+      "id": "noId",
+      "name": "USUARIOS",
+      "access": {
+        "names": {
+          "1": "Admin"
+        },
+        "roles": {
+          "0": "admin",
+          "1": "client"
+        }
+      },
+      "postUrl": null,
+      "type": "category",
+      "content": {
+        "rows": {
+          "0": {
+            "cols": {
+              "0": {
+                "0": "tableUsuarios"
+              }
+            }
+          }
+        }
+      },
+      "childs": {
+        "tableUsuarios": {
+          "id": "noID",
+          "title": "Usuarios",
+          "fetchPath": "/aggregate/Ingesur/Usuarios",
+          "headers": {
+            "0": {
+              "name": "nombre",
+              "label": "Nombre"
+            },
+            "1": {
+              "name": "apellido",
+              "label": "Apellido"
+            },
+            "2": {
+              "name": "dni",
+              "label": "DNI"
+            },
+            "3": {
+              "name": "role",
+              "label": "Rol"
+            },
+            "4": {
+              "name": "empresa",
+              "label": "Empresa"
+            },
+            "5": {
+              "name": "sector",
+              "label": "Sector"
+            }
+          },
+          "filters": {
+            "0": {
+              "label": "Buscar",
+              "inputs": {
+                "nombre": {
+                  "name": "Buscar",
+                  "type": "text",
+                  "placeholder": "Buscar...",
+                  "value": "",
+                  "required": "",
+                  "stage": {
+                    "type": "match",
+                    "var": "nombre"
+                  }
+                }
+              }
+            }
+          },
+          "headerBtns": {
+            "0": {
+              "enabled": "true",
+              "type": "filter",
+              "label": "filtrar",
+              "onClick": {
+                "cmds": {
+                  "0": {
+                    "type": "filter",
+                    "payload": {}
+                  }
+                }
+              }
+            },
+            "1": {
+              "enabled": "true",
+              "type": "erase",
+              "label": "filtrar",
+              "targeted": true,
+              "onClick": {
+                "cmds": {
+                  "0": {
+                    "type": "erase",
+                    "payload": {}
+                  }
+                }
+              }
+            },
+            "2": {
+              "enabled": "true",
+              "type": "edit",
+              "label": "editar",
+              "targeted": true,
+              "onClick": {
+                "cmds": {
+                  "1": {
+                    "type": "modal",
+                    "form": {
+                      "title": "INTI",
+                      "cols": {
+                        "0": {
+                          "0": {
+                            "type": "text",
+                            "label": "DNI",
+                            "placeholder": "DNI"
+                          },
+                          "1": {
+                            "type": "text",
+                            "label": "Nombre",
+                            "placeholder": "Nombre"
+                          },
+                          "2": {
+                            "type": "text",
+                            "label": "Apellido",
+                            "placeholder": "Apellido"
+                          },
+                          "3": {
+                            "type": "date",
+                            "label": "Fecha N.",
+                            "placeholder": ""
+                          },
+                          "4": {
+                            "type": "text",
+                            "label": "Empresa",
+                            "placeholder": "Empresa"
+                          }
+                        },
+                        "1": {
+                          "0": {
+                            "type": "text",
+                            "label": "Sector",
+                            "placeholder": "Sector"
+                          },
+                          "1": {
+                            "type": "text",
+                            "label": "Posición",
+                            "placeholder": "Posición"
+                          },
+                          "2": {
+                            "type": "text",
+                            "label": "Mail",
+                            "placeholder": "Mail"
+                          },
+                          "3": {
+                            "type": "text",
+                            "label": "Teléfono",
+                            "placeholder": ""
+                          },
+                          "4": {
+                            "type": "text",
+                            "label": "Dirección",
+                            "placeholder": "Dirección"
+                          }
+                        }
+                      },
+                      "footerBtns": {
+                        "cancel": {
+                          "enabled": "true",
+                          "type": "edit",
+                          "label": "editar",
+                          "onClick": {}
+                        },
+                        "acept": {
+                          "enabled": "true",
+                          "type": "edit",
+                          "label": "editar",
+                          "onClick": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "3": {
+              "enabled": "true",
+              "type": "add",
+              "label": "agregar",
+              "onClick": {
+                "cmds": {
+                  "0": {
+                    "type": "show-modal",
+                    "payload": {
+                      "child": "addUserModal"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "initialStages": {},
+          "finalStages": {},
+          "footerBtns": {},
+          "rowsData": [],
+          "rowsCheckboxs": [],
+          "targetedBtns": [],
+          "emptyCellChar": "-",
+          "selectedPage": 0,
+          "paginationIndex": 0,
+          "rowCount": 10,
+          "type": "table",
+          "childs": {
+            "addUserModal": null
+          },
+          "path": "dashboard/1/tableUsuarios"
+        }
+      },
+      "path": "dashboard/1"
+    },
+    "2": {
+      "id": "noId",
+      "name": "DETECTORES",
+      "access": {
+        "names": {
+          "1": "Admin"
+        },
+        "roles": {
+          "0": "admin",
+          "1": "client"
+        }
+      },
+      "selectedChild": "",
+      "childs": {
+        "0": {
+          "id": "noId",
+          "name": "Ingresos",
+          "access": {
+            "names": {
+              "1": "Admin"
+            },
+            "roles": {
+              "0": "Admin"
+            }
+          },
+          "postUrl": null,
+          "type": "category",
+          "content": {
+            "rows": {
+              "0": {
+                "cols": {
+                  "0": {
+                    "0": "wizard"
+                  }
+                }
+              }
+            }
+          },
+          "childs": {
+            "wizard": {
+              "id": "noId",
+              "name": "No Name",
+              "pages": {
+                "0": {
+                  "rows": {
+                    "0": {
+                      "cols": {
+                        "0": {
+                          "0": "tableIngresos"
+                        }
+                      }
+                    }
+                  }
+                },
+                "1": {
+                  "rows": {
+                    "0": {
+                      "cols": {
+                        "0": {
+                          "0": "formDespachante"
+                        },
+                        "1": {
+                          "0": "formReceptor"
+                        }
+                      }
+                    },
+                    "1": {
+                      "cols": {
+                        "0": {
+                          "0": "tableNuevoIngreso"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "selectedPage": "0",
+              "parent": null,
+              "type": "wizard",
+              "childs": {
+                "tableIngresos": {
+                  "id": "noID",
+                  "title": "Ingresos",
+                  "fetchPath": "/aggregate/Ingesur/Clientes",
+                  "headers": {
+                    "0": {
+                      "name": "Grupo",
+                      "label": "Grupo"
+                    },
+                    "1": {
+                      "name": "Marca",
+                      "label": "Marca"
+                    },
+                    "2": {
+                      "name": "Modelo",
+                      "label": "Modelo"
+                    },
+                    "3": {
+                      "name": "No.Serie",
+                      "label": "No.Serie"
+                    },
+                    "4": {
+                      "name": "Duración Calibración",
+                      "label": "Duración Calibración"
+                    },
+                    "5": {
+                      "name": "Comentarios",
+                      "label": "Comentarios"
+                    }
+                  },
+                  "filters": {
+                    "0": {
+                      "label": "Buscar",
+                      "inputs": {
+                        "nombre": {
+                          "name": "Buscar",
+                          "type": "text",
+                          "placeholder": "Buscar...",
+                          "value": "",
+                          "required": "",
+                          "stage": {
+                            "type": "match",
+                            "var": "nombre"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "headerBtns": {
+                    "0": {
+                      "enabled": "true",
+                      "type": "filter",
+                      "label": "filtrar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "filter",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "1": {
+                      "enabled": "true",
+                      "type": "erase",
+                      "label": "filtrar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "erase",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "2": {
+                      "enabled": "true",
+                      "type": "edit",
+                      "label": "editar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "1": {
+                            "type": "modal",
+                            "form": {
+                              "title": "INTI",
+                              "cols": {
+                                "0": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "DNI",
+                                    "placeholder": "DNI"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Nombre",
+                                    "placeholder": "Nombre"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Apellido",
+                                    "placeholder": "Apellido"
+                                  },
+                                  "3": {
+                                    "type": "date",
+                                    "label": "Fecha N.",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Empresa",
+                                    "placeholder": "Empresa"
+                                  }
+                                },
+                                "1": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "Sector",
+                                    "placeholder": "Sector"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Posición",
+                                    "placeholder": "Posición"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Mail",
+                                    "placeholder": "Mail"
+                                  },
+                                  "3": {
+                                    "type": "text",
+                                    "label": "Teléfono",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Dirección",
+                                    "placeholder": "Dirección"
+                                  }
+                                }
+                              },
+                              "footerBtns": {
+                                "cancel": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                },
+                                "acept": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "3": {
+                      "enabled": "true",
+                      "type": "add",
+                      "label": "agregar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "modal",
+                            "payload": {
+                              "title": "NUEVO INGRESO",
+                              "text": "¿Desea cargar un nuevo ingreso de equipos?",
+                              "onAccept": {
+                                "cmds": {
+                                  "0": {
+                                    "type": "close-modal",
+                                    "payload": {}
+                                  },
+                                  "1": {
+                                    "type": "parent-cmd",
+                                    "payload": {
+                                      "type": "parent-cmd",
+                                      "payload": {}
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "initialStages": {},
+                  "finalStages": {},
+                  "footerBtns": {},
+                  "rowsData": [],
+                  "rowsCheckboxs": [],
+                  "targetedBtns": [],
+                  "emptyCellChar": "-",
+                  "selectedPage": 0,
+                  "paginationIndex": 0,
+                  "rowCount": 10,
+                  "type": "table",
+                  "childs": {
+                    "nuevoIngresoModal": {
+                      "type": "form",
+                      "childs": {}
+                    }
+                  },
+                  "path": "dashboard/2/0/wizard/tableIngresos"
+                },
+                "formDespachante": {
+                  "id": "noID",
+                  "title": "INGRESOS",
+                  "fetchPath": "/api/aggregate/IngesurERP/Ingesos",
+                  "headers": {
+                    "0": {
+                      "name": "Grupo",
+                      "label": "Grupo"
+                    },
+                    "1": {
+                      "name": "Marca",
+                      "label": "Marca"
+                    },
+                    "2": {
+                      "name": "Modelo",
+                      "label": "Modelo"
+                    },
+                    "3": {
+                      "name": "No.Serie",
+                      "label": "No.Serie"
+                    },
+                    "4": {
+                      "name": "Duración Calibración",
+                      "label": "Duración Calibración"
+                    },
+                    "5": {
+                      "name": "Comentarios",
+                      "label": "Comentarios"
+                    }
+                  },
+                  "filters": {
+                    "0": {
+                      "label": "Buscar",
+                      "inputs": {
+                        "nombre": {
+                          "name": "Buscar",
+                          "type": "text",
+                          "placeholder": "Buscar...",
+                          "value": "",
+                          "required": "",
+                          "stage": {
+                            "type": "match",
+                            "var": "nombre"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "headerBtns": {
+                    "0": {
+                      "enabled": "true",
+                      "type": "filter",
+                      "label": "filtrar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "filter",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "1": {
+                      "enabled": "true",
+                      "type": "erase",
+                      "label": "filtrar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "erase",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "2": {
+                      "enabled": "true",
+                      "type": "edit",
+                      "label": "editar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "1": {
+                            "type": "modal",
+                            "form": {
+                              "title": "INTI",
+                              "cols": {
+                                "0": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "DNI",
+                                    "placeholder": "DNI"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Nombre",
+                                    "placeholder": "Nombre"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Apellido",
+                                    "placeholder": "Apellido"
+                                  },
+                                  "3": {
+                                    "type": "date",
+                                    "label": "Fecha N.",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Empresa",
+                                    "placeholder": "Empresa"
+                                  }
+                                },
+                                "1": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "Sector",
+                                    "placeholder": "Sector"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Posición",
+                                    "placeholder": "Posición"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Mail",
+                                    "placeholder": "Mail"
+                                  },
+                                  "3": {
+                                    "type": "text",
+                                    "label": "Teléfono",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Dirección",
+                                    "placeholder": "Dirección"
+                                  }
+                                }
+                              },
+                              "footerBtns": {
+                                "cancel": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                },
+                                "acept": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "3": {
+                      "enabled": "true",
+                      "type": "add",
+                      "label": "agregar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "modal",
+                            "payload": {
+                              "content": {
+                                "rows": {
+                                  "0": {
+                                    "cols": {
+                                      "0": {
+                                        "0": "nuevoIngresoModal"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "1": {
+                            "type": "post",
+                            "payload": {
+                              "url": "api/post/test/test",
+                              "method": "POST"
+                            }
+                          },
+                          "2": {
+                            "type": "update",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "initialStages": {},
+                  "finalStages": {
+                    "0": "{\"$sort\":{\"paquete.Fecha\":-1,\"paquete.Hora\":-1}}"
+                  },
+                  "footerBtns": {},
+                  "rowsData": [],
+                  "rowsCheckboxs": [],
+                  "targetedBtns": [],
+                  "emptyCellChar": "-",
+                  "selectedPage": 0,
+                  "paginationIndex": 0,
+                  "rowCount": 10,
+                  "type": "table",
+                  "childs": {
+                    "nuevoIngresoModal": {
+                      "type": "wizard",
+                      "pages": {
+                        "0": {
+                          "rows": {
+                            "0": {
+                              "cols": {
+                                "0": {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "childs": {}
+                    }
+                  },
+                  "path": "dashboard/2/0/wizard/formDespachante"
+                },
+                "formReceptor": {
+                  "id": "noID",
+                  "title": "INGRESOS",
+                  "fetchPath": "/api/aggregate/IngesurERP/Ingesos",
+                  "headers": {
+                    "0": {
+                      "name": "Grupo",
+                      "label": "Grupo"
+                    },
+                    "1": {
+                      "name": "Marca",
+                      "label": "Marca"
+                    },
+                    "2": {
+                      "name": "Modelo",
+                      "label": "Modelo"
+                    },
+                    "3": {
+                      "name": "No.Serie",
+                      "label": "No.Serie"
+                    },
+                    "4": {
+                      "name": "Duración Calibración",
+                      "label": "Duración Calibración"
+                    },
+                    "5": {
+                      "name": "Comentarios",
+                      "label": "Comentarios"
+                    }
+                  },
+                  "filters": {
+                    "0": {
+                      "label": "Buscar",
+                      "inputs": {
+                        "nombre": {
+                          "name": "Buscar",
+                          "type": "text",
+                          "placeholder": "Buscar...",
+                          "value": "",
+                          "required": "",
+                          "stage": {
+                            "type": "match",
+                            "var": "nombre"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "headerBtns": {
+                    "0": {
+                      "enabled": "true",
+                      "type": "filter",
+                      "label": "filtrar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "filter",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "1": {
+                      "enabled": "true",
+                      "type": "erase",
+                      "label": "filtrar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "erase",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "2": {
+                      "enabled": "true",
+                      "type": "edit",
+                      "label": "editar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "1": {
+                            "type": "modal",
+                            "form": {
+                              "title": "INTI",
+                              "cols": {
+                                "0": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "DNI",
+                                    "placeholder": "DNI"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Nombre",
+                                    "placeholder": "Nombre"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Apellido",
+                                    "placeholder": "Apellido"
+                                  },
+                                  "3": {
+                                    "type": "date",
+                                    "label": "Fecha N.",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Empresa",
+                                    "placeholder": "Empresa"
+                                  }
+                                },
+                                "1": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "Sector",
+                                    "placeholder": "Sector"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Posición",
+                                    "placeholder": "Posición"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Mail",
+                                    "placeholder": "Mail"
+                                  },
+                                  "3": {
+                                    "type": "text",
+                                    "label": "Teléfono",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Dirección",
+                                    "placeholder": "Dirección"
+                                  }
+                                }
+                              },
+                              "footerBtns": {
+                                "cancel": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                },
+                                "acept": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "3": {
+                      "enabled": "true",
+                      "type": "add",
+                      "label": "agregar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "modal",
+                            "payload": {
+                              "content": {
+                                "rows": {
+                                  "0": {
+                                    "cols": {
+                                      "0": {
+                                        "0": "nuevoIngresoModal"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "1": {
+                            "type": "post",
+                            "payload": {
+                              "url": "api/post/test/test",
+                              "method": "POST"
+                            }
+                          },
+                          "2": {
+                            "type": "update",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "initialStages": {},
+                  "finalStages": {
+                    "0": "{\"$sort\":{\"paquete.Fecha\":-1,\"paquete.Hora\":-1}}"
+                  },
+                  "footerBtns": {},
+                  "rowsData": [],
+                  "rowsCheckboxs": [],
+                  "targetedBtns": [],
+                  "emptyCellChar": "-",
+                  "selectedPage": 0,
+                  "paginationIndex": 0,
+                  "rowCount": 10,
+                  "type": "table",
+                  "childs": {
+                    "nuevoIngresoModal": {
+                      "type": "wizard",
+                      "pages": {
+                        "0": {
+                          "rows": {
+                            "0": {
+                              "cols": {
+                                "0": {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "childs": {}
+                    }
+                  },
+                  "path": "dashboard/2/0/wizard/formReceptor"
+                },
+                "tableNuevoIngreso": {
+                  "id": "noID",
+                  "title": "INGRESOS",
+                  "fetchPath": "/api/aggregate/IngesurERP/Ingesos",
+                  "headers": {
+                    "0": {
+                      "name": "Grupo",
+                      "label": "Grupo"
+                    },
+                    "1": {
+                      "name": "Marca",
+                      "label": "Marca"
+                    },
+                    "2": {
+                      "name": "Modelo",
+                      "label": "Modelo"
+                    },
+                    "3": {
+                      "name": "No.Serie",
+                      "label": "No.Serie"
+                    },
+                    "4": {
+                      "name": "Duración Calibración",
+                      "label": "Duración Calibración"
+                    },
+                    "5": {
+                      "name": "Comentarios",
+                      "label": "Comentarios"
+                    }
+                  },
+                  "filters": {
+                    "0": {
+                      "label": "Buscar",
+                      "inputs": {
+                        "nombre": {
+                          "name": "Buscar",
+                          "type": "text",
+                          "placeholder": "Buscar...",
+                          "value": "",
+                          "required": "",
+                          "stage": {
+                            "type": "match",
+                            "var": "nombre"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "headerBtns": {
+                    "0": {
+                      "enabled": "true",
+                      "type": "filter",
+                      "label": "filtrar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "filter",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "1": {
+                      "enabled": "true",
+                      "type": "erase",
+                      "label": "filtrar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "erase",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "2": {
+                      "enabled": "true",
+                      "type": "edit",
+                      "label": "editar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "1": {
+                            "type": "modal",
+                            "form": {
+                              "title": "INTI",
+                              "cols": {
+                                "0": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "DNI",
+                                    "placeholder": "DNI"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Nombre",
+                                    "placeholder": "Nombre"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Apellido",
+                                    "placeholder": "Apellido"
+                                  },
+                                  "3": {
+                                    "type": "date",
+                                    "label": "Fecha N.",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Empresa",
+                                    "placeholder": "Empresa"
+                                  }
+                                },
+                                "1": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "Sector",
+                                    "placeholder": "Sector"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Posición",
+                                    "placeholder": "Posición"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Mail",
+                                    "placeholder": "Mail"
+                                  },
+                                  "3": {
+                                    "type": "text",
+                                    "label": "Teléfono",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Dirección",
+                                    "placeholder": "Dirección"
+                                  }
+                                }
+                              },
+                              "footerBtns": {
+                                "cancel": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                },
+                                "acept": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "3": {
+                      "enabled": "true",
+                      "type": "add",
+                      "label": "agregar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "modal",
+                            "payload": {
+                              "content": {
+                                "rows": {
+                                  "0": {
+                                    "cols": {
+                                      "0": {
+                                        "0": "nuevoIngresoModal"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "1": {
+                            "type": "post",
+                            "payload": {
+                              "url": "api/post/test/test",
+                              "method": "POST"
+                            }
+                          },
+                          "2": {
+                            "type": "update",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "initialStages": {},
+                  "finalStages": {
+                    "0": "{\"$sort\":{\"paquete.Fecha\":-1,\"paquete.Hora\":-1}}"
+                  },
+                  "footerBtns": {},
+                  "rowsData": [],
+                  "rowsCheckboxs": [],
+                  "targetedBtns": [],
+                  "emptyCellChar": "-",
+                  "selectedPage": 0,
+                  "paginationIndex": 0,
+                  "rowCount": 10,
+                  "type": "table",
+                  "childs": {
+                    "nuevoIngresoModal": {
+                      "type": "wizard",
+                      "pages": {
+                        "0": {
+                          "rows": {
+                            "0": {
+                              "cols": {
+                                "0": {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "childs": {}
+                    }
+                  },
+                  "path": "dashboard/2/0/wizard/tableNuevoIngreso"
+                }
+              },
+              "path": "dashboard/2/0/wizard"
+            }
+          },
+          "path": "dashboard/2/0"
+        },
+        "1": {
+          "id": "noId",
+          "name": "Laboratorio",
+          "access": {
+            "names": {
+              "1": "Admin"
+            },
+            "roles": {
+              "0": "Admin"
+            }
+          },
+          "postUrl": null,
+          "type": "category",
+          "content": {
+            "rows": {
+              "0": {
+                "cols": {
+                  "0": {
+                    "0": "wizard"
+                  }
+                }
+              }
+            }
+          },
+          "childs": {
+            "wizard": {
+              "id": "noId",
+              "name": "No Name",
+              "pages": {
+                "0": {
+                  "rows": {
+                    "0": {
+                      "cols": {
+                        "0": {
+                          "0": "tableIngresos"
+                        }
+                      }
+                    }
+                  }
+                },
+                "1": {
+                  "rows": {
+                    "0": {
+                      "cols": {
+                        "0": {
+                          "0": "formDespachante"
+                        },
+                        "1": {
+                          "0": "formReceptor"
+                        }
+                      }
+                    },
+                    "1": {
+                      "cols": {
+                        "0": {
+                          "0": "tableNuevoIngreso"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "selectedPage": "0",
+              "parent": null,
+              "type": "wizard",
+              "childs": {
+                "tableIngresos": {
+                  "id": "noID",
+                  "title": "Laboratorio",
+                  "fetchPath": "/aggregate/Ingesur/Equipos",
+                  "headers": {
+                    "0": {
+                      "name": "empresa",
+                      "label": "Empresa"
+                    },
+                    "1": {
+                      "name": "sector",
+                      "label": "Sector"
+                    },
+                    "2": {
+                      "name": "marca",
+                      "label": "Marca"
+                    },
+                    "3": {
+                      "name": "modelo",
+                      "label": "Modelo"
+                    },
+                    "4": {
+                      "name": "serialNo",
+                      "label": "Serial No."
+                    },
+                    "5": {
+                      "name": "diasEntreCal",
+                      "label": "Dias Entre Cal."
+                    }
+                  },
+                  "filters": {
+                    "0": {
+                      "label": "Buscar",
+                      "inputs": {
+                        "nombre": {
+                          "name": "Buscar",
+                          "type": "text",
+                          "placeholder": "Buscar...",
+                          "value": "",
+                          "required": "",
+                          "stage": {
+                            "type": "match",
+                            "var": "nombre"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "headerBtns": {
+                    "0": {
+                      "enabled": "true",
+                      "type": "filter",
+                      "label": "filtrar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "filter",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "1": {
+                      "enabled": "true",
+                      "type": "erase",
+                      "label": "filtrar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "erase",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "2": {
+                      "enabled": "true",
+                      "type": "edit",
+                      "label": "editar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "1": {
+                            "type": "modal",
+                            "form": {
+                              "title": "INTI",
+                              "cols": {
+                                "0": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "DNI",
+                                    "placeholder": "DNI"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Nombre",
+                                    "placeholder": "Nombre"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Apellido",
+                                    "placeholder": "Apellido"
+                                  },
+                                  "3": {
+                                    "type": "date",
+                                    "label": "Fecha N.",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Empresa",
+                                    "placeholder": "Empresa"
+                                  }
+                                },
+                                "1": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "Sector",
+                                    "placeholder": "Sector"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Posición",
+                                    "placeholder": "Posición"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Mail",
+                                    "placeholder": "Mail"
+                                  },
+                                  "3": {
+                                    "type": "text",
+                                    "label": "Teléfono",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Dirección",
+                                    "placeholder": "Dirección"
+                                  }
+                                }
+                              },
+                              "footerBtns": {
+                                "cancel": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                },
+                                "acept": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "3": {
+                      "enabled": "true",
+                      "type": "add",
+                      "label": "agregar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "modal",
+                            "payload": {
+                              "title": "NUEVO INGRESO",
+                              "text": "¿Desea cargar un nuevo ingreso de equipos?",
+                              "onAccept": {
+                                "cmds": {
+                                  "0": {
+                                    "type": "close-modal",
+                                    "payload": {}
+                                  },
+                                  "1": {
+                                    "type": "parent-cmd",
+                                    "payload": {
+                                      "type": "parent-cmd",
+                                      "payload": {}
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "initialStages": {},
+                  "finalStages": {},
+                  "footerBtns": {},
+                  "rowsData": [],
+                  "rowsCheckboxs": [],
+                  "targetedBtns": [],
+                  "emptyCellChar": "-",
+                  "selectedPage": 0,
+                  "paginationIndex": 0,
+                  "rowCount": 10,
+                  "type": "table",
+                  "childs": {
+                    "nuevoIngresoModal": {
+                      "type": "form",
+                      "childs": {}
+                    }
+                  },
+                  "path": "dashboard/2/1/wizard/tableIngresos"
+                },
+                "formDespachante": {
+                  "id": "noID",
+                  "title": "INGRESOS",
+                  "fetchPath": "/api/aggregate/IngesurERP/Ingesos",
+                  "headers": {
+                    "0": {
+                      "name": "Grupo",
+                      "label": "Grupo"
+                    },
+                    "1": {
+                      "name": "Marca",
+                      "label": "Marca"
+                    },
+                    "2": {
+                      "name": "Modelo",
+                      "label": "Modelo"
+                    },
+                    "3": {
+                      "name": "No.Serie",
+                      "label": "No.Serie"
+                    },
+                    "4": {
+                      "name": "Duración Calibración",
+                      "label": "Duración Calibración"
+                    },
+                    "5": {
+                      "name": "Comentarios",
+                      "label": "Comentarios"
+                    }
+                  },
+                  "filters": {
+                    "0": {
+                      "label": "Buscar",
+                      "inputs": {
+                        "nombre": {
+                          "name": "Buscar",
+                          "type": "text",
+                          "placeholder": "Buscar...",
+                          "value": "",
+                          "required": "",
+                          "stage": {
+                            "type": "match",
+                            "var": "nombre"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "headerBtns": {
+                    "0": {
+                      "enabled": "true",
+                      "type": "filter",
+                      "label": "filtrar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "filter",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "1": {
+                      "enabled": "true",
+                      "type": "erase",
+                      "label": "filtrar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "erase",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "2": {
+                      "enabled": "true",
+                      "type": "edit",
+                      "label": "editar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "1": {
+                            "type": "modal",
+                            "form": {
+                              "title": "INTI",
+                              "cols": {
+                                "0": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "DNI",
+                                    "placeholder": "DNI"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Nombre",
+                                    "placeholder": "Nombre"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Apellido",
+                                    "placeholder": "Apellido"
+                                  },
+                                  "3": {
+                                    "type": "date",
+                                    "label": "Fecha N.",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Empresa",
+                                    "placeholder": "Empresa"
+                                  }
+                                },
+                                "1": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "Sector",
+                                    "placeholder": "Sector"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Posición",
+                                    "placeholder": "Posición"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Mail",
+                                    "placeholder": "Mail"
+                                  },
+                                  "3": {
+                                    "type": "text",
+                                    "label": "Teléfono",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Dirección",
+                                    "placeholder": "Dirección"
+                                  }
+                                }
+                              },
+                              "footerBtns": {
+                                "cancel": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                },
+                                "acept": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "3": {
+                      "enabled": "true",
+                      "type": "add",
+                      "label": "agregar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "modal",
+                            "payload": {
+                              "content": {
+                                "rows": {
+                                  "0": {
+                                    "cols": {
+                                      "0": {
+                                        "0": "nuevoIngresoModal"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "1": {
+                            "type": "post",
+                            "payload": {
+                              "url": "api/post/test/test",
+                              "method": "POST"
+                            }
+                          },
+                          "2": {
+                            "type": "update",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "initialStages": {},
+                  "finalStages": {
+                    "0": "{\"$sort\":{\"paquete.Fecha\":-1,\"paquete.Hora\":-1}}"
+                  },
+                  "footerBtns": {},
+                  "rowsData": [],
+                  "rowsCheckboxs": [],
+                  "targetedBtns": [],
+                  "emptyCellChar": "-",
+                  "selectedPage": 0,
+                  "paginationIndex": 0,
+                  "rowCount": 10,
+                  "type": "table",
+                  "childs": {
+                    "nuevoIngresoModal": {
+                      "type": "wizard",
+                      "pages": {
+                        "0": {
+                          "rows": {
+                            "0": {
+                              "cols": {
+                                "0": {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "childs": {}
+                    }
+                  },
+                  "path": "dashboard/2/1/wizard/formDespachante"
+                },
+                "formReceptor": {
+                  "id": "noID",
+                  "title": "INGRESOS",
+                  "fetchPath": "/api/aggregate/IngesurERP/Ingesos",
+                  "headers": {
+                    "0": {
+                      "name": "Grupo",
+                      "label": "Grupo"
+                    },
+                    "1": {
+                      "name": "Marca",
+                      "label": "Marca"
+                    },
+                    "2": {
+                      "name": "Modelo",
+                      "label": "Modelo"
+                    },
+                    "3": {
+                      "name": "No.Serie",
+                      "label": "No.Serie"
+                    },
+                    "4": {
+                      "name": "Duración Calibración",
+                      "label": "Duración Calibración"
+                    },
+                    "5": {
+                      "name": "Comentarios",
+                      "label": "Comentarios"
+                    }
+                  },
+                  "filters": {
+                    "0": {
+                      "label": "Buscar",
+                      "inputs": {
+                        "nombre": {
+                          "name": "Buscar",
+                          "type": "text",
+                          "placeholder": "Buscar...",
+                          "value": "",
+                          "required": "",
+                          "stage": {
+                            "type": "match",
+                            "var": "nombre"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "headerBtns": {
+                    "0": {
+                      "enabled": "true",
+                      "type": "filter",
+                      "label": "filtrar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "filter",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "1": {
+                      "enabled": "true",
+                      "type": "erase",
+                      "label": "filtrar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "erase",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "2": {
+                      "enabled": "true",
+                      "type": "edit",
+                      "label": "editar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "1": {
+                            "type": "modal",
+                            "form": {
+                              "title": "INTI",
+                              "cols": {
+                                "0": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "DNI",
+                                    "placeholder": "DNI"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Nombre",
+                                    "placeholder": "Nombre"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Apellido",
+                                    "placeholder": "Apellido"
+                                  },
+                                  "3": {
+                                    "type": "date",
+                                    "label": "Fecha N.",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Empresa",
+                                    "placeholder": "Empresa"
+                                  }
+                                },
+                                "1": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "Sector",
+                                    "placeholder": "Sector"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Posición",
+                                    "placeholder": "Posición"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Mail",
+                                    "placeholder": "Mail"
+                                  },
+                                  "3": {
+                                    "type": "text",
+                                    "label": "Teléfono",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Dirección",
+                                    "placeholder": "Dirección"
+                                  }
+                                }
+                              },
+                              "footerBtns": {
+                                "cancel": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                },
+                                "acept": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "3": {
+                      "enabled": "true",
+                      "type": "add",
+                      "label": "agregar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "modal",
+                            "payload": {
+                              "content": {
+                                "rows": {
+                                  "0": {
+                                    "cols": {
+                                      "0": {
+                                        "0": "nuevoIngresoModal"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "1": {
+                            "type": "post",
+                            "payload": {
+                              "url": "api/post/test/test",
+                              "method": "POST"
+                            }
+                          },
+                          "2": {
+                            "type": "update",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "initialStages": {},
+                  "finalStages": {
+                    "0": "{\"$sort\":{\"paquete.Fecha\":-1,\"paquete.Hora\":-1}}"
+                  },
+                  "footerBtns": {},
+                  "rowsData": [],
+                  "rowsCheckboxs": [],
+                  "targetedBtns": [],
+                  "emptyCellChar": "-",
+                  "selectedPage": 0,
+                  "paginationIndex": 0,
+                  "rowCount": 10,
+                  "type": "table",
+                  "childs": {
+                    "nuevoIngresoModal": {
+                      "type": "wizard",
+                      "pages": {
+                        "0": {
+                          "rows": {
+                            "0": {
+                              "cols": {
+                                "0": {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "childs": {}
+                    }
+                  },
+                  "path": "dashboard/2/1/wizard/formReceptor"
+                },
+                "tableNuevoIngreso": {
+                  "id": "noID",
+                  "title": "INGRESOS",
+                  "fetchPath": "/api/aggregate/IngesurERP/Ingesos",
+                  "headers": {
+                    "0": {
+                      "name": "Grupo",
+                      "label": "Grupo"
+                    },
+                    "1": {
+                      "name": "Marca",
+                      "label": "Marca"
+                    },
+                    "2": {
+                      "name": "Modelo",
+                      "label": "Modelo"
+                    },
+                    "3": {
+                      "name": "No.Serie",
+                      "label": "No.Serie"
+                    },
+                    "4": {
+                      "name": "Duración Calibración",
+                      "label": "Duración Calibración"
+                    },
+                    "5": {
+                      "name": "Comentarios",
+                      "label": "Comentarios"
+                    }
+                  },
+                  "filters": {
+                    "0": {
+                      "label": "Buscar",
+                      "inputs": {
+                        "nombre": {
+                          "name": "Buscar",
+                          "type": "text",
+                          "placeholder": "Buscar...",
+                          "value": "",
+                          "required": "",
+                          "stage": {
+                            "type": "match",
+                            "var": "nombre"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "headerBtns": {
+                    "0": {
+                      "enabled": "true",
+                      "type": "filter",
+                      "label": "filtrar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "filter",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "1": {
+                      "enabled": "true",
+                      "type": "erase",
+                      "label": "filtrar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "erase",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    },
+                    "2": {
+                      "enabled": "true",
+                      "type": "edit",
+                      "label": "editar",
+                      "targeted": true,
+                      "onClick": {
+                        "cmds": {
+                          "1": {
+                            "type": "modal",
+                            "form": {
+                              "title": "INTI",
+                              "cols": {
+                                "0": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "DNI",
+                                    "placeholder": "DNI"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Nombre",
+                                    "placeholder": "Nombre"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Apellido",
+                                    "placeholder": "Apellido"
+                                  },
+                                  "3": {
+                                    "type": "date",
+                                    "label": "Fecha N.",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Empresa",
+                                    "placeholder": "Empresa"
+                                  }
+                                },
+                                "1": {
+                                  "0": {
+                                    "type": "text",
+                                    "label": "Sector",
+                                    "placeholder": "Sector"
+                                  },
+                                  "1": {
+                                    "type": "text",
+                                    "label": "Posición",
+                                    "placeholder": "Posición"
+                                  },
+                                  "2": {
+                                    "type": "text",
+                                    "label": "Mail",
+                                    "placeholder": "Mail"
+                                  },
+                                  "3": {
+                                    "type": "text",
+                                    "label": "Teléfono",
+                                    "placeholder": ""
+                                  },
+                                  "4": {
+                                    "type": "text",
+                                    "label": "Dirección",
+                                    "placeholder": "Dirección"
+                                  }
+                                }
+                              },
+                              "footerBtns": {
+                                "cancel": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                },
+                                "acept": {
+                                  "enabled": "true",
+                                  "type": "edit",
+                                  "label": "editar",
+                                  "onClick": {}
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "3": {
+                      "enabled": "true",
+                      "type": "add",
+                      "label": "agregar",
+                      "onClick": {
+                        "cmds": {
+                          "0": {
+                            "type": "modal",
+                            "payload": {
+                              "content": {
+                                "rows": {
+                                  "0": {
+                                    "cols": {
+                                      "0": {
+                                        "0": "nuevoIngresoModal"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "1": {
+                            "type": "post",
+                            "payload": {
+                              "url": "api/post/test/test",
+                              "method": "POST"
+                            }
+                          },
+                          "2": {
+                            "type": "update",
+                            "payload": {}
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "initialStages": {},
+                  "finalStages": {
+                    "0": "{\"$sort\":{\"paquete.Fecha\":-1,\"paquete.Hora\":-1}}"
+                  },
+                  "footerBtns": {},
+                  "rowsData": [],
+                  "rowsCheckboxs": [],
+                  "targetedBtns": [],
+                  "emptyCellChar": "-",
+                  "selectedPage": 0,
+                  "paginationIndex": 0,
+                  "rowCount": 10,
+                  "type": "table",
+                  "childs": {
+                    "nuevoIngresoModal": {
+                      "type": "wizard",
+                      "pages": {
+                        "0": {
+                          "rows": {
+                            "0": {
+                              "cols": {
+                                "0": {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "childs": {}
+                    }
+                  },
+                  "path": "dashboard/2/1/wizard/tableNuevoIngreso"
+                }
+              },
+              "path": "dashboard/2/1/wizard"
+            }
+          },
+          "path": "dashboard/2/1"
+        },
+        "2": {
+          "id": "noId",
+          "name": "Entregados",
+          "access": {
+            "names": {
+              "1": "Admin"
+            },
+            "roles": {
+              "0": "admin",
+              "1": "client"
+            }
+          },
+          "postUrl": null,
+          "type": "category",
+          "content": {
+            "rows": {
+              "0": {
+                "cols": {
+                  "0": {
+                    "0": "tableUsuarios"
+                  }
+                }
+              }
+            }
+          },
+          "childs": {
+            "tableUsuarios": {
+              "id": "noID",
+              "title": "INGRESOS",
+              "fetchPath": "/aggregate/Ingesur/Clientes",
+              "headers": {
+                "0": {
+                  "name": "Grupo",
+                  "label": "Grupo"
+                },
+                "1": {
+                  "name": "Marca",
+                  "label": "Marca"
+                },
+                "2": {
+                  "name": "Modelo",
+                  "label": "Modelo"
+                },
+                "3": {
+                  "name": "No.Serie",
+                  "label": "No.Serie"
+                },
+                "4": {
+                  "name": "Duración Calibración",
+                  "label": "Duración Calibración"
+                },
+                "5": {
+                  "name": "Comentarios",
+                  "label": "Comentarios"
+                }
+              },
+              "filters": {
+                "0": {
+                  "label": "Buscar",
+                  "inputs": {
+                    "nombre": {
+                      "name": "Buscar",
+                      "type": "text",
+                      "placeholder": "Buscar...",
+                      "value": "",
+                      "required": "",
+                      "stage": {
+                        "type": "match",
+                        "var": "nombre"
+                      }
+                    }
+                  }
+                }
+              },
+              "headerBtns": {
+                "0": {
+                  "enabled": "true",
+                  "type": "filter",
+                  "label": "filtrar",
+                  "onClick": {
+                    "cmds": {
+                      "0": {
+                        "type": "filter",
+                        "payload": {}
+                      }
+                    }
+                  }
+                },
+                "1": {
+                  "enabled": "true",
+                  "type": "erase",
+                  "label": "filtrar",
+                  "targeted": true,
+                  "onClick": {
+                    "cmds": {
+                      "0": {
+                        "type": "erase",
+                        "payload": {}
+                      }
+                    }
+                  }
+                },
+                "2": {
+                  "enabled": "true",
+                  "type": "edit",
+                  "label": "editar",
+                  "targeted": true,
+                  "onClick": {
+                    "cmds": {
+                      "1": {
+                        "type": "modal",
+                        "form": {
+                          "title": "INTI",
+                          "cols": {
+                            "0": {
+                              "0": {
+                                "type": "text",
+                                "label": "DNI",
+                                "placeholder": "DNI"
+                              },
+                              "1": {
+                                "type": "text",
+                                "label": "Nombre",
+                                "placeholder": "Nombre"
+                              },
+                              "2": {
+                                "type": "text",
+                                "label": "Apellido",
+                                "placeholder": "Apellido"
+                              },
+                              "3": {
+                                "type": "date",
+                                "label": "Fecha N.",
+                                "placeholder": ""
+                              },
+                              "4": {
+                                "type": "text",
+                                "label": "Empresa",
+                                "placeholder": "Empresa"
+                              }
+                            },
+                            "1": {
+                              "0": {
+                                "type": "text",
+                                "label": "Sector",
+                                "placeholder": "Sector"
+                              },
+                              "1": {
+                                "type": "text",
+                                "label": "Posición",
+                                "placeholder": "Posición"
+                              },
+                              "2": {
+                                "type": "text",
+                                "label": "Mail",
+                                "placeholder": "Mail"
+                              },
+                              "3": {
+                                "type": "text",
+                                "label": "Teléfono",
+                                "placeholder": ""
+                              },
+                              "4": {
+                                "type": "text",
+                                "label": "Dirección",
+                                "placeholder": "Dirección"
+                              }
+                            }
+                          },
+                          "footerBtns": {
+                            "cancel": {
+                              "enabled": "true",
+                              "type": "edit",
+                              "label": "editar",
+                              "onClick": {}
+                            },
+                            "acept": {
+                              "enabled": "true",
+                              "type": "edit",
+                              "label": "editar",
+                              "onClick": {}
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "3": {
+                  "enabled": "true",
+                  "type": "add",
+                  "label": "agregar",
+                  "onClick": {
+                    "cmds": {
+                      "0": {
+                        "type": "modal",
+                        "payload": {
+                          "title": "NUEVO INGRESO",
+                          "text": "¿Desea cargar un nuevo ingreso de equipos?",
+                          "onAccept": {
+                            "cmds": {
+                              "0": {
+                                "type": "close-modal",
+                                "payload": {}
+                              },
+                              "1": {
+                                "type": "parent-cmd",
+                                "payload": {
+                                  "type": "parent-cmd",
+                                  "payload": {}
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "initialStages": {},
+              "finalStages": {},
+              "footerBtns": {},
+              "rowsData": [],
+              "rowsCheckboxs": [],
+              "targetedBtns": [],
+              "emptyCellChar": "-",
+              "selectedPage": 0,
+              "paginationIndex": 0,
+              "rowCount": 10,
+              "type": "table",
+              "childs": {},
+              "path": "dashboard/2/2/tableUsuarios"
+            }
+          },
+          "path": "dashboard/2/2"
+        },
+        "3": {
+          "id": "noId",
+          "name": "Gases",
+          "access": {
+            "names": {
+              "1": "Admin"
+            },
+            "roles": {
+              "0": "admin",
+              "1": "client"
+            }
+          },
+          "postUrl": null,
+          "type": "category",
+          "content": {
+            "rows": {
+              "0": {
+                "cols": {
+                  "0": {
+                    "0": "tableUsuarios"
+                  }
+                }
+              }
+            }
+          },
+          "childs": {
+            "tableUsuarios": {
+              "id": "noID",
+              "title": "INGRESOS",
+              "fetchPath": "/aggregate/Ingesur/Clientes",
+              "headers": {
+                "0": {
+                  "name": "Grupo",
+                  "label": "Grupo"
+                },
+                "1": {
+                  "name": "Marca",
+                  "label": "Marca"
+                },
+                "2": {
+                  "name": "Modelo",
+                  "label": "Modelo"
+                },
+                "3": {
+                  "name": "No.Serie",
+                  "label": "No.Serie"
+                },
+                "4": {
+                  "name": "Duración Calibración",
+                  "label": "Duración Calibración"
+                },
+                "5": {
+                  "name": "Comentarios",
+                  "label": "Comentarios"
+                }
+              },
+              "filters": {
+                "0": {
+                  "label": "Buscar",
+                  "inputs": {
+                    "nombre": {
+                      "name": "Buscar",
+                      "type": "text",
+                      "placeholder": "Buscar...",
+                      "value": "",
+                      "required": "",
+                      "stage": {
+                        "type": "match",
+                        "var": "nombre"
+                      }
+                    }
+                  }
+                }
+              },
+              "headerBtns": {
+                "0": {
+                  "enabled": "true",
+                  "type": "filter",
+                  "label": "filtrar",
+                  "onClick": {
+                    "cmds": {
+                      "0": {
+                        "type": "filter",
+                        "payload": {}
+                      }
+                    }
+                  }
+                },
+                "1": {
+                  "enabled": "true",
+                  "type": "erase",
+                  "label": "filtrar",
+                  "targeted": true,
+                  "onClick": {
+                    "cmds": {
+                      "0": {
+                        "type": "erase",
+                        "payload": {}
+                      }
+                    }
+                  }
+                },
+                "2": {
+                  "enabled": "true",
+                  "type": "edit",
+                  "label": "editar",
+                  "targeted": true,
+                  "onClick": {
+                    "cmds": {
+                      "1": {
+                        "type": "modal",
+                        "form": {
+                          "title": "INTI",
+                          "cols": {
+                            "0": {
+                              "0": {
+                                "type": "text",
+                                "label": "DNI",
+                                "placeholder": "DNI"
+                              },
+                              "1": {
+                                "type": "text",
+                                "label": "Nombre",
+                                "placeholder": "Nombre"
+                              },
+                              "2": {
+                                "type": "text",
+                                "label": "Apellido",
+                                "placeholder": "Apellido"
+                              },
+                              "3": {
+                                "type": "date",
+                                "label": "Fecha N.",
+                                "placeholder": ""
+                              },
+                              "4": {
+                                "type": "text",
+                                "label": "Empresa",
+                                "placeholder": "Empresa"
+                              }
+                            },
+                            "1": {
+                              "0": {
+                                "type": "text",
+                                "label": "Sector",
+                                "placeholder": "Sector"
+                              },
+                              "1": {
+                                "type": "text",
+                                "label": "Posición",
+                                "placeholder": "Posición"
+                              },
+                              "2": {
+                                "type": "text",
+                                "label": "Mail",
+                                "placeholder": "Mail"
+                              },
+                              "3": {
+                                "type": "text",
+                                "label": "Teléfono",
+                                "placeholder": ""
+                              },
+                              "4": {
+                                "type": "text",
+                                "label": "Dirección",
+                                "placeholder": "Dirección"
+                              }
+                            }
+                          },
+                          "footerBtns": {
+                            "cancel": {
+                              "enabled": "true",
+                              "type": "edit",
+                              "label": "editar",
+                              "onClick": {}
+                            },
+                            "acept": {
+                              "enabled": "true",
+                              "type": "edit",
+                              "label": "editar",
+                              "onClick": {}
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "3": {
+                  "enabled": "true",
+                  "type": "add",
+                  "label": "agregar",
+                  "onClick": {
+                    "cmds": {
+                      "0": {
+                        "type": "modal",
+                        "payload": {
+                          "title": "NUEVO INGRESO",
+                          "text": "¿Desea cargar un nuevo ingreso de equipos?",
+                          "onAccept": {
+                            "cmds": {
+                              "0": {
+                                "type": "close-modal",
+                                "payload": {}
+                              },
+                              "1": {
+                                "type": "parent-cmd",
+                                "payload": {
+                                  "type": "parent-cmd",
+                                  "payload": {}
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "initialStages": {},
+              "finalStages": {},
+              "footerBtns": {},
+              "rowsData": [],
+              "rowsCheckboxs": [],
+              "targetedBtns": [],
+              "emptyCellChar": "-",
+              "selectedPage": 0,
+              "paginationIndex": 0,
+              "rowCount": 10,
+              "type": "table",
+              "childs": {},
+              "path": "dashboard/2/3/tableUsuarios"
+            }
+          },
+          "path": "dashboard/2/3"
+        }
+      },
+      "type": "category-parent",
+      "path": "dashboard/2"
+    },
+    "3": {
+      "id": "noId",
+      "name": "VEHÍCULOS",
+      "access": {
+        "names": {
+          "1": "Admin"
+        },
+        "roles": {
+          "0": "Admin"
+        }
+      },
+      "postUrl": null,
+      "type": "category",
+      "content": {
+        "rows": {
+          "0": {
+            "cols": {
+              "0": {
+                "0": "mapa"
+              }
+            }
+          }
+        }
+      },
+      "childs": {
+        "mapa": {
+          "id": "noID",
+          "title": "Mapas",
+          "childs": {},
+          "headers": {},
+          "filters": {},
+          "headerBtns": {},
+          "type": "map",
+          "origin": "[-34.6083,-58.3712]",
+          "zoom": "12",
+          "layer": "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          "markers": {
+            "0": {
+              "coords": "[-34.6083,-58.3712]",
+              "icon": "tree"
+            },
+            "1": {
+              "coords": "[-34.726959164195364, -58.33363868185681]",
+              "icon": "tree"
+            },
+            "2": {
+              "coords": "[-34.66182308737559, -58.36573935936066]",
+              "icon": "tree"
+            }
+          },
+          "path": "dashboard/3/mapa"
+        }
+      },
+      "path": "dashboard/3"
+    }
+  },
+  "selectedCategory": "",
+  "type": "dashboard",
+  "path": "dashboard"
+}

@@ -141,7 +141,7 @@ const cmd = (state, cmds, res, pos) => {
     const showModal = (state, payload, res) => {
         return new Promise((resolve, reject) => {
             try {
-                modal.show(payload, null);
+                modal.show(state.childs[payload.child], state);
                 resolve();
             } catch (error) {
                 reject(error);
@@ -831,7 +831,7 @@ const cmd = (state, cmds, res, pos) => {
                 case "post":
                     c = () => post(state, command.payload, res);
                     break;
-                case "modal":
+                case "show-modal":
                     c = () => showModal(state, command.payload, res);
                     break;
                 //TODO: CONFIRMATION BOX debería ser un template de modal...
