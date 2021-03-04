@@ -236,24 +236,43 @@ const show = (state, parent) => {
                              dropdownOpt.id= "Defecto";
 
                             dropdownBtn.appendChild(dropdownOpt);
+                  if(input.id== "select-location"){
 
-                  fetch('http://localhost:80/rest/inti/recorridos')
-                            .then(res=>res.json())
-                            .then(data=>{
-                                 console.log(data)
-                                 Object.values(data).forEach(option => {
+                    fetch('http://localhost:80/rest/inti/recorridos')
+                              .then(res=>res.json())
+                              .then(data=>{
 
-                                    var dropdownRecorridos=document.createElement("option");
+                                   Object.values(data).forEach(option => {
 
-                                    dropdownRecorridos.text = option.imei;
-                                    dropdownRecorridos.id= "imei";
+                                      var dropdownRecorridos=document.createElement("option");
 
-                                    dropdownRecorridos.value=`${option.recorrido[0].inicioPos[0]},${option.recorrido[0].inicioPos[1]}`;
-                                   dropdownBtn.appendChild(dropdownRecorridos);
+                                      dropdownRecorridos.text = option.imei;
+                                      dropdownRecorridos.id= "imei";
+
+                                      dropdownRecorridos.value=`${option.recorrido[0].inicioPos[0]},${option.recorrido[0].inicioPos[1]}`;
+                                     dropdownBtn.appendChild(dropdownRecorridos);
 
 
-                             });
-                             });
+                               });
+                               });
+
+
+                  }else{
+
+                  Object.values(input.options).forEach(option => {
+
+                                      var dropdownRecorridos=document.createElement("option");
+
+                                      dropdownRecorridos.text = option.name;
+                                      dropdownRecorridos.id= input.id;
+
+                                      dropdownRecorridos.value=option.layer;
+                                     dropdownBtn.appendChild(dropdownRecorridos);
+
+
+                               });
+
+                  }
 
 
 
@@ -287,10 +306,10 @@ const show = (state, parent) => {
                 //DIBUJA EL RECORRIDO DE UN SOLO IMEI ----- TODO: DIBUJAR PARA TODOS LOS IMEI
 
 
-            var record= [];
+
 
             var div = document.createElement("div");
-             div.class = "";
+            div.class = "";
             div.id =  state.id + "-map";
             div.style.width="100%";
             var height=screen.height*0.6
@@ -301,6 +320,15 @@ const show = (state, parent) => {
             var origin= JSON.parse(state.origin)
             const map =L.map(div.id).setView(origin,state.zoom);
             L.tileLayer(state.layer).addTo(map);
+
+
+            document.getElementById('select-map').addEventListener('change',function(e){
+
+                L.tileLayer(e.target.value).addTo(map);
+
+
+            })
+
 
             map.locate({enableHighAccuracy:true});
 
@@ -357,7 +385,7 @@ return(coords);
 
 
             var latlngs = await getRunCoordsFrom_(imeiNumber);
-            console.log(latlngs);
+
 
             var polyline = L.polyline(latlngs, {
                 color: '#75E87A',
@@ -372,17 +400,17 @@ return(coords);
 
         function coordinatesFrom_(obj, imeiNumber){
             let listaDeCoords = []
-            console.log(obj);
+
             //ITERA SOBRE TODOS LOS ELEMENTOS TRAIDOS. TODO: ITERAR CONDICIONALMENTE.
             for (const element in obj) {
                 if (Object.hasOwnProperty.call(obj, element) && obj[element].imei === imeiNumber) {
                     var elem = (obj[element]);
-                    console.log(elem);
+
                     let run = elem.recorrido;
                     for (let i = 0; i < run.length; i++) {
                         const element = run[i];
                         let position = Object.keys(element).toString();
-                        console.log(position);
+
                         switch (position) {
                             case "inicioPos":
                                 listaDeCoords.push(element.inicioPos);
@@ -403,7 +431,7 @@ return(coords);
 
                         //listaDeCoords.push([element.inicioPos, element.runningPos, element.finalPos]);
                     }
-                    console.log(listaDeCoords);
+
                 }
             }
             return(listaDeCoords);
@@ -412,7 +440,7 @@ return(coords);
          fetch('http://localhost:80/rest/inti/recorridos')
                             .then(res=>res.json())
                             .then(data=>{
-                                 console.log(data)
+
                                  Object.values(data).forEach(option => {
 
                                drawRunOf(option.imei)
