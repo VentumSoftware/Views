@@ -189,7 +189,7 @@ const show = (state, parent) => {
                 if (Object.keys(state.filters).length > index) {
                     var label = document.createElement("label");
                     label.id = state.id + "-map-filters-form-col-" + index.toString() + "-label";
-                   
+
                     col.appendChild(label);
 
                     var inputs = document.createElement("div");
@@ -225,37 +225,57 @@ const show = (state, parent) => {
 
                       var dropdownBtn = document.createElement("select");
                             dropdownBtn.className = "form-control";
-                            dropdownBtn.id="select-location";
+                            dropdownBtn.id=input.id;
                             dropdownBtn.text = input.name;
                             dropdownView.appendChild(dropdownBtn);
 
-                            
+
                       var dropdownOpt=document.createElement("option");
                              dropdownBtn.selected=true;
-                             dropdownOpt.text = "Buscar por IMEI";
+                             dropdownOpt.text = input.name;
                              dropdownOpt.id= "Defecto";
-                              
+
                             dropdownBtn.appendChild(dropdownOpt);
+                  if(input.id== "select-location"){
 
-                  fetch('http://localhost:80/rest/inti/recorridos')
-                            .then(res=>res.json())
-                            .then(data=>{
-                                 console.log(data)
-                                 Object.values(data).forEach(option => {
+                    fetch('http://localhost:80/rest/inti/recorridos')
+                              .then(res=>res.json())
+                              .then(data=>{
 
-                                    var dropdownRecorridos=document.createElement("option");
-                                  
-                                    dropdownRecorridos.text = option.imei;
-                                    dropdownRecorridos.id= option.id;
-                                    dropdownRecorridos.value=`${option.recorrido[0].inicioPos[0]},${option.recorrido[0].inicioPos[1]}`;
-                                   dropdownBtn.appendChild(dropdownRecorridos);
-       
-                             
-                             });
-                             });
+                                   Object.values(data).forEach(option => {
+
+                                      var dropdownRecorridos=document.createElement("option");
+
+                                      dropdownRecorridos.text = option.imei;
+                                      dropdownRecorridos.id= "imei";
+
+                                      dropdownRecorridos.value=`${option.recorrido[0].inicioPos[0]},${option.recorrido[0].inicioPos[1]}`;
+                                     dropdownBtn.appendChild(dropdownRecorridos);
 
 
-                       
+                               });
+                               });
+
+
+                  }else{
+
+                  Object.values(input.options).forEach(option => {
+
+                                      var dropdownRecorridos=document.createElement("option");
+
+                                      dropdownRecorridos.text = option.name;
+                                      dropdownRecorridos.id= input.id;
+
+                                      dropdownRecorridos.value=option.layer;
+                                     dropdownBtn.appendChild(dropdownRecorridos);
+
+
+                               });
+
+                  }
+
+
+
                         } else {
                             var field = document.createElement("input");
                             field.ishoveredin = "0";
@@ -273,71 +293,6 @@ const show = (state, parent) => {
 
             }
 
-            //Dibujo columna con los botones del header
-            var col = document.createElement("div");
-            col.id = state.id + "-table-filters-form-col-" + "6";
-            col.className = "col-2";
-            col.style.textAlign = "center";
-            formRow.appendChild(col);
-            var label = document.createElement("label");
-            label.id = state.id + "-table-filters-form-col-" + "submit" + "-label";
-            label.innerHTML = "  &nbsp";
-            label.style.position = "relative";
-            label.style.width = '100%';
-            col.appendChild(label);
-
-            var inputs = document.createElement("div");
-            inputs.className = "form-row";
-            col.appendChild(inputs);
-
-            //Dibujo cada boton del header
-            var btns = Object.entries(state.headerBtns);
-            var btnsCount = 0;
-            btns.forEach(([key, value]) => {
-                if (value)
-                    btnsCount++;
-            });
-            console.log("header buttons: " + btnsCount.toString());
-            state.targetedBtns = [];
-            btns.forEach(([key, value]) => {
-                if (value.enabled) {
-                    if (btnsCount < 3)
-                        value.showLabel = true;
-                    else
-                        value.showLabel = false;
-
-                    var btnDiv = document.createElement("div");
-                    switch (btnsCount) {
-                        case 1:
-                            btnDiv.className += "col-12";
-                            break;
-                        case 2:
-                            btnDiv.className += "col-6";
-                            break;
-                        case 3:
-                            btnDiv.className += "col-4";
-                            break;
-                        case 4:
-                            btnDiv.className += "col-3";
-                            break;
-                        default:
-                            btnDiv.className += "col-12";
-                            break;
-                    }
-                    inputs.appendChild(btnDiv);
-                    var btn = buttons.createBtn(value);
-                    btnDiv.appendChild(btn);
-                    btn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        cmd(state, value.onClick.cmds, null, 0);
-                    });
-
-                    if (value.targeted) {
-                        state.targetedBtns.push(btn);
-                        btn.disabled = true;
-                    }
-                }
-            });
 
             return div;
         } catch (error) {
@@ -351,72 +306,10 @@ const show = (state, parent) => {
                 //DIBUJA EL RECORRIDO DE UN SOLO IMEI ----- TODO: DIBUJAR PARA TODOS LOS IMEI
 
 
-        async function getRunCoordsFrom_(imeiNumber){
-
-var res = await fetch("http://localhost:80/rest/inti/recorridos");
-const response = await res.json();
-var coords = coordinatesFrom_(response, imeiNumber);
-return(coords);            
-}
-        async function drawRunOf(imeiNumber){
-                
-         
-            var latlngs = await getRunCoordsFrom_(imeiNumber);
-            console.log(latlngs);
-
-            var polyline = L.polyline(latlngs, {
-                color: '#75E87A',
-                weight: 3,
-                opacity: 1
-
-            })
-            .addTo(map);
-        }    
 
 
-        
-        function coordinatesFrom_(obj, imeiNumber){
-            let listaDeCoords = []
-            console.log(obj);
-            //ITERA SOBRE TODOS LOS ELEMENTOS TRAIDOS. TODO: ITERAR CONDICIONALMENTE.
-            for (const element in obj) {
-                if (Object.hasOwnProperty.call(obj, element) && obj[element].imei === imeiNumber) {                    
-                    var elem = (obj[element]);
-                    console.log(elem);
-                    let run = elem.recorrido;
-                    for (let i = 0; i < run.length; i++) {
-                        const element = run[i];
-                        let position = Object.keys(element).toString();
-                        console.log(position);
-                        switch (position) {
-                            case "inicioPos":
-                                listaDeCoords.push(element.inicioPos);
-                                break;
-                            case "runningPos":
-                                for (let i = 0; i < element.runningPos.length; i++) {
-                                    const elem = element.runningPos[i];
-                                    listaDeCoords.push(elem);
-                                }
-                                break;
-                            case "finalPos":
-                                listaDeCoords.push(element.finalPos);
-                                break;
-                            default:
-                                console.error("Valores incorrectos");
-                                break;
-                        }
-
-                        //listaDeCoords.push([element.inicioPos, element.runningPos, element.finalPos]); 
-                    }
-                    console.log(listaDeCoords);
-                }
-            }
-            return(listaDeCoords);
-            
-        }
-        drawRunOf(25);
             var div = document.createElement("div");
-             div.class = "";
+            div.class = "";
             div.id =  state.id + "-map";
             div.style.width="100%";
             var height=screen.height*0.6
@@ -427,6 +320,15 @@ return(coords);
             var origin= JSON.parse(state.origin)
             const map =L.map(div.id).setView(origin,state.zoom);
             L.tileLayer(state.layer).addTo(map);
+
+
+            document.getElementById('select-map').addEventListener('change',function(e){
+
+                L.tileLayer(e.target.value).addTo(map);
+
+
+            })
+
 
             map.locate({enableHighAccuracy:true});
 
@@ -465,35 +367,93 @@ return(coords);
             marker.bindPopup('Ciudad de '+ name);
             map.addLayer(marker);
             map.flyTo(coord, 13)
+
+
             })
+
+
+
+                  async function getRunCoordsFrom_(imeiNumber){
+
+var res = await fetch("http://localhost:80/rest/inti/recorridos");
+const response = await res.json();
+var coords = coordinatesFrom_(response, imeiNumber);
+return(coords);
+}
+
+        async function drawRunOf(imeiNumber){
+
+
+            var latlngs = await getRunCoordsFrom_(imeiNumber);
+
+
+            var polyline = L.polyline(latlngs, {
+                color: '#75E87A',
+                weight: 3,
+                opacity: 1
+
+            })
+            .addTo(map);
+        }
+
+
+
+        function coordinatesFrom_(obj, imeiNumber){
+            let listaDeCoords = []
+
+            //ITERA SOBRE TODOS LOS ELEMENTOS TRAIDOS. TODO: ITERAR CONDICIONALMENTE.
+            for (const element in obj) {
+                if (Object.hasOwnProperty.call(obj, element) && obj[element].imei === imeiNumber) {
+                    var elem = (obj[element]);
+
+                    let run = elem.recorrido;
+                    for (let i = 0; i < run.length; i++) {
+                        const element = run[i];
+                        let position = Object.keys(element).toString();
+
+                        switch (position) {
+                            case "inicioPos":
+                                listaDeCoords.push(element.inicioPos);
+                                break;
+                            case "runningPos":
+                                for (let i = 0; i < element.runningPos.length; i++) {
+                                    const elem = element.runningPos[i];
+                                    listaDeCoords.push(elem);
+                                }
+                                break;
+                            case "finalPos":
+                                listaDeCoords.push(element.finalPos);
+                                break;
+                            default:
+                                console.error("Valores incorrectos");
+                                break;
+                        }
+
+                        //listaDeCoords.push([element.inicioPos, element.runningPos, element.finalPos]);
+                    }
+
+                }
+            }
+            return(listaDeCoords);
+
+        }
+         fetch('http://localhost:80/rest/inti/recorridos')
+                            .then(res=>res.json())
+                            .then(data=>{
+
+                                 Object.values(data).forEach(option => {
+
+                               drawRunOf(option.imei)
+
+                             });
+                             });
+
 
         } catch (error) {
             console.log(error);
         }
     };
-    const drawSelect= () => {
-      try {
 
-          var select = document.createElement("select");
-          select.name = "select-location";
-          select.id= "select-location";
-          cardParent.body.appendChild(select);
-
-          Object.keys(state.markers).forEach(marker => {
-          var option = document.createElement("option");
-          option.value = state.markers[marker].coords;
-          option.text = state.markers[marker].name;
-          option.id= state.markers[marker].name;
-          select.appendChild(option);
-
-                })
-
-
-
-      } catch (error) {
-          console.log(error);
-      }
-  };
    const drawCard= () => {
       try {
 
@@ -517,5 +477,3 @@ return(coords);
     drawCard();
 
 };
-
-export default { create, show, cmd };
