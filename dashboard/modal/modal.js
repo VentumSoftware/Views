@@ -3,41 +3,88 @@ import card from 'https://ventumdashboard.s3.amazonaws.com/dashboard/card/card.j
 import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.js';
 import dashboard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/dashboard.js';
 import dialogBox from 'https://ventumdashboard.s3.amazonaws.com/dashboard/dialogBox/dialogBox.js';
+import buttons from 'https://ventumdashboard.s3.amazonaws.com/dashboard/buttons/buttons.js';
 
 const dfltState = {
     type: "modal",
     width: "auto",
     title: "NO TITLE",
     text: "",
-    footerBtns: {
-        0: {
-            type: "secondary",
-            label: "Cancelar",
-            onClick: {
-                cmds: {
-                    0: {
-                        type: "close-modal",
-                        payload: {}
-                    }
-                }
-            }
-        },
-        1: {
-            type: "primary",
-            label: "Aceptar",
-            onClick: {
-                cmds: {}
-            }
-        }
-    },
+    width: "50%",
+    footerBtns: {},
     childs: {}
 };
 
 var states = [];
 
+
+//Hace algo parecido a los "backslashs": hace un eval de los que esta andentro de ${}
+var getStringVars = (str) => {
+    console.log("getStringVars: " + str);
+    var result = "";
+    var re = new RegExp('(?<=\${)[^}]*', 'gm');
+    //var matches = str.matchAll('/(?<=\${)[^}]*/gm');
+    var matches = str.matchAll(re);
+    console.log(matches);
+    for (var match of matches) {
+        console.log(match);
+        var expression = eval(match.value[2]);
+        if (typeof expression === 'object') expression = JSON.stringify(expression);
+        console.log(expression);
+    }
+    return str;
+}
+
+let evalString = (str) => str.replace(/\${(.*?)}/g, (x,g)=> eval(g));
+
 //-----------------------------------------------------------------------------------------------
 
 const cmd = (state, cmds, res, pos) => {
+
+    const fetchCmd = (state, payload, res) => {
+        console.log("fetch: " + JSON.stringify(payload))
+        var options = {
+            method: payload.method || 'GET',
+            mode: payload.mode || 'cors',
+            cache: payload.cache || 'no-cache',
+            credentials: payload.credentials || 'same-origin',
+            headers: payload.headers || { 'Content-Type': 'application/json' },
+            redirect: payload.redirect || 'follow',
+            referrerPolicy: payload.referrerPolicy || 'no-referrer',
+        };
+        if (options.method === "POST") {
+            options.body = payload.body || {};
+
+            if (typeof options.body === 'object')
+                options.body = JSON.stringify(options.body);
+            
+            options.body = getStringVars(options.body);
+        };
+
+        return fetch(payload.url, options);
+    };
+
+    const childCmd = (state, payload, res) => {
+        try {
+            var child = state.childs[payload.child];
+            payload.cmds = payload.cmds || res;
+            switch (child.type) {
+                case "form":
+                    return form.cmd(child, payload.cmds, res, 0);
+                case "table":
+                    return table.cmd(child, payload.cmds, res, 0);
+                case "modal":
+                    return modal.cmd(child, payload.cmds, res, 0);
+                default:
+                    return new Promise((resolve, reject) => {
+                        reject("Error with type: " + key);
+                    })
+            }
+        } catch (error) {
+            console.log(error)
+            reject("Child cmd failed!");
+        }
+    };
 
     const parentCmd = (state, payload, res) => {
         switch (state.parentState.type) {
@@ -103,16 +150,9 @@ const cmd = (state, cmds, res, pos) => {
         spinnerBorder.appendChild(span);
     };
 
-    const returnCorrectCmd = (state, payload, res) => {
+    const closeModal = (state, payload, res) => {
         return new Promise((resolve, reject) => {
-            returnCorrect(state, payload.res);
-            resolve(payload.res);
-        })
-    };
-
-    const returnErrorCmd = (state, payload, res) => {
-        return new Promise((resolve, reject) => {
-            returnCorrect(state, payload.res);
+            $('#modal-root').modal('hide');
             resolve(payload.res);
         })
     };
@@ -123,9 +163,18 @@ const cmd = (state, cmds, res, pos) => {
             resolve(res);
         } else {
             console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
+            if(typeof res === 'object') console.log(`res (${JSON.stringify(res)})`);  
+            else console.log(`res (${res})`);
+
             var c = null;
             var command = cmds[pos];
             switch (command.type) {
+                case "fetch":
+                    c = () => fetchCmd(state, command.payload, res);
+                    break;
+                case "child-cmd":
+                    c = () => childCmd(state, command.payload, res);
+                    break;
                 case "parent-cmd":
                     c = () => parentCmd(state, command.payload, res);
                     break;
@@ -141,11 +190,8 @@ const cmd = (state, cmds, res, pos) => {
                 case "hideSpinner":
                     c = () => hideSpinner(state, command.payload, res);
                     break;
-                case "return-correct":
-                    c = () => returnCorrectCmd(state, command.payload, res);
-                    break;
-                case "return-error":
-                    c = () => returnErrorCmd(state, command.payload, res);
+                case "close":
+                    c = () => closeModal(state, command.payload, res);
                     break;
                 default:
                     console.log(`Cmd not found: ${command.type}`);
@@ -168,7 +214,7 @@ const cmd = (state, cmds, res, pos) => {
 
 const create = (newState, path) => {
 
-    try{
+    try {
         if (newState.type == "modal") {
             newState = utils.fillObjWithDflt(newState, dfltState);
             newState.path = path;
@@ -196,8 +242,8 @@ const create = (newState, path) => {
             states.push(newState);
             return newState;
         } else {
-        console.log("Error modal, incorrect type: " + newState.type);
-        return null;
+            console.log("Error modal, incorrect type: " + newState.type);
+            return null;
         }
     } catch (error) {
         console.log(error);
@@ -253,60 +299,115 @@ const show = (state, parent) => {
 
     const showModal = () => {
 
-        document.getElementById("modal-header").childNodes[1].innerHTML = state.title;
-        
+        const createRow = (parent) => {
+            const margins = 20;
+            var row = document.createElement("div");
+            row.style.position = 'relative';
+            // row.style.left = margins + 'px';
+            // row.style.right = margins + 'px';
+            // row.style.top = margins + 'px';
+            // row.style.bottom = margins + 'px';
+            row.style.marginBottom = "20px";
+            row.style.width = (parent.offsetWidth - margins) * 100 / parent.offsetWidth + '%';
+            row.style.height = 'auto';
+            row.className += " row";
+            // tableRoot.style.height = (parent.offsetHeight - margins * 2) * 100 / parent.offsetHeight + '%';
+            parent.appendChild(row);
+            return row;
+        };
 
-        if (state.width == "auto") {
-            
-        } else {
-            document.getElementById("modal-dialog").width = state.width;
-        }
+        const createCol = (parent) => {
+            const margins = 0;
+            var col = document.createElement("div");
+            col.style.position = 'relative';
+            col.style.left = margins + 'px';
+            col.style.right = margins + 'px';
+            col.style.top = margins + 'px';
+            col.style.bottom = margins + 'px';
+            col.style.width = (parent.offsetWidth - margins * 2) * 100 / parent.offsetWidth + '%';
+            col.style.height = 'auto';
+            col.className += " col";
+            // tableRoot.style.height = (parent.offsetHeight - margins * 2) * 100 / parent.offsetHeight + '%';
+            parent.appendChild(col);
+            return col;
+        };
+
+        const createFooterBtns = (parent) => {
+            const footer = document.getElementById('modal-footer');
+            footer.innerHTML = null;
+            var btns = Object.entries(state.footerBtns);
+            var btnsCount = 0;
+            btns.forEach(([key, value]) => {
+                if (value)
+                    btnsCount++;
+            });
+
+            var btnsRow = document.createElement("div");
+            btnsRow.className = "row";
+            btnsRow.style["justify-content"] = "flex-end";
+            btnsRow.style.width = "100%";
+            footer.appendChild(btnsRow);
+
+            console.log("btncount: " + btnsCount.toString());
+            btns.forEach(([key, value]) => {
+                // if (btnsCount < 3)
+                //     value.showLabel = true;
+                // else
+                //     value.showLabel = false;
+                var btnDiv = document.createElement("div");
+                btnDiv.className += "col-3";
+                // switch (btnsCount) {
+                //     case 1:
+                //         btnDiv.className += "col-12";
+                //         break;
+                //     case 2:
+                //         btnDiv.className += "col-6";
+                //         break;
+                //     case 3:
+                //         btnDiv.className += "col-4";
+                //         break;
+                //     case 4:
+                //         btnDiv.className += "col-3";
+                //         break;
+                //     case 5:
+                //         btnDiv.className += "col-2";
+                //         break;
+                //     case 6:
+                //         btnDiv.className += "col-2";
+                //         break;
+                //     default:
+                //         btnDiv.className += "col-12";
+                //         break;
+                // }
+                btnsRow.appendChild(btnDiv);
+                var btn = buttons.createBtn(value, state);
+                btnDiv.appendChild(btn);
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    cmd(state, value.onClick.cmds, null, 0);
+                });
+            });
+        };
+
+        //Limpio el modal anterior
+        document.getElementById("modal-body").innerHTML = null;
+        document.getElementById("modal-header").childNodes[1].innerHTML = state.title;
+        document.getElementById("modal-footer").innerHTML = null;
+        
+        var modalDialog = document.getElementById("modal-dialog")
+        modalDialog.style["max-width"] = "9999px"; // Esto es para sacar el maxwidth de la clase "modal-dialog"
+        modalDialog.style.width = state.width;
 
         if (state.content != null) {
             const showContent = () => {
-
-                const createRow = (parent) => {
-                    const margins = 20;
-                    var row = document.createElement("div");
-                    row.style.position = 'relative';
-                    row.style.left = margins + 'px';
-                    row.style.right = margins + 'px';
-                    row.style.top = margins + 'px';
-                    row.style.bottom = margins + 'px';
-                    row.style.marginBottom = "20px";
-                    row.style.width = (parent.offsetWidth - margins) * 100 / parent.offsetWidth + '%';
-                    row.style.height = 'auto';
-                    row.className += " row";
-                    // tableRoot.style.height = (parent.offsetHeight - margins * 2) * 100 / parent.offsetHeight + '%';
-                    parent.appendChild(row);
-                    return row;
-                };
-                
-                const createCol = (parent) => {
-                    const margins = 0;
-                    var col = document.createElement("div");
-                    col.style.position = 'relative';
-                    col.style.left = margins + 'px';
-                    col.style.right = margins + 'px';
-                    col.style.top = margins + 'px';
-                    col.style.bottom = margins + 'px';
-                    col.style.width = (parent.offsetWidth - margins * 2) * 100 / parent.offsetWidth + '%';
-                    col.style.height = 'auto';
-                    col.className += " col";
-                    // tableRoot.style.height = (parent.offsetHeight - margins * 2) * 100 / parent.offsetHeight + '%';
-                    parent.appendChild(col);
-                    return col;
-                };
-        
                 try {
                     const body = document.getElementById('modal-body');
-
                     Object.values(state.content.rows).forEach(row => {
                         var rowDiv = createRow(body);
                         Object.values(row.cols).forEach(col => {
                             var colDiv = createCol(rowDiv);
                             Object.values(col).forEach(element => {
-                                console.log("show child: " + element); 
+                                console.log("show child: " + element);
                                 var content = state.childs[element];
                                 console.log("content: " + JSON.stringify(content))
                                 switch (content.type) {
@@ -339,15 +440,14 @@ const show = (state, parent) => {
             document.getElementById("modal-body").innerHTML = state.text;
         }
 
+        createFooterBtns(parent);
 
         $('#modal-root').modal('show');
-    };  
+    };
 
     console.log("Modal show: " + JSON.stringify(state));
-    
+
     showModal();
 };
-
-
 
 export default { create, show, cmd };

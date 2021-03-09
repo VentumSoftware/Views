@@ -10,7 +10,8 @@ const dfltState = {
     fetchPath: "/api/aggregate",
     inputs: {},
     footerBtns: {},
-    parent: null
+    parent: null,
+    childs: {}
 };
 
 var states = [];
@@ -197,7 +198,7 @@ const show = (state, parent) => {
                     // inputSubDiv.className = "form-group";
                     // inputDiv.appendChild(inputSubDiv);
                     var inputIn = document.createElement("input");
-                    state.inputs[input.label] = input.value;
+                    state.inputs[input.name] = input.value;
 
                     //readonly class="form-control-plaintext" id="staticEmail" value="email@example.com"
                     switch (input.type) {
@@ -240,7 +241,6 @@ const show = (state, parent) => {
                             setInterval(() => {
                                 var d = new Date();
                                 var n = `${(d.getUTCFullYear())}/${("0" + (d.getUTCMonth() + 1)).slice(-2)}/${("0" + d.getUTCDate()).slice(-2)}`;
-                                inputIn.value = n;
                                 state.inputs[input.label] = inputIn.value;
                             }, 1000);
                             break;
@@ -251,7 +251,7 @@ const show = (state, parent) => {
                     }
 
                     inputIn.addEventListener('change', (event) => {
-                        state.inputs[input.label] = event.target.value;
+                        state.inputs[input.name] = event.target.value;
                     });
 
                     inputDiv.appendChild(inputIn);
@@ -317,6 +317,7 @@ const show = (state, parent) => {
     };
     console.log("Form show: " + JSON.stringify(state));
     const cardParent = card.create({ title: state.title }, parent);
+    state.inputs = {};
     drawForm();
 };
 

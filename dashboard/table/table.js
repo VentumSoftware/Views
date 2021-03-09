@@ -14,12 +14,12 @@ const dfltState = {
     finalStages: {},
     footerBtns: {},
     rowsData: [],
-    rowsCheckboxs: [],
     targetedBtns: [],
     emptyCellChar: "-",
     selectedPage: 0,
     paginationIndex: 0,
-    rowCount: 10
+    rowCount: 10,
+    html: {} // Referencias de la UI, ignorar en la serialización
 };
 
 var states = [];
@@ -94,6 +94,23 @@ const formatValue = (value) => {
     }
 }
 
+
+
+//Hace algo parecido a los "backslashs": hace un eval de los que esta andentro de ${}
+var getStringVars = (str) => {
+    console.log(str);
+    var result = "";
+    var matches = str.matchAll('/(?<=\${)[^}]*/gm');
+    console.log(matches);
+    for (var match of  matches) {
+        console.log(match);
+        var expression = eval(match.value[2]);
+        if (typeof expression === 'object') expression = JSON.stringify(expression);
+        console.log(expression);
+    }
+    return str;
+}
+
 //------------------------------ Públicos -----------------------------------------------------------------
 
 // filter, edit, erase, add, dismissModal, post, update, modal
@@ -108,6 +125,45 @@ const cmd = (state, cmds, res, pos) => {
     //     states = [];
     // };
 
+    const getSelectedRows = (state, payload, res) => {
+        var result = [];
+        return new Promise((resolve, reject) => {
+            try {
+                for (let index = 0; index < state.html.rowsCheckboxs.length; index++) {
+                    if (state.html.rowsCheckboxs[index].checked) result.push(state.rowsData[index]);
+                }
+                resolve(result);
+            } catch (error) {
+                console.log(error);
+                reject("Failed to get selected rows!");
+            }
+        })
+    };
+
+    const deleteSelectedRows = (state, payload, res) => {
+        return new Promise((resolve, reject) => {
+            try {
+                console.log(state);
+                resolve();
+            } catch (error) {
+                console.log(error);
+                reject("Failed to get selected rows!");
+            }
+        })
+    };
+
+    const editSelectedRows = (state, payload, res) => {
+        return new Promise((resolve, reject) => {
+            try {
+                console.log(state);
+                resolve();
+            } catch (error) {
+                console.log(error);
+                reject("Failed to get selected rows!");
+            }
+        })
+    };
+
     const parentCmd = (state, payload, res) => {
         switch (state.parentState.type) {
             case "modal":
@@ -120,21 +176,26 @@ const cmd = (state, cmds, res, pos) => {
         }
     };
 
-    const post = (state, payload, res) => {
+    const fetchCmd = (state, payload, res) => {
+        console.log("fetch: " + JSON.stringify(payload))
         var options = {
             method: payload.method || 'GET',
             mode: payload.mode || 'cors',
             cache: payload.cache || 'no-cache',
             credentials: payload.credentials || 'same-origin',
-            headers: payload.headers || {
-                'Content-Type': 'application/json'
-            },
+            headers: payload.headers || { 'Content-Type': 'application/json' },
             redirect: payload.redirect || 'follow',
             referrerPolicy: payload.referrerPolicy || 'no-referrer',
         };
-        if (options.method == "POST") {
-            options.body = JSON.stringify(payload.body || res)
-        }
+        if (options.method === "POST") {
+            options.body = payload.body || {};
+
+            if (typeof options.body === 'object')
+                options.body = JSON.stringify(options.body);
+            
+            options.body = getStringVars(options.body);
+        };
+
         return fetch(payload.url, options);
     };
 
@@ -150,41 +211,24 @@ const cmd = (state, cmds, res, pos) => {
 
     };
 
-    const updateEditRemoveBtns = (state, payload, res) => {
+    const updateTargetedBtns = (state, payload, res) => {
 
         return new Promise((resolve, reject) => {
             try {
-                const enableBtns = () => {
-                    state.targetedBtns.forEach((btn) => {
-                        btn.disabled = false;
-                    });
-                    console.log("enableBtns true");
-                };
-
-                const disableBtns = () => {
-                    state.targetedBtns.forEach((btn) => {
-                        btn.disabled = true;
-                    });
-                    console.log("enableBtns false");
-                };
-
                 var enable = false;
-                state.rowsCheckboxs.forEach((checkbox) => {
-                    if (checkbox.checked) {
-                        enable = true;
+                state.html.rowsCheckboxs.forEach((checkbox) => { if (checkbox.checked) enable = true; });
+
+                if (enable) state.html.headerBtns.forEach((btn) => { btn.disabled = false });
+                else
+                    for (let index = 0; index < state.html.headerBtns.length; index++) {
+                        if (state.headerBtns[index].targeted)
+                            state.html.headerBtns[index].disabled = true;
                     }
-                });
 
-                if (enable) {
-                    enableBtns();
-                } else {
-                    disableBtns();
-                }
-
-                resolve();
+                resolve(enable);
             } catch (error) {
                 console.log(error);
-                reject(error);
+                reject("Failed to update targeted btns!");
             }
 
         });
@@ -319,31 +363,35 @@ const cmd = (state, cmds, res, pos) => {
                     console.log("Pipeline: " + result);
                     return result;
                 };
-                
+
                 return new Promise((resolve, reject) => {
-                    var filters = getFiltersValues();
-                    var pipeline = buildPipeline(filters);
-                    const options = `&options={"collation":{"locale":"en_US","numericOrdering":true},"allowDiskUse":true}`;
-                    const path = state.fetchPath + "?pipeline=" + pipeline + options;
-                    console.log(path);
-                    fetch(
-                        path,
+                    const filters = getFiltersValues(); //devuelve un string
+                    const pipeline = buildPipeline(filters);//devuelve un string
+                    const queryOptions = "{'collation':{'locale':'en_US','numericOrdering':true},'allowDiskUse':true}";
+                    const path = state.fetchPath;
+
+                    cmd(state,
                         {
-                            referrerPolicy: "origin-when-cross-origin",
-                            credentials: 'include',
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json;charset=utf-8',
+                            0:{
+                                type: "fetch",
+                                payload: {
+                                    url: path,
+                                    method: "POST",
+                                    body: {
+                                        pipeline: pipeline,
+                                        queryOptions: queryOptions
+                                    }
+                                }
                             }
-                        }
-                    ).then((response) => {
-                        return response.json(); 
-                    }).then((rows) => {
-                        resolve(rows);
-                    }).catch(e => {
-                        console.log(e);
-                        reject("Failed to get Rows!");
-                    });
+                        },
+                        null,
+                        0)
+                        .then(response => response.json())
+                        .then(rows => resolve(rows))
+                        .catch(e => {
+                            console.log(e);
+                            reject("Failed to get Rows!");
+                        });
 
                 });
             }
@@ -430,16 +478,25 @@ const cmd = (state, cmds, res, pos) => {
                 var pipeline = buildPipeline(filters);
 
                 return new Promise((resolve, reject) => {
-                    //const options = `{"collation":{"locale":"en_US","numericOrdering":"true"}, "allowDiskUse" : "true"}`;
-                    const options = `{"collation":{"locale":"en_US","numericOrdering":"true"},"allowDiskUse":"true"}`;
-                    fetch(path + "?pipeline=" + pipeline + "&options=" + options, {
-                        referrerPolicy: "origin-when-cross-origin",
-                        credentials: 'include',
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json;charset=utf-8',
-                        }
-                    })
+                    const queryOptions = `{"collation":{"locale":"en_US","numericOrdering":"true"},"allowDiskUse":"true"}`;
+
+                    cmd(state,
+                        {
+                            0:{
+                                type: "fetch",
+                                payload: {
+                                    url: path,
+                                    method: "POST",
+                                    body: {
+                                        pipeline: pipeline,
+                                        queryOptions: queryOptions
+                                    }
+                                    
+                                }
+                            }
+                        },
+                        null,
+                        0)
                         .then(res => {
                             console.log(res);
                             return res.json();
@@ -450,7 +507,7 @@ const cmd = (state, cmds, res, pos) => {
                         })
                         .catch(err => {
                             console.log(err);
-                            reject(err)
+                            reject("Failed to get count!")
                         });
                 });
             };
@@ -471,7 +528,7 @@ const cmd = (state, cmds, res, pos) => {
                     })
                     .catch(err => {
                         console.log(err);
-                        reject(err);
+                        reject("Failed to get Rows!");
                     });
             });
         };
@@ -494,13 +551,13 @@ const cmd = (state, cmds, res, pos) => {
                 console.log("drawRows headers: " + JSON.stringify(state.headers));
 
                 //Borro lo anterior
-                state.rowsRoot.innerHTML = "";
-                state.rowsCheckboxs = [];
+                state.html.rowsRoot.innerHTML = "";
+                state.html.rowsCheckboxs = [];
 
                 data.forEach(row => {
                     var tr = document.createElement("tr");
                     tr.className = "";
-                    state.rowsRoot.appendChild(tr);
+                    state.html.rowsRoot.appendChild(tr);
 
                     var addCheckbox = false;
                     //Si hay algun boton "targeted" agrego el checkbos a las filas
@@ -513,9 +570,10 @@ const cmd = (state, cmds, res, pos) => {
                         var checkbox = document.createElement("input");
                         checkbox.type = "checkbox";
                         checkbox.className = "";
-                        state.rowsCheckboxs.push(checkbox);
+
+                        state.html.rowsCheckboxs.push(checkbox);
                         checkbox.addEventListener('click', (e) => {
-                            updateEditRemoveBtns(state);
+                            updateTargetedBtns(state);
                         })
                         th.appendChild(checkbox);
                         tr.appendChild(th);
@@ -794,7 +852,7 @@ const cmd = (state, cmds, res, pos) => {
             }
         };
 
-        
+
 
         return new Promise((resolve, reject) => {
             state.targetedBtns = [];
@@ -814,22 +872,31 @@ const cmd = (state, cmds, res, pos) => {
 
 
     return new Promise((resolve, reject) => {
-        //A: Si ya ejecute todos los comandos termino
+        //A: Si ya ejecuté todos los comandos termino
         if (Object.keys(cmds).length == pos) {
-            resolve();
+            resolve(res);
         } else {
             console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
+            if(typeof res === 'object') console.log(`res (${JSON.stringify(res)})`);  
+            else console.log(`res (${res})`);
+
             var c = null;
             var command = cmds[pos];
             switch (command.type) {
+                case "selected-rows":
+                    c = () => getSelectedRows(state, command.payload, res);
+                    break;
+                case "delete-selected-rows":
+                    c = () => deleteSelectedRows(state, command.payload, res);
+                    break;
                 case "parent-cmd":
                     c = () => parentCmd(state, command.payload, res);
                     break;
                 case "filter":
                     c = () => filter(state, command.payload, res);
                     break;
-                case "post":
-                    c = () => post(state, command.payload, res);
+                case "fetch":
+                    c = () => fetchCmd(state, command.payload, res);
                     break;
                 case "show-modal":
                     c = () => showModal(state, command.payload, res);
@@ -854,13 +921,11 @@ const cmd = (state, cmds, res, pos) => {
             }
 
             c()
-                .then((res) => {
-                    cmd(state, cmds, res, pos + 1);
-                })
+                .then((res) => cmd(state, cmds, res, pos + 1))
                 .then((res) => resolve(res))
                 .catch(err => {
                     console.log(err);
-                    reject(err);
+                    reject("Failed to executed cmds!");
                 });
         }
     });
@@ -994,7 +1059,6 @@ const show = (state, parent) => {
                             }
                         });
                     }
-
                 }
 
                 //Dibujo columna con los botones del header
@@ -1023,6 +1087,7 @@ const show = (state, parent) => {
                 });
                 console.log("header buttons: " + btnsCount.toString());
                 state.targetedBtns = [];
+                state.html.headerBtns = [];
                 btns.forEach(([key, value]) => {
                     if (value.enabled) {
                         if (btnsCount < 3)
@@ -1050,6 +1115,7 @@ const show = (state, parent) => {
                         }
                         inputs.appendChild(btnDiv);
                         var btn = buttons.createBtn(value);
+                        state.html.headerBtns.push(btn);
                         btnDiv.appendChild(btn);
                         btn.addEventListener('click', (e) => {
                             e.preventDefault();
@@ -1100,7 +1166,7 @@ const show = (state, parent) => {
                 var tbody = document.createElement("tbody");
                 tbody.id = state.id + "-table-body";
                 tbody.className = "";
-                state.rowsRoot = tbody;
+                state.html.rowsRoot = tbody;
                 table.appendChild(tbody);
 
                 return table;
@@ -1130,6 +1196,7 @@ const show = (state, parent) => {
 
         };
 
+        state.html = {}; // Borro las referencias anteriores al documento
         console.log("Table show: " + JSON.stringify(state));
         const cardParent = card.create({ title: state.title }, parent);
 
