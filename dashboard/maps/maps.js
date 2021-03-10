@@ -165,136 +165,119 @@ const create = (newState, path) => {
 const show = (state, parent) => {
     const createFilters = () => {
         try {
-            var div = document.createElement("div");
-            div.id = state.id + "-map-filters";
-            div.className = "ventum-table-filters ";
-            cardParent.body.appendChild(div);
+            var divContainer =document.createElement("div");
+            divContainer.className="container mx-auto mt-25";
+            divContainer.style.marginTop="30px";
+            divContainer.style.marginBottom="30px";
+            cardParent.body.appendChild(divContainer);
 
-            state.filterForm = document.createElement("form");
-            state.filterForm.id = state.id + "-map-filters-form";
-            state.filterForm.className = "ventum-table-filters-form";
-            div.appendChild(state.filterForm);
+            var divCard=document.createElement("div");
+            divCard.className="col-lg-12"
+            divContainer.appendChild(divCard)
 
-            var formRow = document.createElement("div");
-            formRow.id = state.id + "-map-filters-form-row";
-            formRow.className = "form-row ventum-table-filters-form-row";
-            state.filterForm.appendChild(formRow);
-
-            //TODO modificar para que se puedan poner mas de 5 filtros
-            for (let index = 0; index < 5; index++) {
-                var col = document.createElement("div");
-                col.id = state.id + "-map-filters-form-col-" + index.toString();
-                col.className = "col-6";
-                formRow.appendChild(col);
-                if (Object.keys(state.filters).length > index) {
-                    var label = document.createElement("label");
-                    label.id = state.id + "-map-filters-form-col-" + index.toString() + "-label";
-
-                    col.appendChild(label);
-
-                    var inputs = document.createElement("div");
-                    inputs.className = "form-row";
-                    col.appendChild(inputs);
-
-                    var inputsArray = Object.values(state.filters[index].inputs);
-                    inputsArray.forEach(input => {
-                        var inputCol = document.createElement("div");
-                        switch (inputsArray.length) {
-                            case 1:
-                                inputCol.className = "col-12";
-                                break;
-                            case 2:
-                                inputCol.className = "col-6";
-                                break;
-                            case 3:
-                                inputCol.className = "col-4";
-                                break;
-                            case 4:
-                                inputCol.className = "col-3";
-                                break;
-                            default:
-                                inputCol.className = "col-12";
-                                break;
-                        }
-                        inputs.appendChild(inputCol);
-                        if (input.type == "dropdown") {
-
-                            var dropdownView = document.createElement("div");
-                            dropdownView.className = "";
-                            inputCol.appendChild(dropdownView);
-
-                      var dropdownBtn = document.createElement("select");
-                            dropdownBtn.className = "form-control";
-                            dropdownBtn.id=input.id;
-                            dropdownBtn.text = input.name;
-                            dropdownView.appendChild(dropdownBtn);
-
-
-                      var dropdownOpt=document.createElement("option");
-                             dropdownBtn.selected=true;
-                             dropdownOpt.text = input.name;
-                             dropdownOpt.id= "Defecto";
-
-                            dropdownBtn.appendChild(dropdownOpt);
-                  if(input.id== "select-location"){
-
-                    fetch('http://localhost:80/rest/inti/recorridos')
-                              .then(res=>res.json())
-                              .then(data=>{
-
-                                   Object.values(data).forEach(option => {
-
-                                      var dropdownRecorridos=document.createElement("option");
-
-                                      dropdownRecorridos.text = option.imei;
-                                      dropdownRecorridos.id= "imei";
-
-                                      dropdownRecorridos.value=`${option.recorrido[0].inicioPos[0]},${option.recorrido[0].inicioPos[1]}`;
-                                     dropdownBtn.appendChild(dropdownRecorridos);
-
-
-                               });
-                               });
-
-
-                  }else{
-
-                  Object.values(input.options).forEach(option => {
-
-                                      var dropdownRecorridos=document.createElement("option");
-
-                                      dropdownRecorridos.text = option.name;
-                                      dropdownRecorridos.id= input.id;
-
-                                      dropdownRecorridos.value=option.layer;
-                                     dropdownBtn.appendChild(dropdownRecorridos);
-
-
-                               });
-
-                  }
+            var divInput= document.createElement("div");
+            divInput.className=" input-group-append";
+            divCard.appendChild(divInput);
 
 
 
-                        } else {
-                            var field = document.createElement("input");
-                            field.ishoveredin = "0";
-                            field.isfocusedin = "0";
-                            field.name = input.name;
-                            field.type = input.type;
-                            field.className = "form-control";
-                            field.placeholder = input.placeholder;
-                            field.value = input.value;
-                            field.required = input.required;
-                            inputCol.appendChild(field);
-                        }
-                    });
-                }
+            var input = document.createElement("input");
+            input.type="text";
+            input.className="form-control";
+            input.placeholder="Numero de patente";
 
-            }
+            divInput.appendChild(input);
+
+            var divButton= document.createElement("div");
+            divButton.className="input-group-append";
+            divInput.appendChild(divButton);
+
+            var button = document.createElement("button");
+            button.className="btn btn-outline-secondary";
+            button.type="button";
+            button.innerHTML="Buscar";
+            divButton.appendChild(button);
+
+            var divSelect = document.createElement("div");
+            divSelect.className= "input-group";
+            divSelect.style.marginTop="20px";
+
+            divCard.appendChild(divSelect)
 
 
-            return div;
+            var select = document.createElement("select");
+            select.className="custom-select";
+            divSelect.appendChild(select);
+
+            var optionSelected = document.createElement("option");
+            optionSelected.select=true;
+            optionSelected.text="Buscar por ciudad";
+            select.appendChild(optionSelected);
+
+            var optionTest1 = document.createElement("option");
+            optionTest1.text="Ciudad de Buenos Aires";
+            select.appendChild(optionTest1);
+
+
+
+
+
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+
+    };
+    const createwidgets = () => {
+        try {
+
+          var divContainer = document.createElement("div");
+          divContainer.className="col-md-12 row noId-card-footer";
+          cardParent.body.appendChild(divContainer);
+
+          var divContent=document.createElement("div");
+          divContent.className="col-lg-6";
+          divContent.style.marginLeft="0px";
+          divContent.style.paddingLeft="0px";
+          divContent.style.marginTop="0px";
+          divContainer.appendChild(divContent);
+
+          var divCardContainer=document.createElement("div");
+          divCardContainer.className="card l-bg-orange-dark";
+          divCardContainer.style.background="linear-gradient(to right, #0a504a, #38ef7d) !important"
+          divCardContainer.style.color="#fff"
+          divContent.appendChild(divCardContainer)
+
+
+          var divContent = document.createElement("div");
+          divContent.style.fontSize ="110px";
+          divContent.style.lineHeight ="50px";
+          divContent.style.marginLeft ="15px";
+          divContent.style.color="#000";
+          divContent.style.position="absolute";
+          divContent.style.right="5px";
+          divContent.style.top="20px";
+          divContent.style.opacity="0.1";
+          divCardContainer.appendChild(divContent);
+
+          var divMb=document.createElement("div");
+          divMb.className="mb-4";
+          divContent.appendChild(divMb);
+
+
+         var text = document.createElement("h2");
+         text.innerHTML="Hola mundo";
+
+         divMb.appendChild(text);
+
+
+
+
+
+
+
+
+
         } catch (error) {
             console.log(error);
             throw error;
@@ -303,9 +286,6 @@ const show = (state, parent) => {
     };
     const drawMap = () => {
         try {
-                //DIBUJA EL RECORRIDO DE UN SOLO IMEI ----- TODO: DIBUJAR PARA TODOS LOS IMEI
-
-
 
 
             var div = document.createElement("div");
