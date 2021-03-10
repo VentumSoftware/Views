@@ -9,12 +9,11 @@ const views = {
                 .then(dom => {
                     var script = dom.window.document.createElement("script");
                     script.type = "module";
-                    var innerHTML = `import dashboard from "https://ventumdashboard.s3.amazonaws.com/dashboard/dashboard.js";
-                    `;
-                    innerHTML += `var dashboardState = dashboard.create(${JSON.stringify(data)}, "dashboard");
-                    `;
-                    innerHTML += `dashboard.show(dashboardState);
-                    `;
+                    var innerHTML = ``;
+                    innerHTML += `import views from "https://ventumdashboard.s3.amazonaws.com/lib/views/views.js";`;
+                    innerHTML += `var globalState = {};`;
+                    innerHTML += `globalState.dashboard = views.create(${JSON.stringify(data)});`;
+                    innerHTML += `views.show(globalState.dashboard, document.body);`;
                     script.innerHTML = innerHTML;
                     dom.window.document.body.appendChild(script);
                     res.send((dom.serialize()));

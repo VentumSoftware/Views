@@ -1,188 +1,96 @@
-import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
-import category from 'https://ventumdashboard.s3.amazonaws.com/dashboard/category.js';
-import categoryParent from 'https://ventumdashboard.s3.amazonaws.com/dashboard/categoryParent.js';
-
-//Dflt Dashboards State
-const dfltState = {
-    contentDiv: null, //Contenedor donde voy a dibujar cada pantalla...
-    id: "id",
-    company: {
-        name: "CompanyName"
+//Caracteristicas de este componente (dashboard)
+const component = {
+    //Dflt Dashboards State
+    dfltState: {
+        id: "id",
+        company: {
+            name: "CompanyName"
+        },
+        user: {
+            name: "UserName",
+        },
+        selectedCategory: "",
+        childs: {},
+        html: {} //Referencia a elementos del documento
     },
-    user: {
-        name: "UserName",
-    },
-    childs: {},
-    selectedCategory: ""
-};
-
-//Each state represents a Dashboard
-var states = [];
-
-//Commands that can be executed by this Component (Dashboard)
-const cmd = (state, cmds, res, pos) => {
-
-    const clearContent = (state, payload, res) => {
-        return new Promise((resolve, reject) => {
-            try {
-                state.contentDiv.innerHTML = null;
-                console.log("ClearContent!");
-                resolve();
-            } catch (error) {
-                reject(error);
-            }
-        });
-    };
-
-    const ifStatement = (state, payload, res) => {
-
-        return new Promise((resolve, reject) => {
-            if (eval(payload.condition)) {
-                console.log("condicion cumplida!");
-            } else {
-                console.log("condicion NO cumplida!");
-            }
-            resolve("ok");
-        });
-    };
-
-    const selectCategory = (state, payload, res) => {
-        return new Promise((resolve, reject) => {
-            try {
-                console.log("Category LOG:" + payload.catPath);
-        
-                var dirs = payload.catPath.split('/');
-                var cat = state.childs[dirs[0]];
-                for (let i = 1; i < dirs.length; i++) {
-                    cat = cat.childs[dirs[i]];
-                }
-
-
-                // var sidebar = document.getElementById(state.id + "-sidebar");
-                // sidebar.childNodes.forEach(child => {
-                //     child.childNodes.forEach(grandChild => {
-                //         grandChild.childNodes[0].style.color = "";
-                //     });
-                // });
-
-                // var sidebar = document.getElementById(state.id + "-sidebar");
-                // //el "+5" es por los elementos de arriba del sidebar: nombreEmpresa, usuario, lineas y espacios
-
-                // var selected = sidebar.childNodes[index + 5];
-                // console.log(selected);
-
-                // selected.childNodes.forEach(child => {
-                //     child.childNodes[0].style.color = "green";
-                // });
-
-                // if (dirs[1] != null) {
-
-                // }
-
-                clearContent(state, null, null)
-                    .then(() => {
-                        console.log("show selected Cat: " + JSON.stringify(cat));
-                        category.show(cat, state.contentDiv);
-                        state.selectedCategory = payload.catPath;
-                        resolve(cat);
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    });
-
-            } catch (error) {
-                console.log("Error with selected cat! " + error);
-                reject(error);
-            }
-        });
-    };
-
-    const logOut = (state, payload, res) => {
-        return new Promise((resolve, reject) => {
-            document.cookie = "access-token=; expires=0; path=/";
-            location.reload();
-            resolve("logOut");
-        });
-    };
-
-
-    return new Promise((resolve, reject) => {
-        //A: Si ya ejecuté todos los comandos termino
-        if (Object.keys(cmds).length <= pos) {
-            resolve(res);
-        } else {
-            console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
-            var c = null;
-            var command = cmds[pos];
-            switch (command.type) {
-                case "parent-cmd":
-                    c = () => parentCmd(state, command.payload, res);
-                    break;
-                case "if":
-                    c = () => ifStatement(state, command.payload, res);
-                    break;
-                case "select-category":
-                    c = () => selectCategory(state, command.payload, res);
-                    break;
-                case "log-out":
-                    c = () => logOut(state, command.payload, res);
-                    break;
-                default:
-                    console.log(`Cmd not found: ${command.type}`);
-                    c = () => new Promise((res, rej) => { rej(`Cmd not found: ${command.type}`) });
-                    break;
-            }
-
-            c()
-                .then((res) => {
-                    cmd(state, cmds, res, pos + 1);
-                })
-                .then((res) => resolve(res))
-                .catch(err => {
-                    console.log(err);
-                    reject(err);
-                });
-        }
-    })
-};
-
-//Creates a new Dashboard
-const create = (newState, path = "dashboard") => {
-    try {
-        if (newState.type == "dashboard") {
-            newState = utils.fillObjWithDflt(newState, dfltState);
-            newState.path = path;
-
-            Object.entries(newState.childs).forEach(child => {
-                switch (child[1].type) {
-                    case "category":
-                        newState.childs[child[0]] = category.create(child[1], path + "/" + child[0]);
-                        break;
-                    case "category-parent":
-                        newState.childs[child[0]] = categoryParent.create(child[1], path + "/" + child[0]);
-                        break;
-                    default:
-                        console.log("Error creating dashboard child, incorrect type: " + child[1].type);
-                        break;
+    //Commandos específicos para el componente (dashboard)
+    cmds: {
+        clearContent: (state, payload, res) => {
+            return new Promise((resolve, reject) => {
+                try {
+                    state.contentDiv.innerHTML = null;
+                    console.log("ClearContent!");
+                    resolve();
+                } catch (error) {
+                    reject(error);
                 }
             });
-            console.log("Dashboard new State: " + JSON.stringify(newState));
-            states.push(newState);
-            return newState;
-        } else {
-            console.log("Error creating dashboard, incorrect type: " + newState.type);
-            return null;
-        }
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
-
-};
-
-const show = (state) => {
-
-    const createDashboard = () => {
+        },
+        selectCategory: (state, payload, res) => {
+            return new Promise((resolve, reject) => {
+                try {
+                    console.log("Category LOG:" + payload.catPath);
+        
+                    var dirs = payload.catPath.split('/');
+                    var cat = state.childs[dirs[0]];
+                    for (let i = 1; i < dirs.length; i++) {
+                        cat = cat.childs[dirs[i]];
+                    }
+                    // var sidebar = document.getElementById(state.id + "-sidebar");
+                    // sidebar.childNodes.forEach(child => {
+                    //     child.childNodes.forEach(grandChild => {
+                    //         grandChild.childNodes[0].style.color = "";
+                    //     });
+                    // });
+        
+                    // var sidebar = document.getElementById(state.id + "-sidebar");
+                    // //el "+5" es por los elementos de arriba del sidebar: nombreEmpresa, usuario, lineas y espacios
+        
+                    // var selected = sidebar.childNodes[index + 5];
+                    // console.log(selected);
+        
+                    // selected.childNodes.forEach(child => {
+                    //     child.childNodes[0].style.color = "green";
+                    // });
+        
+                    // if (dirs[1] != null) {
+        
+                    // }
+        
+                    clearContent(state, null, null)
+                        .then(() => {
+                            console.log("show selected Cat: " + JSON.stringify(cat));
+                            category.show(cat, state.contentDiv);
+                            state.selectedCategory = payload.catPath;
+                            resolve(cat);
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        });
+        
+                } catch (error) {
+                    console.log("Error with selected cat! " + error);
+                    reject(error);
+                }
+            });
+        },
+        logOut: (state, payload, res) => {
+            return new Promise((resolve, reject) => {
+                try {
+                    document.cookie = "access-token=; expires=0; path=/";
+                    location.reload();
+                    resolve("logOut");
+                } catch (error) {
+                    console.log(error);
+                    reject("logOut failed!");
+                }
+            });
+        },
+    },
+    //Typos de hijos que puede tener el componente (dashboard)
+    childTypes: ["category", "category-parent"],
+    //Función que dibuja al componente (dashboard)
+    show: (state, parent) => {
 
         const createNav = () => {
             var nav = document.createElement("div");
@@ -654,21 +562,19 @@ const show = (state) => {
         nav.appendChild(content);
         document.body.appendChild(nav);
         state.contentDiv = content.getElementsByClassName('ventum-main-content')[0];
-    }
 
-    createDashboard();
-
-    var cmds = {
-        0: {
-            type: "select-category",
-            payload: {
-                catPath: state.childs[0].path
+        var msgs = {
+            0: {
+                type: "select-category",
+                payload: {
+                    catPath: state.childs[0].path
+                }
             }
         }
+    
+        cmd(state, msgs, null);
+    
     }
-
-    //cmd(state, cmds, null, 0);
-
 };
 
-export default { create, show, cmd };
+export default { component };

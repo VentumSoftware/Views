@@ -1,277 +1,66 @@
-import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
 import card from 'https://ventumdashboard.s3.amazonaws.com/dashboard/card/card.js';
-import modal from 'https://ventumdashboard.s3.amazonaws.com/dashboard/modal/modal.js';
 import buttons from 'https://ventumdashboard.s3.amazonaws.com/dashboard/buttons/buttons.js';
 
-const dfltState = {
-    id: "noID",
-    title: "Table",
-    fetchPath: "/api/aggregate",
-    headers: {},
-    filters: {},
-    headerBtns: {},
-    initialStages: {},
-    finalStages: {},
-    footerBtns: {},
-    rowsData: [],
-    targetedBtns: [],
-    emptyCellChar: "-",
-    selectedPage: 0,
-    paginationIndex: 0,
-    rowCount: 10,
-    html: {} // Referencias de la UI, ignorar en la serialización
-};
-
-var states = [];
-
-//---------------------------------------- Otros ----------------------------------------------------
-
-//TODO: Mover a un librería
-const formatDateToQuery = (date) => {
-    var dateToFormat = date.split("-");
-    dateToFormat = dateToFormat[0] + dateToFormat[1] + dateToFormat[2];
-    return (dateToFormat[0] + dateToFormat[1] + dateToFormat[2]);
-};
-
-
-function formatToDate(value) {
-    let year = [], month = [], day = [], hours = [], minutes = [], seconds = [];
-    let formattedDate;
-    try {
-        for (let i = 0; i < value.length; i++) {
-            switch (true) {
-                case (i < 4):
-                    year.push(value[i]);
-                    break;
-                case (i < 6):
-                    month.push(value[i]);
-                    break;
-                case (i < 8):
-                    day.push(value[i]);
-                    break;
-                case (i < 10):
-                    hours.push(value[i]);
-                    break;
-                case (i < 12):
-                    minutes.push(value[i]);
-                    break;
-                case (i < 14):
-                    seconds.push(value[i]);
-                    break;
-                default:
-                    break;
-            }
-        }
-        formattedDate = `${year.join('')}-${month.join('')}-${day.join('')} ${hours.join('')}:${minutes.join('')}:${seconds.join('')}`;
-        const fecha = new Date(formattedDate);
-        if (Number.isNaN(fecha.getTime())) {
-            console.log('Invalid date: ' + fecha + ". Instead, value " + value + " will be returned.");
-            return (value);
-        } else {
-            return (fecha);
-        }
-    } catch (error) {
-        console.log('Error al formatear fecha: ' + error);
-        return null;
-    }
-
-}
-
-const formatValue = (value) => {
-    const formattedValue = formatToDate(value); //formatToDate() devuelve un objeto Date en formato ISOString
-    if (typeof formattedValue == 'object' && formattedValue !== null) {
-        try {
-            let newTime = new Date();
-            let globalTime = formattedValue.getTime();
-            let localeTime = new Date(newTime.setTime(globalTime + (-3 * 60 * 60 * 1000))); //Setea el valor ISOString a Hora Argentina UTC-3
-            return (localeTime.toISOString().split('.')[0]);
-        } catch (error) {
-            console.log(error);
-            return value;
-        }
-    } else {
-        console.log("ERROR: " + value);
-    }
-}
-
-
-
-//Hace algo parecido a los "backslashs": hace un eval de los que esta andentro de ${}
-var getStringVars = (str) => {
-    console.log(str);
-    var result = "";
-    var matches = str.matchAll('/(?<=\${)[^}]*/gm');
-    console.log(matches);
-    for (var match of  matches) {
-        console.log(match);
-        var expression = eval(match.value[2]);
-        if (typeof expression === 'object') expression = JSON.stringify(expression);
-        console.log(expression);
-    }
-    return str;
-}
-
-//------------------------------ Públicos -----------------------------------------------------------------
-
-// filter, edit, erase, add, dismissModal, post, update, modal
-const cmd = (state, cmds, res, pos) => {
-
-    // const resetStates = () => {
-    //     if (states.length > 0) {
-    //         states.forEach((el) => {
-    //             el = null;
-    //         })
-    //     }
-    //     states = [];
-    // };
-
-    const getSelectedRows = (state, payload, res) => {
-        var result = [];
-        return new Promise((resolve, reject) => {
-            try {
-                for (let index = 0; index < state.html.rowsCheckboxs.length; index++) {
-                    if (state.html.rowsCheckboxs[index].checked) result.push(state.rowsData[index]);
-                }
-                resolve(result);
-            } catch (error) {
-                console.log(error);
-                reject("Failed to get selected rows!");
-            }
-        })
-    };
-
-    const deleteSelectedRows = (state, payload, res) => {
-        return new Promise((resolve, reject) => {
-            try {
-                console.log(state);
-                resolve();
-            } catch (error) {
-                console.log(error);
-                reject("Failed to get selected rows!");
-            }
-        })
-    };
-
-    const editSelectedRows = (state, payload, res) => {
-        return new Promise((resolve, reject) => {
-            try {
-                console.log(state);
-                resolve();
-            } catch (error) {
-                console.log(error);
-                reject("Failed to get selected rows!");
-            }
-        })
-    };
-
-    const parentCmd = (state, payload, res) => {
-        switch (state.parentState.type) {
-            case "modal":
-                payload.cmds = payload.cmds || res;
-                return modal.cmd(state.parentState, payload.cmds, res, 0);
-            default:
-                return new Promise((resolve, reject) => {
-                    reject("Error with type: " + key);
-                })
-        }
-    };
-
-    const fetchCmd = (state, payload, res) => {
-        console.log("fetch: " + JSON.stringify(payload))
-        var options = {
-            method: payload.method || 'GET',
-            mode: payload.mode || 'cors',
-            cache: payload.cache || 'no-cache',
-            credentials: payload.credentials || 'same-origin',
-            headers: payload.headers || { 'Content-Type': 'application/json' },
-            redirect: payload.redirect || 'follow',
-            referrerPolicy: payload.referrerPolicy || 'no-referrer',
-        };
-        if (options.method === "POST") {
-            options.body = payload.body || {};
-
-            if (typeof options.body === 'object')
-                options.body = JSON.stringify(options.body);
-            
-            options.body = getStringVars(options.body);
-        };
-
-        return fetch(payload.url, options);
-    };
-
-    const showModal = (state, payload, res) => {
-        return new Promise((resolve, reject) => {
-            try {
-                modal.show(state.childs[payload.child], state);
-                resolve();
-            } catch (error) {
-                reject(error);
-            }
-        })
-
-    };
-
-    const updateTargetedBtns = (state, payload, res) => {
-
-        return new Promise((resolve, reject) => {
-            try {
-                var enable = false;
-                state.html.rowsCheckboxs.forEach((checkbox) => { if (checkbox.checked) enable = true; });
-
-                if (enable) state.html.headerBtns.forEach((btn) => { btn.disabled = false });
-                else
-                    for (let index = 0; index < state.html.headerBtns.length; index++) {
-                        if (state.headerBtns[index].targeted)
-                            state.html.headerBtns[index].disabled = true;
+//Caracteristicas de este componente (table)
+const component = {
+    //Dflt Dashboards State
+    dfltState: {
+        id: "noID",
+        title: "Table",
+        fetchPath: "/api/aggregate",
+        headers: {},
+        filters: {},
+        headerBtns: {},
+        initialStages: {},
+        finalStages: {},
+        footerBtns: {},
+        rowsData: [],
+        targetedBtns: [],
+        emptyCellChar: "-",
+        selectedPage: 0,
+        paginationIndex: 0,
+        rowCount: 10,
+        html: {} // Referencias de la UI, ignorar en la serialización
+    },
+    //Commandos específicos para el componente (table)
+    cmds: {
+        getRows: (state, payload, res) => {
+            return new Promise((resolve, reject) => {
+                resolve(state.inputs);
+            });
+        },
+        getSelectedRows: (state, payload, res) => {
+            var result = [];
+            return new Promise((resolve, reject) => {
+                try {
+                    for (let index = 0; index < state.html.rowsCheckboxs.length; index++) {
+                        if (state.html.rowsCheckboxs[index].checked) result.push(state.rowsData[index]);
                     }
-
-                resolve(enable);
-            } catch (error) {
-                console.log(error);
-                reject("Failed to update targeted btns!");
-            }
-
-        });
-
-    };
-
-    const filter = (state, payload, res) => {
-        return new Promise((res, rej) => {
-            state.selectedPage = 0;
-            state.paginationIndex = 0;
-            update(state)
-                .then(() => {
-                    console.log("updated");
-                    res();
-                })
-                .catch(err => {
-                    console.log("failed update: " + err);
-                    rej();
-                });
-        });
-
-    };
-
-    const confirmationBox = (state, payload, res) => {
-        return new Promise((res, rej) => {
-            rej("not implemented!");
-        });
-    };
-
-    const ifCmd = (state, payload, res) => {
-        return new Promise((res, rej) => {
-            rej("not implemented!");
-        });
-    };
-
-    const dismissModal = (state, payload, res) => {
-        return new Promise((res, rej) => {
-            rej("not implemented!");
-        });
-    };
-
-    //Updates table data and view
-    const update = (state, payload, res) => {
+                    resolve(result);
+                } catch (error) {
+                    console.log(error);
+                    reject("Failed to get selected rows!");
+                }
+            })
+        },
+        filter: (state, payload, res) => {
+            return new Promise((res, rej) => {
+                state.selectedPage = 0;
+                state.paginationIndex = 0;
+                update(state)
+                    .then(() => {
+                        console.log("updated");
+                        res();
+                    })
+                    .catch(err => {
+                        console.log("failed update: " + err);
+                        rej();
+                    });
+            });
+    
+        },
+        //Updates table data and view
+        update : (state, payload, res) => {
 
         const fetchData = () => {
 
@@ -868,348 +657,262 @@ const cmd = (state, cmds, res, pos) => {
                     reject(err);
                 });
         });
-    };
-
-
-    return new Promise((resolve, reject) => {
-        //A: Si ya ejecuté todos los comandos termino
-        if (Object.keys(cmds).length == pos) {
-            resolve(res);
-        } else {
-            console.log(`cmds´(${JSON.stringify(pos)}): ${JSON.stringify(cmds)}`);
-            if(typeof res === 'object') console.log(`res (${JSON.stringify(res)})`);  
-            else console.log(`res (${res})`);
-
-            var c = null;
-            var command = cmds[pos];
-            switch (command.type) {
-                case "selected-rows":
-                    c = () => getSelectedRows(state, command.payload, res);
-                    break;
-                case "delete-selected-rows":
-                    c = () => deleteSelectedRows(state, command.payload, res);
-                    break;
-                case "parent-cmd":
-                    c = () => parentCmd(state, command.payload, res);
-                    break;
-                case "filter":
-                    c = () => filter(state, command.payload, res);
-                    break;
-                case "fetch":
-                    c = () => fetchCmd(state, command.payload, res);
-                    break;
-                case "show-modal":
-                    c = () => showModal(state, command.payload, res);
-                    break;
-                //TODO: CONFIRMATION BOX debería ser un template de modal...
-                case "confirmationBox":
-                    c = () => confirmationBox(state, command.payload, res);
-                    break;
-                case "if":
-                    c = () => ifCmd(state, command.payload, res);
-                    break;
-                case "dismiss-modal":
-                    c = () => dismissModal(state, command.payload, res);
-                    break;
-                case "update":
-                    c = () => update(state, command.payload, res);
-                    break;
-                default:
-                    console.log(`Cmd not found: ${command.type}`);
-                    c = () => new Promise((res, rej) => { rej(`Cmd not found: ${command.type}`) });
-                    break;
-            }
-
-            c()
-                .then((res) => cmd(state, cmds, res, pos + 1))
-                .then((res) => resolve(res))
-                .catch(err => {
-                    console.log(err);
-                    reject("Failed to executed cmds!");
-                });
         }
-    });
-};
-
-const create = (newState, path) => {
-    try {
-        if (newState.type == "table") {
-            newState = utils.fillObjWithDflt(newState, dfltState);
-            newState.path = path;
-
-            Object.entries(newState.childs).forEach(child => {
-                switch (child[1].type) {
-                    case "modal":
-                        newState.childs[child[0]] = modal.create(child[1], path + "/" + child[0]);
-                        break;
-                    default:
-                        console.log("Error creating table child, incorrect type: " + child[1].type);
-                        break;
-                }
-            });
-            //console.log("Table new State: " + JSON.stringify(newState));
-            states.push(newState);
-            return newState;
-        } else {
-            console.log("Error creating table, incorrect type: " + newState.type);
-            return null;
-        }
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
-};
-
-const show = (state, parent) => {
-    try {
-        const createFilters = () => {
-            try {
-                var div = document.createElement("div");
-                div.id = state.id + "-table-filters";
-                div.className = "ventum-table-filters ";
-                cardParent.body.appendChild(div);
-
-                state.filterForm = document.createElement("form");
-                state.filterForm.id = state.id + "-table-filters-form";
-                state.filterForm.className = "ventum-table-filters-form";
-                div.appendChild(state.filterForm);
-
-                var formRow = document.createElement("div");
-                formRow.id = state.id + "-table-filters-form-row";
-                formRow.className = "form-row ventum-table-filters-form-row";
-                state.filterForm.appendChild(formRow);
-
-                //TODO modificar para que se puedan poner mas de 5 filtros
-                for (let index = 0; index < 5; index++) {
+    },
+    //Typos de hijos que puede tener el componente (table)
+    childTypes: ["modal"],
+    //Función que dibuja al componente (table)
+    show: (state, parent) => {
+        try {
+            const createFilters = () => {
+                try {
+                    var div = document.createElement("div");
+                    div.id = state.id + "-table-filters";
+                    div.className = "ventum-table-filters ";
+                    cardParent.body.appendChild(div);
+    
+                    state.filterForm = document.createElement("form");
+                    state.filterForm.id = state.id + "-table-filters-form";
+                    state.filterForm.className = "ventum-table-filters-form";
+                    div.appendChild(state.filterForm);
+    
+                    var formRow = document.createElement("div");
+                    formRow.id = state.id + "-table-filters-form-row";
+                    formRow.className = "form-row ventum-table-filters-form-row";
+                    state.filterForm.appendChild(formRow);
+    
+                    //TODO modificar para que se puedan poner mas de 5 filtros
+                    for (let index = 0; index < 5; index++) {
+                        var col = document.createElement("div");
+                        col.id = state.id + "-table-filters-form-col-" + index.toString();
+                        col.className = "col-2";
+                        formRow.appendChild(col);
+                        if (Object.keys(state.filters).length > index) {
+                            var label = document.createElement("label");
+                            label.id = state.id + "-table-filters-form-col-" + index.toString() + "-label";
+                            label.innerHTML = state.filters[index].label;
+                            col.appendChild(label);
+    
+                            var inputs = document.createElement("div");
+                            inputs.className = "form-row";
+                            col.appendChild(inputs);
+    
+                            var inputsArray = Object.values(state.filters[index].inputs);
+                            inputsArray.forEach(input => {
+                                var inputCol = document.createElement("div");
+                                switch (inputsArray.length) {
+                                    case 1:
+                                        inputCol.className = "col-12";
+                                        break;
+                                    case 2:
+                                        inputCol.className = "col-6";
+                                        break;
+                                    case 3:
+                                        inputCol.className = "col-4";
+                                        break;
+                                    case 4:
+                                        inputCol.className = "col-3";
+                                        break;
+                                    default:
+                                        inputCol.className = "col-12";
+                                        break;
+                                }
+                                inputs.appendChild(inputCol);
+                                if (input.type == "dropdown") {
+    
+                                    var dropdownView = document.createElement("div");
+                                    dropdownView.className = "dropdown";
+                                    inputCol.appendChild(dropdownView);
+    
+                                    var dropdownBtn = document.createElement("button");
+                                    dropdownBtn.className = "btn btn-secondary dropdown-toggle";
+                                    dropdownBtn.type = "button";
+                                    dropdownBtn.id = input.name;
+                                    dropdownBtn.setAttribute('data-toggle', "dropdown");
+                                    dropdownBtn.setAttribute('aria-haspopup', "true");
+                                    dropdownBtn.setAttribute('aria-expanded', "false");
+                                    dropdownBtn.innerHTML = input.placeholder;
+                                    dropdownView.appendChild(dropdownBtn);
+    
+                                    var dropdownMenu = document.createElement("div");
+                                    dropdownMenu.className = "dropdown-menu";
+                                    dropdownMenu.setAttribute('aria-labelledby', input.name);
+                                    dropdownView.appendChild(dropdownMenu);
+    
+                                    Object.values(input.options).forEach(option => {
+                                        var dropdownLink = document.createElement("button");
+                                        dropdownLink.href = "#";
+                                        dropdownLink.innerHTML = option;
+                                        dropdownMenu.appendChild(dropdownLink);
+                                    });
+    
+    
+                                } else {
+                                    var field = document.createElement("input");
+                                    field.ishoveredin = "0";
+                                    field.isfocusedin = "0";
+                                    field.name = input.name;
+                                    field.type = input.type;
+                                    field.className = "form-control";
+                                    field.placeholder = input.placeholder;
+                                    field.value = input.value;
+                                    field.required = input.required;
+                                    inputCol.appendChild(field);
+                                }
+                            });
+                        }
+                    }
+    
+                    //Dibujo columna con los botones del header
                     var col = document.createElement("div");
-                    col.id = state.id + "-table-filters-form-col-" + index.toString();
+                    col.id = state.id + "-table-filters-form-col-" + "6";
                     col.className = "col-2";
+                    col.style.textAlign = "center";
                     formRow.appendChild(col);
-                    if (Object.keys(state.filters).length > index) {
-                        var label = document.createElement("label");
-                        label.id = state.id + "-table-filters-form-col-" + index.toString() + "-label";
-                        label.innerHTML = state.filters[index].label;
-                        col.appendChild(label);
-
-                        var inputs = document.createElement("div");
-                        inputs.className = "form-row";
-                        col.appendChild(inputs);
-
-                        var inputsArray = Object.values(state.filters[index].inputs);
-                        inputsArray.forEach(input => {
-                            var inputCol = document.createElement("div");
-                            switch (inputsArray.length) {
+                    var label = document.createElement("label");
+                    label.id = state.id + "-table-filters-form-col-" + "submit" + "-label";
+                    label.innerHTML = "  &nbsp";
+                    label.style.position = "relative";
+                    label.style.width = '100%';
+                    col.appendChild(label);
+    
+                    var inputs = document.createElement("div");
+                    inputs.className = "form-row";
+                    col.appendChild(inputs);
+    
+                    //Dibujo cada boton del header
+                    var btns = Object.entries(state.headerBtns);
+                    var btnsCount = 0;
+                    btns.forEach(([key, value]) => {
+                        if (value)
+                            btnsCount++;
+                    });
+                    console.log("header buttons: " + btnsCount.toString());
+                    state.targetedBtns = [];
+                    state.html.headerBtns = [];
+                    btns.forEach(([key, value]) => {
+                        if (value.enabled) {
+                            if (btnsCount < 3)
+                                value.showLabel = true;
+                            else
+                                value.showLabel = false;
+    
+                            var btnDiv = document.createElement("div");
+                            switch (btnsCount) {
                                 case 1:
-                                    inputCol.className = "col-12";
+                                    btnDiv.className += "col-12";
                                     break;
                                 case 2:
-                                    inputCol.className = "col-6";
+                                    btnDiv.className += "col-6";
                                     break;
                                 case 3:
-                                    inputCol.className = "col-4";
+                                    btnDiv.className += "col-4";
                                     break;
                                 case 4:
-                                    inputCol.className = "col-3";
+                                    btnDiv.className += "col-3";
                                     break;
                                 default:
-                                    inputCol.className = "col-12";
+                                    btnDiv.className += "col-12";
                                     break;
                             }
-                            inputs.appendChild(inputCol);
-                            if (input.type == "dropdown") {
-
-                                var dropdownView = document.createElement("div");
-                                dropdownView.className = "dropdown";
-                                inputCol.appendChild(dropdownView);
-
-                                var dropdownBtn = document.createElement("button");
-                                dropdownBtn.className = "btn btn-secondary dropdown-toggle";
-                                dropdownBtn.type = "button";
-                                dropdownBtn.id = input.name;
-                                dropdownBtn.setAttribute('data-toggle', "dropdown");
-                                dropdownBtn.setAttribute('aria-haspopup', "true");
-                                dropdownBtn.setAttribute('aria-expanded', "false");
-                                dropdownBtn.innerHTML = input.placeholder;
-                                dropdownView.appendChild(dropdownBtn);
-
-                                var dropdownMenu = document.createElement("div");
-                                dropdownMenu.className = "dropdown-menu";
-                                dropdownMenu.setAttribute('aria-labelledby', input.name);
-                                dropdownView.appendChild(dropdownMenu);
-
-                                Object.values(input.options).forEach(option => {
-                                    var dropdownLink = document.createElement("button");
-                                    dropdownLink.href = "#";
-                                    dropdownLink.innerHTML = option;
-                                    dropdownMenu.appendChild(dropdownLink);
-                                });
-
-
-                            } else {
-                                var field = document.createElement("input");
-                                field.ishoveredin = "0";
-                                field.isfocusedin = "0";
-                                field.name = input.name;
-                                field.type = input.type;
-                                field.className = "form-control";
-                                field.placeholder = input.placeholder;
-                                field.value = input.value;
-                                field.required = input.required;
-                                inputCol.appendChild(field);
+                            inputs.appendChild(btnDiv);
+                            var btn = buttons.createBtn(value);
+                            state.html.headerBtns.push(btn);
+                            btnDiv.appendChild(btn);
+                            btn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                cmd(state, value.onClick.cmds, null, 0);
+                            });
+    
+                            if (value.targeted) {
+                                state.targetedBtns.push(btn);
+                                btn.disabled = true;
                             }
-                        });
-                    }
+                        }
+                    });
+    
+                    return div;
+                } catch (error) {
+                    console.log(error);
+                    throw error;
                 }
-
-                //Dibujo columna con los botones del header
-                var col = document.createElement("div");
-                col.id = state.id + "-table-filters-form-col-" + "6";
-                col.className = "col-2";
-                col.style.textAlign = "center";
-                formRow.appendChild(col);
-                var label = document.createElement("label");
-                label.id = state.id + "-table-filters-form-col-" + "submit" + "-label";
-                label.innerHTML = "  &nbsp";
-                label.style.position = "relative";
-                label.style.width = '100%';
-                col.appendChild(label);
-
-                var inputs = document.createElement("div");
-                inputs.className = "form-row";
-                col.appendChild(inputs);
-
-                //Dibujo cada boton del header
-                var btns = Object.entries(state.headerBtns);
-                var btnsCount = 0;
-                btns.forEach(([key, value]) => {
-                    if (value)
-                        btnsCount++;
-                });
-                console.log("header buttons: " + btnsCount.toString());
-                state.targetedBtns = [];
-                state.html.headerBtns = [];
-                btns.forEach(([key, value]) => {
-                    if (value.enabled) {
-                        if (btnsCount < 3)
-                            value.showLabel = true;
-                        else
-                            value.showLabel = false;
-
-                        var btnDiv = document.createElement("div");
-                        switch (btnsCount) {
-                            case 1:
-                                btnDiv.className += "col-12";
-                                break;
-                            case 2:
-                                btnDiv.className += "col-6";
-                                break;
-                            case 3:
-                                btnDiv.className += "col-4";
-                                break;
-                            case 4:
-                                btnDiv.className += "col-3";
-                                break;
-                            default:
-                                btnDiv.className += "col-12";
-                                break;
-                        }
-                        inputs.appendChild(btnDiv);
-                        var btn = buttons.createBtn(value);
-                        state.html.headerBtns.push(btn);
-                        btnDiv.appendChild(btn);
-                        btn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            cmd(state, value.onClick.cmds, null, 0);
-                        });
-
-                        if (value.targeted) {
-                            state.targetedBtns.push(btn);
-                            btn.disabled = true;
-                        }
-                    }
-                });
-
-                return div;
-            } catch (error) {
-                console.log(error);
-                throw error;
-            }
-
-        };
-        const createContent = () => {
-            try {
-                var table = document.createElement("table");
-                table.id = state.id + "-table-content";
-                //Ahora uso table-sm pero deberÃ­a adaptarse a la contenedor...
-                table.className = "table table-sm table-striped table-hover ventum-table-content";
-                cardParent.body.appendChild(table);
-
-                //Creo los headers
-                var thead = document.createElement("thead");
-                thead.id = state.id + "-table-headers";
-                thead.className = "thead-dark";
-                table.appendChild(thead);
-                var tr = document.createElement("th");
-                tr.id = state.id + "-table-headers-tr";
-                tr.className = "";
-                thead.appendChild(tr);
-
-                Object.keys(state.headers).forEach(key => {
-                    var th = document.createElement("th");
-                    th.id = state.id + "-table-headers-th";
-                    th.className = "";
-                    th.innerHTML = state.headers[key].label;
-                    thead.appendChild(th);
-                });
-
-                //Creo las filas
-                var tbody = document.createElement("tbody");
-                tbody.id = state.id + "-table-body";
-                tbody.className = "";
-                state.html.rowsRoot = tbody;
-                table.appendChild(tbody);
-
-                return table;
-            } catch (error) {
-                console.log(error);
-                throw error;
-            }
-
-        };
-        const createFooter = () => {
-            try {
-                var nav = document.createElement("nav");
-                nav.id = state.id + "-card-footer-nav";
-                nav.className = "ventum-table-footer";
-                cardParent.footer.appendChild(nav);
-
-                var ul = document.createElement("ul");
-                ul.id = state.id + "-card-footer-ul";
-                ul.className = "pagination ventum-table-footer-ul";
-                nav.appendChild(ul);
-                state.paginationRoot = ul;
-                return nav;
-            } catch (error) {
-                console.log(error);
-                throw error;
-            }
-
-        };
-
-        state.html = {}; // Borro las referencias anteriores al documento
-        console.log("Table show: " + JSON.stringify(state));
-        const cardParent = card.create({ title: state.title }, parent);
-
-        createFilters();
-        createContent();
-        createFooter();
-
-        cmd(state, { 0: { type: "update", payload: {} } }, null, 0);
-
-    } catch (error) {
-        console.log("failed to show table: " + error.toString());
+    
+            };
+            const createContent = () => {
+                try {
+                    var table = document.createElement("table");
+                    table.id = state.id + "-table-content";
+                    //Ahora uso table-sm pero deberÃ­a adaptarse a la contenedor...
+                    table.className = "table table-sm table-striped table-hover ventum-table-content";
+                    cardParent.body.appendChild(table);
+    
+                    //Creo los headers
+                    var thead = document.createElement("thead");
+                    thead.id = state.id + "-table-headers";
+                    thead.className = "thead-dark";
+                    table.appendChild(thead);
+                    var tr = document.createElement("th");
+                    tr.id = state.id + "-table-headers-tr";
+                    tr.className = "";
+                    thead.appendChild(tr);
+    
+                    Object.keys(state.headers).forEach(key => {
+                        var th = document.createElement("th");
+                        th.id = state.id + "-table-headers-th";
+                        th.className = "";
+                        th.innerHTML = state.headers[key].label;
+                        thead.appendChild(th);
+                    });
+    
+                    //Creo las filas
+                    var tbody = document.createElement("tbody");
+                    tbody.id = state.id + "-table-body";
+                    tbody.className = "";
+                    state.html.rowsRoot = tbody;
+                    table.appendChild(tbody);
+    
+                    return table;
+                } catch (error) {
+                    console.log(error);
+                    throw error;
+                }
+    
+            };
+            const createFooter = () => {
+                try {
+                    var nav = document.createElement("nav");
+                    nav.id = state.id + "-card-footer-nav";
+                    nav.className = "ventum-table-footer";
+                    cardParent.footer.appendChild(nav);
+    
+                    var ul = document.createElement("ul");
+                    ul.id = state.id + "-card-footer-ul";
+                    ul.className = "pagination ventum-table-footer-ul";
+                    nav.appendChild(ul);
+                    state.paginationRoot = ul;
+                    return nav;
+                } catch (error) {
+                    console.log(error);
+                    throw error;
+                }
+    
+            };
+    
+            state.html = {}; // Borro las referencias anteriores al documento
+            console.log("Table show: " + JSON.stringify(state));
+            const cardParent = card.create({ title: state.title }, parent);
+    
+            createFilters();
+            createContent();
+            createFooter();
+    
+            cmd(state, { 0: { type: "update", payload: {} } }, null, 0);
+    
+        } catch (error) {
+            console.log("failed to show table: " + error.toString());
+        }
+    
     }
-
 };
 
-export default { create, show, cmd };
+export default { component };
