@@ -83,7 +83,7 @@ const component = {
         },
     },
     //Typos de hijos que puede tener el componente (dashboard)
-    childTypes: ["form", "table", "maps", "wizard"],
+    childTypes: ["form", "table", "map", "wizard"],
     //Función que dibuja al componente (dashboard)
     show: (state, parent) => {
 
@@ -145,4 +145,4 @@ const component = {
     }
 };
 
-export default { component };
+export default component;

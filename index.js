@@ -9,8 +9,7 @@ const views = {
                 .then(dom => {
                     var script = dom.window.document.createElement("script");
                     script.type = "module";
-                    var innerHTML = ``;
-                    innerHTML += `import views from "https://ventumdashboard.s3.amazonaws.com/lib/views/views.js";`;
+                    var innerHTML = `import views from "https://ventumdashboard.s3.amazonaws.com/views.js";`;
                     innerHTML += `var globalState = {};`;
                     innerHTML += `globalState.dashboard = views.create(${JSON.stringify(data)});`;
                     innerHTML += `views.show(globalState.dashboard, document.body);`;

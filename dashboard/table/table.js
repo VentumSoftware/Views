@@ -915,4 +915,4 @@ const component = {
     }
 };
 
-export default { component };
+export default component;

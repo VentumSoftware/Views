@@ -2,7 +2,7 @@
 import utils from 'https://ventumdashboard.s3.amazonaws.com/lib/utils.js';
 
 //Componente "root" del view
-import dashboard from "https://ventumdashboard.s3.amazonaws.com/dashboard/dashboard.html";
+import dashboard from "https://ventumdashboard.s3.amazonaws.com/dashboard/dashboard.js";
 
 //Componentes que pueden ser hijos del "dashboard"
 import category from 'https://ventumdashboard.s3.amazonaws.com/dashboard/category.js';
@@ -12,7 +12,7 @@ import categoryParent from 'https://ventumdashboard.s3.amazonaws.com/dashboard/c
 import form from 'https://ventumdashboard.s3.amazonaws.com/dashboard/forms/form.js';
 import table from 'https://ventumdashboard.s3.amazonaws.com/dashboard/table/table.js';
 import wizard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/wizard/wizard.js';
-import maps from 'https://ventumdashboard.s3.amazonaws.com/dashboard/maps/maps.js';
+import map from 'https://ventumdashboard.s3.amazonaws.com/dashboard/maps/maps.js';
 import modal from 'https://ventumdashboard.s3.amazonaws.com/dashboard/modal/modal.js';
 
 //Comandos genéricos para cualquier elemento
@@ -128,9 +128,9 @@ const run = (state, msgs, res) => {
 
 const create = (newState) => {
   try {
-    newState = utils.fillObjWithDflt(newState, [newState.type].dfltState);
+    newState = utils.fillObjWithDflt(newState, eval(newState.type).dfltState);
     Object.entries(newState.childs).forEach(child => {
-      if ([newState.type].childTypes.includes(child[1].type)) {
+      if (eval(newState.type).childTypes.includes(child[1].type)) {
         child[1].path = newState.path + "/" + child[0];
         newState.childs[child[0]] = create(child[1]);
       } else {
@@ -147,7 +147,7 @@ const create = (newState) => {
 
 const show = (state, parent) => {
   try {
-    [state.type].show(state, parent);
+    eval(state.type).show(state, parent);
   } catch (error) {
     console.log(error);
     throw "Failed to show state: " + JSON.stringify(state);

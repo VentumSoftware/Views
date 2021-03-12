@@ -29,9 +29,9 @@ const component = {
         selectCategory: (state, payload, res) => {
             return new Promise((resolve, reject) => {
                 try {
-                    console.log("Category LOG:" + payload.catPath);
-        
-                    var dirs = payload.catPath.split('/');
+                    var dirs = payload.catPath.replace(state.path + '/', '');
+                    console.log("Category selected:" + dirs);
+                    dirs = dirs.split('/');
                     var cat = state.childs[dirs[0]];
                     for (let i = 1; i < dirs.length; i++) {
                         cat = cat.childs[dirs[i]];
@@ -57,7 +57,7 @@ const component = {
         
                     // }
         
-                    clearContent(state, null, null)
+                    component.cmds.clearContent(state, null, null)
                         .then(() => {
                             console.log("show selected Cat: " + JSON.stringify(cat));
                             category.show(cat, state.contentDiv);
@@ -67,7 +67,6 @@ const component = {
                         .catch(err => {
                             console.log(err);
                         });
-        
                 } catch (error) {
                     console.log("Error with selected cat! " + error);
                     reject(error);
@@ -88,7 +87,7 @@ const component = {
         },
     },
     //Typos de hijos que puede tener el componente (dashboard)
-    childTypes: ["category", "category-parent"],
+    childTypes: ["category", "categoryParent"],
     //Función que dibuja al componente (dashboard)
     show: (state, parent) => {
 
@@ -313,7 +312,7 @@ const component = {
                 try {
                     if (child.type == "category")
                         createCategory();
-                    else if (child.type == "category-parent")
+                    else if (child.type == "categoryParent")
                         createCategoryParent();
                     else
                         console.log("Incorrect child type for dashboard: " + child.type);
@@ -563,18 +562,20 @@ const component = {
         document.body.appendChild(nav);
         state.contentDiv = content.getElementsByClassName('ventum-main-content')[0];
 
-        var msgs = {
-            0: {
-                type: "select-category",
-                payload: {
-                    catPath: state.childs[0].path
-                }
-            }
+        var firstCat = Object.values(state.childs)[0];
+        var catPath = "";
+        if (firstCat.type === 'categoryParent') catPath = Object.values(firstCat.childs)[0].path;
+        else if (firstCat.type === 'category') catPath = firstCat.path;
+        else throw `Incorrect child type for dashboard: ${firstCat.path}`;
+
+        var msg = {
+            type: "selectCategory",
+            catPath: catPath
         }
     
-        cmd(state, msgs, null);
+        component.cmds.selectCategory(state, msg, null);
     
     }
 };
 
-export default { component };
+export default component;
