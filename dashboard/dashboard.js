@@ -304,7 +304,7 @@ const component = {
                             var subcatPath = Object.keys(child.childs).find(key => child.childs[key] === subCat);
                             var path = catParentPath + "/" + subcatPath;
                             console.log("path: " + path);
-                            var cmds = {
+                            var msgs = {
                                 0: {
                                     type: "selectCategory",
                                     payload: {
@@ -313,7 +313,7 @@ const component = {
                                 }
                             }
 
-                            cmd(state, cmds, null, 0);
+                            cmd(state, msgs, null, 0);
                         }
                     });
                 };
@@ -368,7 +368,7 @@ const component = {
                     //             var subPath = Object.keys(subCategories).find(key => subCategories[key] === subCat)
                     //             catPath += `/${subPath}`;
                     //             console.log("catPath: " + catPath);
-                    //             var cmds = {
+                    //             var msgs = {
                     //                 0: {
                     //                     type: "selectCategory",
                     //                     payload: {
@@ -377,7 +377,7 @@ const component = {
                     //                 }
                     //             }
 
-                    //             cmd(state, cmds, null, 0);
+                    //             cmd(state, msgs, null, 0);
                     //         };
                     //     });
 
@@ -392,7 +392,7 @@ const component = {
                     //         e.preventDefault();
                     //         var catPath = Object.keys(state.categories).find(key => state.categories[key] === cat)
                     //         console.log("expand: " + catPath);
-                    //         // var cmds = {
+                    //         // var msgs = {
                     //         //     0: {
                     //         //         type: "selectCategory",
                     //         //         payload: {
@@ -401,7 +401,7 @@ const component = {
                     //         //     }
                     //         // }
 
-                    //         // cmd(state, cmds, null, 0);
+                    //         // cmd(state, msgs, null, 0);
                     //     };
 
                     //     //DROPDOWN BUTTON - CATEGORY
@@ -444,7 +444,7 @@ const component = {
 
                     //     nameText.onclick = (e) => {
                     //         e.preventDefault();
-                    //         var cmds = {
+                    //         var msgs = {
                     //             0: {
                     //                 type: "selectCategory",
                     //                 payload: {
@@ -453,7 +453,7 @@ const component = {
                     //             }
                     //         }
 
-                    //         cmd(state, cmds, null, 0);
+                    //         cmd(state, msgs, null, 0);
                     //         console.log("Category selected: " + cat.name);
                     //         //selectCategory(cat);
                     //     };
@@ -464,7 +464,7 @@ const component = {
                     //         e.preventDefault();
                     //         var catPath = Object.keys(state.childs).find(key => state.childs[key] === cat)
                     //         console.log("catPath: " + catPath);
-                    //         var cmds = {
+                    //         var msgs = {
                     //             0: {
                     //                 type: "select-category",
                     //                 payload: {
@@ -473,7 +473,7 @@ const component = {
                     //             }
                     //         }
 
-                    //         cmd(state, cmds, null, 0);
+                    //         cmd(state, msgs, null, 0);
                     //     };
                     // }
                 } catch (error) {

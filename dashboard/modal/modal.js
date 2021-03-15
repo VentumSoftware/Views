@@ -169,7 +169,7 @@ const component = {
                     btnDiv.appendChild(btn);
                     btn.addEventListener('click', (e) => {
                         e.preventDefault();
-                        views.run(state, value.onClick.cmds, null);
+                        views.run(state, value.onClick.msgs, null);
                     });
                 });
             };

@@ -1,5 +1,7 @@
 import card from 'https://ventumdashboard.s3.amazonaws.com/dashboard/card/card.js';
 import buttons from 'https://ventumdashboard.s3.amazonaws.com/dashboard/buttons/buttons.js';
+//import views from '../../views';
+import views from "https://ventumdashboard.s3.amazonaws.com/views.js";
 
 //Caracteristicas de este componente (category)
 const component = {
@@ -166,7 +168,7 @@ const component = {
                     btnDiv.appendChild(btn);
                     btn.addEventListener('click', (e) => {
                         e.preventDefault();
-                        cmd(state, value.onClick.cmds, null, 0);
+                        views.run(state, value.onClick.msgs, null);
                     });
                 });
                 return form;

@@ -17,32 +17,32 @@ import modal from 'https://ventumdashboard.s3.amazonaws.com/dashboard/modal/moda
 
 //Comandos genéricos para cualquier elemento
 var cmds = {
-  getState: (state, payload, res) => {
+  getState: (state, msg, res) => {
     return new Promise((resolve, reject) => {
       resolve(state);
     });
   },
-  parentCmd: (state, payload, res) => {
+  parentCmd: (state, msg, res) => {
     try {
-      return [state.parentState.type].cmd(state.parentState, payload.msgs, res);
+      return run(state.parentState, msg.msgs, res);
     } catch (error) {
       console.log(error);
-      reject("Failed to run parentCmd");
+      throw "Failed to run parentCmd";
     }
   },
-  childCmd: (state, payload, res) => {
+  childCmd: (state, msg, res) => {
     try {
-      var child = state.childs[payload.child];
-      return [child.type].cmd(child, payload.msgs, res);
+      var child = state.childs[msg.child];
+      return run(child, msg.msgs, res);
     } catch (error) {
       console.log(error);
-      reject("Failed to run childCmd");
+      throw "Failed to run childCmd";
     }
   },
-  showModal: (state, payload, res) => {
+  showModal: (state, msg, res) => {
     return new Promise((resolve, reject) => {
         try {
-            modal.show(state.childs[payload.child], state);
+            modal.show(state.childs[msg.child], state);
             resolve();
         } catch (error) {
             console.log(error)
@@ -50,31 +50,31 @@ var cmds = {
         }
     })
   },
-  fetch: (state, payload, res) => {
+  fetch: (state, msg, res) => {
     try {
       var options = {
-        method: payload.method || 'GET',
-        mode: payload.mode || 'cors',
-        cache: payload.cache || 'no-cache',
-        credentials: payload.credentials || 'same-origin',
-        headers: payload.headers || { 'Content-Type': 'application/json' },
-        redirect: payload.redirect || 'follow',
-        referrerPolicy: payload.referrerPolicy || 'no-referrer',
+        method: msg.method || 'GET',
+        mode: msg.mode || 'cors',
+        cache: msg.cache || 'no-cache',
+        credentials: msg.credentials || 'same-origin',
+        headers: msg.headers || { 'Content-Type': 'application/json' },
+        redirect: msg.redirect || 'follow',
+        referrerPolicy: msg.referrerPolicy || 'no-referrer',
       };
       if (options.method === "POST") {
-        options.body = payload.body || {};
+        options.body = msg.body || {};
         if (typeof options.body === 'object') options.body = JSON.stringify(options.body);
         options.body = utils.evalString(options.body);
       };
-      return fetch(payload.url, options);
+      return fetch(msg.url, options);
     } catch (error) {
       console.log(error);
       return Promise.reject("Failed fetch cmd!");
     }
   },
-  if: (state, payload, res) => {
+  if: (state, msg, res) => {
     return new Promise((resolve, reject) => {
-      if (eval(payload.condition)) {
+      if (eval(msg.condition)) {
           console.log("condicion cumplida!");
       } else {
           console.log("condicion NO cumplida!");
@@ -82,10 +82,10 @@ var cmds = {
       resolve("ok");
     });
   },
-  showCmd: (state, payload, res) => {
+  showCmd: (state, msg, res) => {
     return new Promise((resolve, reject) => {
       try {
-        eval(state.type).show(state, payload.parent);
+        eval(state.type).show(state, msg.parent);
         resolve("ok");
       } catch (error) {
         console.log(error);
