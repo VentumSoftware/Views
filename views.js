@@ -14,6 +14,7 @@ import table from 'https://ventumdashboard.s3.amazonaws.com/dashboard/table/tabl
 import wizard from 'https://ventumdashboard.s3.amazonaws.com/dashboard/wizard/wizard.js';
 import map from 'https://ventumdashboard.s3.amazonaws.com/dashboard/maps/maps.js';
 import modal from 'https://ventumdashboard.s3.amazonaws.com/dashboard/modal/modal.js';
+import chart from 'https://ventumdashboard.s3.amazonaws.com/dashboard/chart/chart.js';
 
 //Comandos genéricos para cualquier elemento
 var cmds = {
