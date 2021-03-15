@@ -211,7 +211,7 @@ const component = {
 
                         views.run(state,
                             {
-                                0:{
+                                0: {
                                     type: "fetch",
                                     url: path,
                                     method: "POST",
@@ -623,7 +623,7 @@ const component = {
                                 type: "filter",
                                 label: "filtrar",
                                 onClick: {
-                                    cmds: {}
+                                    msgs: {}
                                 }
                             }],
                             [1, btns[0][1]]
@@ -673,7 +673,7 @@ const component = {
                         }
                         btn.addEventListener('click', (e) => {
                             e.preventDefault();
-                            views.run(state, value.onClick.cmds, null);
+                            views.run(state, value.onClick.msgs, null);
                         });
 
                         if (value.targeted) {
@@ -689,12 +689,13 @@ const component = {
             };
 
             return new Promise((resolve, reject) => {
-                //state.html.targetedBtns = [];
+                
                 fetchData()
                     .then(result => {
                         state.rowsData = result.rows;
                         drawRows(result.rows);
                         drawPagination(state, result.count);
+                        updateTargetedBtns();
                         resolve("ok");
                     })
                     .catch(err => {
@@ -704,7 +705,7 @@ const component = {
             });
         }
     },
-    //Typos de hijos que puede tener el componente (table)
+    //Tipos de hijos que puede tener el componente (table)
     childTypes: ["modal"],
     //Función que dibuja al componente (table)
     show: (state, parent) => {
@@ -866,7 +867,7 @@ const component = {
                             btnDiv.appendChild(btn);
                             btn.addEventListener('click', (e) => {
                                 e.preventDefault();
-                                views.run(state, value.onClick.cmds, null);
+                                views.run(state, value.onClick.msgs, null);
                             });
     
                             if (value.targeted) {
