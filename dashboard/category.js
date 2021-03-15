@@ -1,3 +1,5 @@
+import views from "https://ventumdashboard.s3.amazonaws.com/views.js";
+
 //Caracteristicas de este componente (category)
 const component = {
     //Dflt Dashboards State
@@ -10,17 +12,6 @@ const component = {
     },
     //Commandos específicos para el componente (dashboard)
     cmds: {
-        clearContent: (state, payload, res) => {
-            return new Promise((resolve, reject) => {
-                try {
-                    state.contentDiv.innerHTML = null;
-                    console.log("ClearContent!");
-                    resolve();
-                } catch (error) {
-                    reject(error);
-                }
-            });
-        },
         selectCategory: (state, payload, res) => {
             return new Promise((resolve, reject) => {
                 try {
@@ -51,12 +42,25 @@ const component = {
                     // if (dirs[1] != null) {
         
                     // }
-        
-                    clearContent(state, null, null)
-                        .then(() => {
-                            console.log("show selected Cat: " + JSON.stringify(cat));
-                            category.show(cat, state.contentDiv);
-                            state.selectedCategory = payload.catPath;
+                    var msgs = {
+                        0: {
+                            type: "parentCmd",
+                            payload: {
+                                type: "clearContent"
+                            }
+                        },
+                        1: {
+                            type: "parentCmd",
+                            payload: {
+                                type: "getState"
+                            }
+                        }
+                    }
+
+                    views.run(state, msgs, null)
+                        .then((parentState) => {
+                            console.log("showing selected Cat: " + state.name);
+                            views.show(cat, parentState.html.contentDiv);
                             resolve(cat);
                         })
                         .catch(err => {
@@ -130,8 +134,8 @@ const component = {
                         Object.values(col).forEach(element => {
                             console.log("show child: " + element);
                             var content = state.childs[element];
-                            console.log("content: " + JSON.stringify(content))
-                            [content.type].show(content, colDiv);
+                            //console.log("content: " + JSON.stringify(content))
+                            views.show(content, colDiv);
                         });
                     });
                 });
@@ -140,7 +144,8 @@ const component = {
             }
         };
     
-        console.log("Category show: " + JSON.stringify(state));
+        //console.log("Category show: " + JSON.stringify(state));
+        console.log("Category show: " + state.name);
         showContent();
     }
 };

@@ -1,3 +1,6 @@
+import views from "https://ventumdashboard.s3.amazonaws.com/views.js";
+//TODO: Ver como podemos hacer para no tener que referenciar esto acá (nos queda "doblemente enlazado")
+
 //Caracteristicas de este componente (dashboard)
 const component = {
     //Dflt Dashboards State
@@ -18,9 +21,10 @@ const component = {
         clearContent: (state, payload, res) => {
             return new Promise((resolve, reject) => {
                 try {
-                    state.contentDiv.innerHTML = null;
+                    if( state.html.contentDiv)
+                        state.html.contentDiv.innerHTML = null;
                     console.log("ClearContent!");
-                    resolve();
+                    resolve(state.html.contentDiv);
                 } catch (error) {
                     reject(error);
                 }
@@ -59,8 +63,15 @@ const component = {
         
                     component.cmds.clearContent(state, null, null)
                         .then(() => {
-                            console.log("show selected Cat: " + JSON.stringify(cat));
-                            category.show(cat, state.contentDiv);
+                            //console.log("show selected Cat: " + JSON.stringify(cat));
+                            console.log("show selected Cat: " + cat.name);
+                            const msgs = {
+                                0: {
+                                    type: "showCmd",
+                                    parent: state.html.contentDiv
+                                }
+                            }
+                            views.run(cat, msgs, null);
                             state.selectedCategory = payload.catPath;
                             resolve(cat);
                         })
@@ -219,16 +230,14 @@ const component = {
                         e.preventDefault();
                         var catPath = Object.keys(state.childs).find(key => state.childs[key] === child)
                         console.log("catPath: " + catPath);
-                        var cmds = {
+                        var msgs = {
                             0: {
-                                type: "select-category",
-                                payload: {
-                                    catPath: catPath
-                                }
+                                type: "selectCategory",
+                                catPath: catPath
                             }
                         }
 
-                        cmd(state, cmds, null, 0);
+                        views.run(state, msgs, null);
                     };
 
                 };
@@ -297,7 +306,7 @@ const component = {
                             console.log("path: " + path);
                             var cmds = {
                                 0: {
-                                    type: "select-category",
+                                    type: "selectCategory",
                                     payload: {
                                         catPath: path
                                     }
@@ -361,7 +370,7 @@ const component = {
                     //             console.log("catPath: " + catPath);
                     //             var cmds = {
                     //                 0: {
-                    //                     type: "select-category",
+                    //                     type: "selectCategory",
                     //                     payload: {
                     //                         catPath: catPath
                     //                     }
@@ -385,7 +394,7 @@ const component = {
                     //         console.log("expand: " + catPath);
                     //         // var cmds = {
                     //         //     0: {
-                    //         //         type: "select-category",
+                    //         //         type: "selectCategory",
                     //         //         payload: {
                     //         //             catPath: catPath
                     //         //         }
@@ -437,7 +446,7 @@ const component = {
                     //         e.preventDefault();
                     //         var cmds = {
                     //             0: {
-                    //                 type: "select-category",
+                    //                 type: "selectCategory",
                     //                 payload: {
                     //                     catPath: "0"
                     //                 }
@@ -560,7 +569,7 @@ const component = {
         var content = createContent();
         nav.appendChild(content);
         document.body.appendChild(nav);
-        state.contentDiv = content.getElementsByClassName('ventum-main-content')[0];
+        state.html.contentDiv = content.getElementsByClassName('ventum-main-content')[0];
 
         var firstCat = Object.values(state.childs)[0];
         var catPath = "";

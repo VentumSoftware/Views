@@ -1,5 +1,8 @@
+import views from "https://ventumdashboard.s3.amazonaws.com/views.js";
+
 import card from 'https://ventumdashboard.s3.amazonaws.com/dashboard/card/card.js';
 import buttons from 'https://ventumdashboard.s3.amazonaws.com/dashboard/buttons/buttons.js';
+//import views from '../../views';
 
 //Caracteristicas de este componente (table)
 const component = {
@@ -65,16 +68,22 @@ const component = {
         const fetchData = () => {
 
             const getFiltersValues = () => {
-                var result = {};
-                if (state.filterForm) {
-                    const formData = new FormData(state.filterForm);
-                    var i = 0;
-                    for (var pair of formData.entries()) {
-                        result[pair[0]] = pair[1];
-                    }
-                };
-                console.log("filter values: " + JSON.stringify(result));
-                return result;
+                try {
+                    var result = {};
+                    if (state.filterForm) {
+                        const formData = new FormData(state.filterForm);
+                        var i = 0;
+                        for (var pair of formData.entries()) {
+                            result[pair[0]] = pair[1];
+                        }
+                    };
+                    console.log("filter values: " + JSON.stringify(result));
+                    return result;
+                } catch (error) {
+                    console.log(error);
+                    throw "Failed to getFilterValues!";
+                }
+                
             };
 
             const getRows = () => {
@@ -84,73 +93,91 @@ const component = {
                     const buildStage = (key, value) => {
 
                         const getStageDefinition = () => {
-                            var result = null;
-                            if (value == "")
-                                return result;
-                            Object.keys(state.filters).forEach((index) => {
-                                Object.keys(state.filters[index].inputs).forEach((filter) => {
-                                    if (state.filters[index].inputs[filter].name == key) {
-                                        result = state.filters[index].inputs[filter].stage;
-                                        console.log(result);
-                                    }
+                            try {
+                                var result = null;
+                                if (value == "")
+                                    return result;
+                                Object.keys(state.filters).forEach((index) => {
+                                    Object.keys(state.filters[index].inputs).forEach((filter) => {
+                                        if (state.filters[index].inputs[filter].name == key) {
+                                            result = state.filters[index].inputs[filter].stage;
+                                            console.log(result);
+                                        }
+                                    })
                                 })
-                            })
-                            return result;
+                                return result;
+                            } catch (error) {
+                                console.log(error);
+                                throw "Failed to getStageDefinition!"; 
+                            }
                         };
 
-                        var result = "";
-                        var stageDef = getStageDefinition();
-                        if (stageDef != null) {
-                            switch (stageDef.type) {
-                                case "match":
-                                    switch (stageDef.transform) {
-                                        case "date":
-                                            value = formatDateToQuery(value);
-                                            break;
-                                        case "number":
-                                            result += `{"$addFields":{"paquete.vel":{"$toInt": "$paquete.Velocidad"}}},`;
-                                            value = parseInt(value);
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                    var op = "";
-                                    switch (typeof (stageDef.op)) {
-                                        case 'string':
-                                            if (stageDef.transform == "number") {
-                                                op = `{"${stageDef.op}":${value}}`;
-                                            } else {
-                                                op = `{"${stageDef.op}":"${value}"}`;
-                                            }
-                                            break;
-                                        case 'undefined':
-                                            op = `"${value}"`;
-                                            break;
-                                        case 'object':
-                                            //TODO
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                    result += `{"$match":{"${stageDef.var}":${op}}},`;
-                                    break;
-                                default:
-                                    break;
+                        try {
+                            var result = "";
+                            var stageDef = getStageDefinition();
+                            if (stageDef != null) {
+                                switch (stageDef.type) {
+                                    case "match":
+                                        switch (stageDef.transform) {
+                                            case "date":
+                                                value = formatDateToQuery(value);
+                                                break;
+                                            case "number":
+                                                result += `{"$addFields":{"paquete.vel":{"$toInt": "$paquete.Velocidad"}}},`;
+                                                value = parseInt(value);
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                        var op = "";
+                                        switch (typeof (stageDef.op)) {
+                                            case 'string':
+                                                if (stageDef.transform == "number") {
+                                                    op = `{"${stageDef.op}":${value}}`;
+                                                } else {
+                                                    op = `{"${stageDef.op}":"${value}"}`;
+                                                }
+                                                break;
+                                            case 'undefined':
+                                                op = `"${value}"`;
+                                                break;
+                                            case 'object':
+                                                //TODO
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                        result += `{"$match":{"${stageDef.var}":${op}}},`;
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
+                            return result;
+                        } catch (error) {
+                            console.log(error);
+                            throw "Failed to buildStage!"; 
                         }
-                        return result;
+
+                        
                     }
 
-                    var result = "[";
-                    Object.keys(filters).forEach(key => {
-                        result += buildStage(key, filters[key]);
-                    });
-                    Object.keys(state.finalStages).forEach((key) => {
-                        result += state.finalStages[key] + ",";
-                    });
-                    result += `{"$skip": ${state.selectedPage * 10} },{"$limit": ${state.rowCount} }]`; //Ordenamiento descendente por Hora (de nuevo a viejo) -- Hasta 10 resultados.
-                    console.log("Pipeline: " + result);
-                    return result;
+                    try {
+                        var result = "[";
+                        Object.keys(filters).forEach(key => {
+                            result += buildStage(key, filters[key]);
+                        });
+                        Object.keys(state.finalStages).forEach((key) => {
+                            result += state.finalStages[key] + ",";
+                        });
+                        result += `{"$skip": ${state.selectedPage * 10} },{"$limit": ${state.rowCount} }]`; //Ordenamiento descendente por Hora (de nuevo a viejo) -- Hasta 10 resultados.
+                        console.log("Pipeline: " + result);
+                        return result;
+                    } catch (error) {
+                        console.log(error);
+                        throw "Failed to buildPipeline!";
+                    }
+                    
                 };
 
                 return new Promise((resolve, reject) => {
@@ -159,22 +186,19 @@ const component = {
                     const queryOptions = "{'collation':{'locale':'en_US','numericOrdering':true},'allowDiskUse':true}";
                     const path = state.fetchPath;
 
-                    cmd(state,
+                    views.run(state,
                         {
                             0:{
                                 type: "fetch",
-                                payload: {
-                                    url: path,
-                                    method: "POST",
-                                    body: {
-                                        pipeline: pipeline,
-                                        queryOptions: queryOptions
-                                    }
+                                url: path,
+                                method: "POST",
+                                body: {
+                                    pipeline: pipeline,
+                                    queryOptions: queryOptions
                                 }
                             }
                         },
-                        null,
-                        0)
+                        null)
                         .then(response => response.json())
                         .then(rows => resolve(rows))
                         .catch(e => {
@@ -269,23 +293,19 @@ const component = {
                 return new Promise((resolve, reject) => {
                     const queryOptions = `{"collation":{"locale":"en_US","numericOrdering":"true"},"allowDiskUse":"true"}`;
 
-                    cmd(state,
+                    views.run(state,
                         {
                             0:{
                                 type: "fetch",
-                                payload: {
-                                    url: path,
-                                    method: "POST",
-                                    body: {
-                                        pipeline: pipeline,
-                                        queryOptions: queryOptions
-                                    }
-                                    
+                                url: path,
+                                method: "POST",
+                                body: {
+                                    pipeline: pipeline,
+                                    queryOptions: queryOptions
                                 }
                             }
                         },
-                        null,
-                        0)
+                        null)
                         .then(res => {
                             console.log(res);
                             return res.json();
@@ -460,7 +480,9 @@ const component = {
                         removeAllActives();
                         state.selectedPage = i;
                         state.paginationRoot.childNodes[state.selectedPage % 10 + 2].className += " active";
-                        update(state).then(() => console.log("updated")).catch(err => console.log("failed update: " + err));
+                        views.run(state, {0: {type: "update"}}, null)
+                            .then(() => console.log("updated"))
+                            .catch(err => console.log("failed update: " + err));
                     })
                     li.appendChild(button);
                 }
@@ -544,7 +566,9 @@ const component = {
                     if (page && page < count / 10) {
                         state.selectedPage = page - 1;
                         state.paginationIndex = Math.trunc(state.selectedPage / 10);
-                        update(state).then(() => console.log("updated")).catch(err => console.log("failed update: " + err));
+                        views.run(state, {0: {type: "update"}}, null)
+                            .then(() => console.log("updated"))
+                            .catch(err => console.log("failed update: " + err));
                     } else {
                         goTo.value = "";
                     }
@@ -626,7 +650,7 @@ const component = {
                     }
                     btn.addEventListener('click', (e) => {
                         e.preventDefault();
-                        cmd(state, value.onClick.cmds, null, 0);
+                        views.run(state, value.onClick.cmds, null);
                     });
 
                     if (value.targeted) {
@@ -821,7 +845,7 @@ const component = {
                             btnDiv.appendChild(btn);
                             btn.addEventListener('click', (e) => {
                                 e.preventDefault();
-                                cmd(state, value.onClick.cmds, null, 0);
+                                views.run(state, value.onClick.cmds, null);
                             });
     
                             if (value.targeted) {
@@ -899,14 +923,14 @@ const component = {
             };
     
             state.html = {}; // Borro las referencias anteriores al documento
-            console.log("Table show: " + JSON.stringify(state));
+            //console.log("Table show: " + JSON.stringify(state));
             const cardParent = card.create({ title: state.title }, parent);
     
             createFilters();
             createContent();
             createFooter();
     
-            cmd(state, { 0: { type: "update", payload: {} } }, null, 0);
+            views.run(state, { 0: { type: "update", payload: {} } }, null);
     
         } catch (error) {
             console.log("failed to show table: " + error.toString());

@@ -12,6 +12,7 @@ const views = {
                     var innerHTML = `import views from "https://ventumdashboard.s3.amazonaws.com/views.js";`;
                     innerHTML += `var globalState = {};`;
                     innerHTML += `globalState.dashboard = views.create(${JSON.stringify(data)});`;
+                    innerHTML += `console.log(JSON.stringify(globalState));`;
                     innerHTML += `views.show(globalState.dashboard, document.body);`;
                     script.innerHTML = innerHTML;
                     dom.window.document.body.appendChild(script);
