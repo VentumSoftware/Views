@@ -254,7 +254,6 @@ const show = (state, parent) => {
           divContent.style.lineHeight ="50px";
           divContent.style.marginLeft ="15px";
           divContent.style.color="#000";
-          divContent.style.position="absolute";
           divContent.style.right="5px";
           divContent.style.top="20px";
           divContent.style.opacity="0.1";
@@ -455,5 +454,6 @@ return(coords);
     const cardParent = card.create({ title: state.title }, parent);
     createFilters();
     drawCard();
+    createwidgets()
 
 };
