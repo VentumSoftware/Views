@@ -197,10 +197,11 @@ input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
-
-
 /* Firefox */
-
 input[type=number] {
     -moz-appearance: textfield;
+}
+.l-bg-orange-dark{
+  background: linear-gradient(to right, #6c757d, #08c) !important;
+  color: #fff;
 }
