@@ -38,6 +38,7 @@ const create = (data, parent) => {
         return footer
     };
 
+    
     data = utils.fillObjWithDflt(data, dflt);
 
     var div = createDiv();

@@ -65,8 +65,9 @@ var cmds = {
       if (options.method === "POST") {
         options.body = msg.body || {};
         if (typeof options.body === 'object') options.body = JSON.stringify(options.body);
-        options.body = utils.evalString(options.body);
+        options.body = utils.evalString(options.body, { state: state, msg: msg, res: res });
       };
+      console.log(`fetch url: ${msg.url}  options: ${JSON.stringify(options)}`);
       return fetch(msg.url, options);
     } catch (error) {
       console.log(error);
@@ -103,18 +104,15 @@ const run = (state, msgs, res) => {
       //Si msgs es un objeto lo convierto a un array
       if (typeof msgs === 'object') msgs = Object.values(msgs);
 
-      //console.log(`run "state": ${JSON.stringify(state)}`);
-      console.log(`run "state": ${JSON.stringify(state.type)}`);
-      console.log(`run "msgs": ${JSON.stringify(msgs)}`);
-      //console.log(`run "res": ${JSON.stringify(res)}`);
-
       //A: Si ya ejecuté todos los comandos termino
       if (Object.keys(msgs).length === 0) {
         //console.log(`run completed "state": ${JSON.stringify(state)}`);
         console.log(`run completed "state": ${state.type}`);
-        //console.log(`run completed "res": ${JSON.stringify(res)}`);
+        console.log(`run completed "res": ${JSON.stringify(res)}`);
         resolve(res);
       } else {
+        console.log(`run "state": ${JSON.stringify(state.type)}`);
+        console.log(`run "msgs": ${JSON.stringify(msgs)}`);
         var msg = msgs.shift();
         var cmd = eval(state.type).cmds[msg.type] || cmds[msg.type];
         if (cmd === null || cmd === undefined) {
@@ -123,8 +121,6 @@ const run = (state, msgs, res) => {
           var c = () => cmd(state, msg, res);
           c()
             .then((res) => {
-              console.log(`cmd executed: ${msgs.shift()}`);
-              //console.log(`cmd "res": ${res}`);
               return run(state, msgs, res);
             })
             .then((res) => resolve(res))

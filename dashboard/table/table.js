@@ -387,6 +387,7 @@ const component = {
                     state.html.rowsCheckboxs = [];
 
                     data.forEach(row => {
+                        
                         var tr = document.createElement("tr");
                         tr.className = "";
                         state.html.rowsRoot.appendChild(tr);
@@ -397,6 +398,7 @@ const component = {
                             if (btn.targeted)
                                 addCheckbox = true;
                         });
+
                         if (addCheckbox) {
                             var th = document.createElement("th");
                             var checkbox = document.createElement("input");
@@ -411,20 +413,36 @@ const component = {
                             tr.appendChild(th);
                         }
 
+                        state.html.rowBtns = [];
                         Object.keys(state.headers).forEach(headerKey => {
                             var th = document.createElement("th");
-                            var cellValue = getCellValue(row, state.headers[headerKey].name.split('.'));
-                            if (!Number.isNaN(cellValue)) {
-                                //cellValue = formatValue(cellValue);
-                                cellValue = cellValue || state.emptyCellChar;
-                                th.innerHTML = cellValue;
-                                tr.appendChild(th);
+                            
+                            if (state.headers[headerKey].btn) {
+                                var value = state.headers[headerKey].btn;
+                                var btn = buttons.createBtn(value);
+                                btn.style["padding-top"] = "0px";
+                                //btn.style["padding-right"] = "0px";
+                                btn.style["padding-bottom"] = "0px";
+                                btn.style["padding-toleftp"] = "0px";
+                                btn.style["width"] = (0.07 * window.screen.width) + "px";
+                                state.html.rowBtns.push(btn);
+                                th.appendChild(btn);
+                                btn.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    views.run(state, value.onClick.msgs, null);
+                                });
                             } else {
-                                cellValue = cellValue || state.emptyCellChar;
-                                th.innerHTML = cellValue;
-                                tr.appendChild(th);
-                            }
-
+                                var cellValue = getCellValue(row, state.headers[headerKey].name.split('.'));
+                                if (!Number.isNaN(cellValue)) {
+                                    //cellValue = formatValue(cellValue);
+                                    cellValue = cellValue || state.emptyCellChar;
+                                    th.innerHTML = cellValue;                             
+                                } else {
+                                    cellValue = cellValue || state.emptyCellChar;
+                                    th.innerHTML = cellValue;
+                                }
+                            } 
+                            tr.appendChild(th);
                         });
                     });
                 } catch (error) {
@@ -897,10 +915,20 @@ const component = {
                     thead.id = state.id + "-table-headers";
                     thead.className = "thead-dark";
                     table.appendChild(thead);
-                    var tr = document.createElement("th");
-                    tr.id = state.id + "-table-headers-tr";
-                    tr.className = "";
-                    thead.appendChild(tr);
+
+                    var addCheckbox = false;
+                    //Si hay algun boton "targeted" agrego el checkbos a las filas
+                    Object.values(state.headerBtns).forEach((btn) => {
+                        if (btn.targeted)
+                            addCheckbox = true;
+                    });
+                    
+                    if (addCheckbox) {
+                        var th = document.createElement("th");
+                        th.id = state.id + "-table-headers-th";
+                        th.className = "";
+                        thead.appendChild(th);
+                    } 
     
                     Object.keys(state.headers).forEach(key => {
                         var th = document.createElement("th");

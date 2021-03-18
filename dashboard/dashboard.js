@@ -307,13 +307,11 @@ const component = {
                             var msgs = {
                                 0: {
                                     type: "selectCategory",
-                                    payload: {
-                                        catPath: path
-                                    }
+                                    catPath: path
                                 }
                             }
 
-                            cmd(state, msgs, null, 0);
+                            views.run(state, msgs, null);
                         }
                     });
                 };

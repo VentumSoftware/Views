@@ -10,73 +10,117 @@ const component = {
     //Dflt Modal State
     dfltState: {
         type: "chart",
-        width: "auto",
-        title: "NO TITLE",
-        text: "",
-        width: "50%",
-        footerBtns: {},
+        title: "Chart",
+        chart: {
+            type: "pie"
+        },
         childs: {}
     },
     //Commandos específicos para el componente (chart)
-    cmds: {
-    },
+    cmds: {},
     //Typos de hijos que puede tener el componente (chart)
     childTypes: ["modal"],
     show: (state, parent) => {
         const drawChart = () => {
-            try {
-                    var data = state.chart.dataset;
-                    var type = state.chart.type;
-                    var width = state.chart.width;
-                    var height = state.chart.heigth;
+
+            const pieChart = () => {
+                try {
                     var radius = width / 2;
-
-
-                    var svg = d3.select(cardBody.id)
-                        .append("svg")
-                        .attr("width", width)
-                        .attr("height", height);                        
-
-                        g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-                    
-                    //ORDEN DE LOS COLORES EN ESCALA
-                    var color = d3.scaleOrdinal(['#4daf4a','#377eb8','#ff7f00','#984ea3','#e41a1c']);
-                    
-                    // Generate the pie
                     var pie = d3.pie();
+                    var arc = d3.arc()
+                            .innerRadius(0)
+                            .outerRadius(radius);
+                } catch (error) {
                     
-                    // Generate the arcs
-                    if(type == "pie"){
-                        var arc = d3.arc()
-                                .innerRadius(0)
-                                .outerRadius(radius);
+                }
+            };
+
+            const donutChart = () => {
+                try {
+                    var radius = width / 2;
+                    var arc = d3.arc()
+                            .innerRadius(radius - ((radius/100)*15))
+                            .outerRadius(radius);
+                } catch (error) {
                     
-                    } else if(type == "donut"){
-                        var arc = d3.arc()
-                                .innerRadius(radius - ((radius/100)*15))
-                                .outerRadius(radius);
+                }
+            };
+
+            const barChart = () => {
+                try {
                     
-                    }else{
-                        var arc = d3.arc()
-                                .innerRadius(0)
-                                .outerRadius(radius);    
-                    }
+                } catch (error) {
                     
-                    //Generate groups
-                    var arcs = g.selectAll("arc")
-                                .data(pie(data))
-                                .enter()
-                                .append("g")
-                                .attr("class", "arc")
+                }
+            };
+
+            try {
+                var type = state.chart.type;
+                var data = state.chart.dataset;
+                var width = state.chart.width;
+                var height = state.chart.heigth;
+                
+                var svg = d3.select(cardBody.id)
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height);                        
+
+                // Esto no entiendo bien que hace?
+                g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
                     
-                    //Draw arc paths / los arcos de la torta hay que dibujarlos con path.
-                    arcs.append("path")
-                        .attr("fill", function(d, i) {
-                            return color(i);
-                        })
-                        .attr("d", arc);  
-                        
-                    return svg;
+                //ORDEN DE LOS COLORES EN ESCALA
+                var color = d3.scaleOrdinal(['#4daf4a','#377eb8','#ff7f00','#984ea3','#e41a1c']);
+                
+                switch (type) {
+                    case "pie":
+                        pieChart();
+                        break;
+                    case "donut":
+                        circleChart();
+                        break;
+                    case "bar":
+                        barChart();
+                        break;
+                    default:
+                        throw `Incorrect chart type: ${type}`;
+                        break;
+                }
+
+                // Generate the pie
+                var pie = d3.pie();
+                
+                // Generate the arcs
+                if(type == "pie"){
+                    var arc = d3.arc()
+                            .innerRadius(0)
+                            .outerRadius(radius);
+                
+                } else if(type == "donut"){
+                    var arc = d3.arc()
+                            .innerRadius(radius - ((radius/100)*15))
+                            .outerRadius(radius);
+                
+                }else{
+                    var arc = d3.arc()
+                            .innerRadius(0)
+                            .outerRadius(radius);    
+                }
+                    
+                //Generate groups
+                var arcs = g.selectAll("arc")
+                            .data(pie(data))
+                            .enter()
+                            .append("g")
+                            .attr("class", "arc")
+                
+                //Draw arc paths / los arcos de la torta hay que dibujarlos con path.
+                arcs.append("path")
+                    .attr("fill", function(d, i) {
+                        return color(i);
+                    })
+                    .attr("d", arc);  
+                    
+                return svg;
                 
             } catch (error) {
                 console.log(error);
