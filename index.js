@@ -36,7 +36,20 @@ const views = {
         } catch (error) {
             res.status(500).send(error);
         }
-    }
+    },
+    signup:(req, res, data) => {
+        console.log("signup!");
+        const originPath = "https://ventumdashboard.s3.amazonaws.com/signup/signup.html";
+        try {
+            JSDOM.fromURL(originPath)
+                .then(dom => {
+                    res.send((dom.serialize()));
+                })
+                .catch(err => reject(err));
+        } catch (error) {
+            res.status(500).send(error);
+        }
+    },
 };
 
 module.exports = views;
