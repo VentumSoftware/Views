@@ -23,6 +23,12 @@ const dfltState = {
       console.log(this.layers);
     },
     onDrawStart: (state) => { },
+    onEdit: function onEdit(e){
+      //this.options.push(e.layer.feature.properties);
+      //FETCH to update this modified layer.
+      this.layers.push(e.layer);
+      console.log(e);
+    },
     controls: {
       position: 'topleft',
       drawRectangle: false,
@@ -179,11 +185,10 @@ const render = (state, parent) => {
     })
       .then((references) => references.json())
       .then((references) => {
-        console.log(references);
-        //draw references(from GEOJSON)
         references.forEach((ref)=>{
-          console.log(ref);
-          L.geoJSON(ref).bindPopup(ref => {return ref.feature.properties}).addTo(map)
+          L.geoJSON(ref,{onEachFeature(feature, layer) {
+            layer.on('pm:edit', (e) => state.editor.onEdit(e))
+          }}).bindPopup(ref => {return ref.feature.properties}).addTo(map)
         });
       });
 
