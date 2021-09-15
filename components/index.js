@@ -1,25 +1,3 @@
-//Ejecución de un evento de un componente (Ej: Click en un botón)
-// const onEvent = (state, eventName, func, otherData) => {
-//   return new Promise((resolve, reject) => {
-//     if (func != null) {
-//       try {
-//         console.log(`Event: ${eventName}`);
-//         console.log(cmps)
-//         if (typeof func === 'string') func = eval(func);
-//         let r = func(state, otherData);
-//         if (r instanceof Promise) r.then((res) => resolve(state));
-//         else resolve(state);
-//       } catch (error) {
-//         console.log(error);
-//         reject(error);
-//       }
-//     } else {
-//       //console.log(`Event not defined: ${eventName}`);
-//       resolve(state);
-//     }
-//   });
-// };
-
 const dfltState = {
   style: "dflt",
   show: true,
@@ -188,7 +166,7 @@ const getComponents = () => {
 
   return new Promise((resolve, reject) => {
     let results = {};
-    const rootFolder = '/public/views/components';
+    const rootFolder = '/public/Views/components';
     let paths = [];
     getCmpPaths(rootFolder)
       .then(p => {

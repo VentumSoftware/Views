@@ -1,6 +1,7 @@
 //Herramientas utiles que usamos por ahí
 import comp from './components/index.js';
-
+import utils from './lib/index.js';
+window.utils = utils;
 // ---------------------------- Aux Funcs -------------------------
 
 const serializeState = (state = globalState) => {
@@ -59,7 +60,7 @@ const loadComponents = () => {
 
       return new Promise((resolve, reject) => {
         let results = [];
-        const rootFolder = '/public/views/components';
+        const rootFolder = '/public/Views/components';
         getCmpPaths(rootFolder)
           .then(p => {
             console.log("Dependencies found:");

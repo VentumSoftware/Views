@@ -1,6 +1,6 @@
 const dfltState = {
     background: {
-        image: '../public/assets/Images/detector0.jpeg',
+        image: '',
         gradientDirection: "to right",
         gradientStart: "rgba(255, 255, 255, 0.7)",
         gradientEnd: "rgba(255,255,255,0)"
@@ -33,9 +33,11 @@ const dfltState = {
                 .catch(err => console.log(err));
         });
     },
+    signUp: "true",
     onSignUp: () => {
         console.log("OnSignUp no implementado!")
     },
+    forgotPass: "true",
     childs: {
         failedSignInModal: {
             type: "modal",
@@ -135,6 +137,12 @@ const render = (state, parent) => {
         var html = utils.stringToHTML(getHTML(state));
         html = parent.appendChild(html);
         state = getReferences(state, html.getRootNode());
+        if(state.signUp == "false"){
+            state.html.signUpLink.remove();
+        };
+        if(state.forgotPass == "false"){
+            state.html.forgotPassLink.remove();
+        };
         console.log(state.onSignIn);
         state.html.signInBtn.addEventListener('click', (e) => eval(state.onSignIn)(state));
         res(state);

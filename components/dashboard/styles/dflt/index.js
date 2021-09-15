@@ -35,7 +35,7 @@ const render = (state, parent) => {
         <div id="${state.id}-content-navbar-div" class="ventum-content-navbar-div row">
           <div id="${state.id}-content-navbar-div-exit" class="col-11"></div>
           <div id="${state.id}-content-navbar-div-exit" class="col-1 d-flex content-center" style="position: relative;"><button
-              id="${state.id}-content-navbar-div-exit" class="btn btn-danger btn-sm"
+              id="${state.id}-logout" class="btn btn-danger btn-sm"
               style="color: white; margin-top: 10%; margin-bottom: 10%;">Log Out</button></div>
         </div>
         <div class="ventum-content-separator-line"></div>
@@ -49,7 +49,8 @@ const render = (state, parent) => {
   const getReferences = (state, root) => {
     state.html = {
       categorys: root.getElementById(`${state.id}-categorys`),
-      content:root.getElementById(`${state.id}-content-main`),
+      content: root.getElementById(`${state.id}-content-main`),
+      logout: root.getElementById(`${state.id}-logout`)
     };
     return state;
   };
@@ -97,6 +98,11 @@ const render = (state, parent) => {
     html = parent.appendChild(html);
     state = getReferences(state, html.getRootNode());
     state = renderCategorys(state);
+    state.html.logout.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.cookie = 'access-token=; Max-Age=0';
+      location.reload();
+    })
     renderChilds(state)
       .then(state => {
         //Seleccionar cat
