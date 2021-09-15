@@ -45,7 +45,7 @@ const dfltState = {
             console.log(feature);
           })
           console.log(data);
-          data.features.forEach((layer)=>{
+          data.features.forEach((layer) => {
             fetch('/davi/map', {
               method: 'POST',
               headers: {
@@ -54,10 +54,10 @@ const dfltState = {
               body: JSON.stringify(layer)
             })
               .then(res => res.json())
-              .then(res => layer.id = res.id );
+              .then(res => layer.id = res.id);
           })
         },
-icon: "item"
+        icon: "item"
       }
     }
   }
@@ -169,65 +169,78 @@ const render = (state, parent) => {
     map.on('pm:create', (e) => state.editor.onCreate(e));
   }
 
-  const drawIcons = (state, map) => {
+  const drawLayers = (state, map) => {
+    //Layers de referencias (Markers, Polyline, Circles)
+    fetch('/davi/map', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+      .then((references) => references.json())
+      .then((references) => {
+        console.log(references);
+        //draw references(from GEOJSON)
+        references.forEach((ref)=>{
+          console.log(ref);
+          L.geoJSON(ref).bindPopup(ref => {return ref.feature.properties}).addTo(map)
+        });
+      });
 
-    //Dibujo Markers
-    Object.values(state.markers).forEach(markerData => {
-      var marker = L.marker(Object.values(markerData.pos)).addTo(map);
-      if (markerData.popUp.show == "true")
-        marker.bindPopup(markerData.popUp.innerHTML).openPopup();
-      else
-        marker.bindPopup(markerData.popUp.innerHTML);
 
-      markerData.ref = marker;
-      views.onEvent(state, "markerOnCreate", markerData.onCreate, marker);
-    });
+    //Markers de vehiculos (Última posición)
+    fetch('/davi/vehicles', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+      .then((vehicles) => vehicles.json())
+      .then((vehicles) => {
+        let markers = {};
+        for (let i = 0; i < vehicles.length; i++) {
+          markers[vehicles[i].id] = {
+            pos: [vehicles[i].gps.lat, vehicles[i].gps.lon],
+            popUp: {
+              innerHTML: `<b>${vehicles[i].name}</b>
+            <br>ID: ${vehicles[i].id}.
+            <br>Patente: ${vehicles[i].licensePlate}.
+            <br>Conductor: ${vehicles[i].driver}.
+            <br>Marca: ${vehicles[i].vehicleBrand}.
+            <br>Modelo: ${vehicles[i].vehicleModel}.
+            <br>Actualizado a las ${vehicles[i].gral.time}.
+            `,
+              show: false,
+            }
+          }
+        }
+        Object.values(markers).forEach(markerData => {
+          var marker = L.marker(Object.values(markerData.pos)).addTo(map);
+          if (markerData.popUp.show == "true")
+            marker.bindPopup(markerData.popUp.innerHTML).openPopup();
+          else
+            marker.bindPopup(markerData.popUp.innerHTML);
 
-    //Dibujo Circulos
-    Object.values(state.circles).forEach(circleData => {
-      var circle = L.circle(Object.values(circleData.pos), {
-        color: circleData.color || 'red',
-        fillColor: circleData.fillColor || '#f03',
-        fillOpacity: circleData.fillOpacity || 0.5,
-        radius: circleData.radius || 500
-      }).addTo(map);
+          markerData.ref = marker;
+          views.onEvent(state, "markerOnCreate", markerData.onCreate, marker);
+        });
+      });
 
-      if (circleData.popUp.show == "true")
-        circle.bindPopup(circleData.popUp.innerHTML).openPopup();
-      else
-        circle.bindPopup(circleData.popUp.innerHTML);
-    });
+    // //Dibujo Poligonos
+    // Object.values(state.polygons).forEach(polygonData => {
+    //   var positions = [];
+    //   Object.values(polygonData.pos).forEach(pos => positions.push(Object.values(pos)))
+    //   var polygon = L.polygon(positions, {
+    //     color: polygonData.color || 'blue',
+    //     fillColor: polygonData.fillColor || '#008',
+    //     fillOpacity: polygonData.fillOpacity || 0.5,
+    //   }).addTo(map);
 
-    //Dibujo Poligonos
-    Object.values(state.polygons).forEach(polygonData => {
-      var positions = [];
-      Object.values(polygonData.pos).forEach(pos => positions.push(Object.values(pos)))
-      var polygon = L.polygon(positions, {
-        color: polygonData.color || 'blue',
-        fillColor: polygonData.fillColor || '#008',
-        fillOpacity: polygonData.fillOpacity || 0.5,
-      }).addTo(map);
-
-      if (polygonData.popUp.show == "true")
-        polygon.bindPopup(polygonData.popUp.innerHTML).openPopup();
-      else
-        polygon.bindPopup(polygonData.popUp.innerHTML);
-    });
-    //             marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
-    // circle.bindPopup("I am a circle.");
-    // polygon.bindPopup("I am a polygon.");
-    //             var marker = L.marker([51.5, -0.09]).addTo(mymap);
-    //             var circle = L.circle([51.508, -0.11], {
-    //               color: 'red',
-    //               fillColor: '#f03',
-    //               fillOpacity: 0.5,
-    //               radius: 500
-    //             }).addTo(mymap);
-    //             var polygon = L.polygon([
-    //               [51.509, -0.08],
-    //               [51.503, -0.06],
-    //               [51.51, -0.047]
-    //           ]).addTo(mymap);
+    //   if (polygonData.popUp.show == "true")
+    //     polygon.bindPopup(polygonData.popUp.innerHTML).openPopup();
+    //   else
+    //     polygon.bindPopup(polygonData.popUp.innerHTML);
+    // });
     return state;
   }
 
@@ -248,8 +261,8 @@ const render = (state, parent) => {
       accessToken: state.apitoken
     })
       .addTo(mymap);
+    state = drawLayers(state, mymap);
     customEditor(state, mymap);
-    state = drawIcons(state, mymap);
     renderChilds(state)
       .then(state => {
         if (state.show == true) state.html.root.style.display = "block";
