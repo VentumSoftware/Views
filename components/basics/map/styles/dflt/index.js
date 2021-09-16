@@ -23,11 +23,9 @@ const dfltState = {
       console.log(this.layers);
     },
     onDrawStart: (state) => { },
-    onEdit: function onEdit(e){
-      //this.options.push(e.layer.feature.properties);
+    onEdit: function onEdit(e) {
       //FETCH to update this modified layer.
       this.layers.push(e.layer);
-      console.log(e);
     },
     controls: {
       position: 'topleft',
@@ -46,22 +44,33 @@ const dfltState = {
           let data = window.globalState.childs.daviMap.childs.body.childs[1].editor.layers;
           let options = window.globalState.childs.daviMap.childs.body.childs[1].editor.options;
           data = L.layerGroup(data).toGeoJSON();
-          data.features.forEach((feature, i) => {
-            feature.properties = options[i];
-            console.log(feature);
-          })
           console.log(data);
+          let i = 0;
           data.features.forEach((layer) => {
-            fetch('/davi/map', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(layer)
-            })
-              .then(res => res.json())
-              .then(res => layer.id = res.id);
-          })
+            if (layer.hasOwnProperty('_id')) {
+              fetch('/davi/map', {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(layer)
+              })
+                .then(res => res.json())
+                .then(res => layer.id = res.id);
+            } else {
+              layer.properties = options[i];
+              fetch('/davi/map', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(layer)
+              })
+                .then(res => res.json())
+                .then(res => layer.id = res.id);
+                i++;
+            }
+          });
         },
         icon: "item"
       }
@@ -185,10 +194,12 @@ const render = (state, parent) => {
     })
       .then((references) => references.json())
       .then((references) => {
-        references.forEach((ref)=>{
-          L.geoJSON(ref,{onEachFeature(feature, layer) {
-            layer.on('pm:edit', (e) => state.editor.onEdit(e))
-          }}).bindPopup(ref => {return ref.feature.properties}).addTo(map)
+        references.forEach((ref) => {
+          L.geoJSON(ref, {
+            onEachFeature(feature, layer) {
+              layer.on('pm:edit', (e) => state.editor.onEdit(e))
+            }
+          }).bindPopup(ref => { return ref.feature.properties }).addTo(map)
         });
       });
 
