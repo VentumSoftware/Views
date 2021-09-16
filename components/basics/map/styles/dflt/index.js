@@ -23,9 +23,18 @@ const dfltState = {
       console.log(this.layers);
     },
     onDrawStart: (state) => { },
-    onEdit: function onEdit(e) {
-      //FETCH to update this modified layer.
-      this.layers.push(e.layer);
+    onRemove: function onRemove(e) {
+      //FETCH to Delete this removed layer.
+      console.log(e.layer);
+      fetch('/davi/map', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(e.layer.feature)
+      })
+        .then(res => res.json())
+        .then(res => console.log(res));
     },
     controls: {
       position: 'topleft',
@@ -182,6 +191,7 @@ const render = (state, parent) => {
     map.on('pm:drawstart', (e) => eval(state.editor.onDrawStart)(e));
     //Triggered when a new layer is created.
     map.on('pm:create', (e) => state.editor.onCreate(e));
+    map.on('pm:remove', (e) => state.editor.onRemove(e));
   }
 
   const drawLayers = (state, map) => {
