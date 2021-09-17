@@ -1,11 +1,35 @@
 
 //Dflt Modal State
 var dfltState = {
-    width: "50%"
 };
 
+const hide = (state) => {
+    const visible = views.isRendering(state);
+    if (visible) {
+        views.onEvent(state, "onHide", state.onHide);
+    }
+    state.show = false;
+    if (state.html.root) {
+        $("#" + state.id + "_root").modal('hide');
+    }
+    console.log(`${state.type} "${state.id}" hidden!`);
+    return state;
+};
+
+const show = (state, show = true) => {
+    const visible = views.isRendering(state);
+    if (!visible) {
+        views.onEvent(state, "onShow", state.onShow);
+    }
+    state.show = true;
+    if (state.html.root) {
+        $("#" + state.id + "_root").modal('show');
+    }
+    console.log(`${state.type} "${state.id}" showed!`);
+    return state;
+};
 var old = {
-    render : (state, parent) => {
+    render: (state, parent) => {
 
         const showModal = () => {
 
@@ -102,7 +126,7 @@ var old = {
         window.views.onEvent(state, "onRender", state.onRender);
     },
 
-    showSpinner : () => {
+    showSpinner: () => {
         //<div class="d-flex justify-content-center"></div>
 
         var justifyDiv = document.createElement("div");
@@ -120,7 +144,7 @@ var old = {
         spinnerBorder.appendChild(span);
     },
 
-    hideSpinner : () => {
+    hideSpinner: () => {
         var justifyDiv = document.createElement("div");
         justifyDiv.className = "d-flex justify-content-center";
         parent.appendChild(justifyDiv);
@@ -136,14 +160,12 @@ var old = {
         spinnerBorder.appendChild(span);
     },
 
-    closeModal : () => {
+    closeModal: () => {
         $('#modal-root').modal('hide');
     },
 
-    update : () => {
+    update: () => {
     },
 }
 
-
-
-export default { dfltState };
+export default { dfltState, hide, show };

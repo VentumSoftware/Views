@@ -1,9 +1,9 @@
-// import utils from 'http://localhost/public/views/lib/utils.js';
-// import card from 'http://localhost/public/views/dashboard/card/card.js';
-// import form from 'http://localhost/public/views/dashboard/form/form.js';
-// import button from 'http://localhost/public/views/dashboard/button/button.js';
+// import utils from 'http://localhost/public/Views/lib/utils.js';
+// import card from 'http://localhost/public/Views/dashboard/card/card.js';
+// import form from 'http://localhost/public/Views/dashboard/form/form.js';
+// import button from 'http://localhost/public/Views/dashboard/button/button.js';
 // //import views from '../../views';
-// import views from "http://localhost/public/views/views.js";
+// import views from "http://localhost/public/Views/views.js";
 
 //Caracteristicas de este componente (chart)
 // const component = {

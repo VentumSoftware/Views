@@ -14,14 +14,27 @@ const dfltCmp = {
     childKVs.forEach(childKV => state.childs[childKV[0]] = views.create(childKV[1]));
     return state;
   },
+  renderChilds: function (state) {
+    return new Promise((res, rej) => {
+      var childsKV = Object.entries(state.childs);
+      utils.forEachPromise(childsKV, (childKV) => {
+        return new Promise((res, rej) => {
+          views.render(childKV[1], state.html.content)
+            .then(childSt => {
+              state.childs[childKV[0]] = childSt;
+              res(state);
+            });
+        })
+      });
+      res(state);
+    });
+  },
   render: function(state, parent) {
     return new Promise((res, rej) => {
       this.onEvent(state, "onBeforeRender", state.onBeforeRender);
-
       if (state.html.root != null) {
         state.html.root.parentNode.removeChild(state.html.root);
       }
-        
       state.html = {};
       this.styles[state.style].render(state, parent)
         .then(state => {
@@ -80,7 +93,7 @@ const dfltCmp = {
       else {
         let childs = Object.values(root.childs);
         for (let i = 0; i < childs.length; i++) {
-          let a = getParent(state, childs[i]);
+          let a = views.getParent(state, childs[i]);
           if (a != null) return a;
         }
         return null;
@@ -114,8 +127,6 @@ const dfltCmp = {
     });
   }
 };
-
-
 
 const getComponents = () => {
 

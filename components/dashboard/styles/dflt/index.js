@@ -55,22 +55,6 @@ const render = (state, parent) => {
     return state;
   };
 
-  const renderChilds = (state) => {
-    return new Promise((res, rej) => {
-      var childsKV = Object.entries(state.childs);
-      window.utils.forEachPromise(childsKV, (childKV) => {
-        return new Promise((res, rej) => {
-          window.views.render(childKV[1], state.html.content)
-            .then(childSt => {
-              state.childs[childKV[0]] = childSt;
-              res(state);
-            });
-        })
-      });
-      res(state);
-    });
-  };
-
   const renderCategorys = (state) => {
     Object.values(state.categorys).forEach(category => {
       var catHTML = `
@@ -103,11 +87,7 @@ const render = (state, parent) => {
       document.cookie = 'access-token=; Max-Age=0';
       location.reload();
     })
-    renderChilds(state)
-      .then(state => {
-        //Seleccionar cat
-        res(state);
-      });
+    views.renderChilds(state).then(res);
   });
 };
 
