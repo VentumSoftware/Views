@@ -14,14 +14,14 @@ const render = (state, parent) => {
   const getHTML = (state) => {
 
     const dataBackdrop = (state) => {
-      if(state.backdrop) return `data-backdrop="static"`;
+      if (state.backdrop) return `data-backdrop="static"`;
       else return "";
     };
 
     const modalDialogClasses = (state) => {
       let result = "modal-dialog";
-      if(state.scrollable) result += " modal-dialog-scrollable";
-      if(state.verticallyCentered) result += " modal-dialog-centered";
+      if (state.scrollable) result += " modal-dialog-scrollable";
+      if (state.verticallyCentered) result += " modal-dialog-centered";
       return result;
     }
 
@@ -63,20 +63,25 @@ const render = (state, parent) => {
           if (state.childs.header) {
             views.render(state.childs.header, state.html.header)
               .then(child => {
-                if (state.closeBtn)
-                  state.html.header.appendChild(utils.stringToHTML(`<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                if (state.closeBtn) {
+                  let closeBtn = utils.stringToHTML(`
+                  <button type="button" class="close" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
-                    </button>`));
+                    </button>`);
+                  closeBtn.addEventListener('click', (e)=>cmps.modal.hide(state));
+                  state.html.header.appendChild(closeBtn);
+                }
+
                 state.childs.header = child;
                 res(state);
               });
           } else if (eval(state.closeBtn) === true) {
-            state.html.header.appendChild(
-              utils.stringToHTML(`
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              `));
+            let closeBtn = utils.stringToHTML(`
+            <button type="button" class="close" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>`);
+            closeBtn.addEventListener('click', (e)=>cmps.modal.hide(state));
+            state.html.header.appendChild(closeBtn);
             res(state);
           } else
             res(state);
@@ -145,4 +150,4 @@ const render = (state, parent) => {
 
 
 
-export default { dfltState, render};
+export default { dfltState, render };

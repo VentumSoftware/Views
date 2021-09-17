@@ -60,12 +60,12 @@ const render = (state, parent) => {
             <div class="col-${col.size || "md"}-${col.colSize || 12}">
               <div class="row">
                 <div class="col-4">
-                  <label for="${col.name}" style="margin:0;vertical-align: -webkit-baseline-middle">${col.label}</label>
+                  <label for="${col.name + "_id"}" style="margin:0;vertical-align: -webkit-baseline-middle">${col.label}</label>
                 </div>
                 <div class="col-8">
                   <div class="input-group">
                     ${getPrepend(col)}
-                    <input type="${col.type}" class="form-control" id="${col.name}" placeholder="${col.placeholder}">
+                    <input type="${col.type}" class="form-control" id="${col.name+ "_id"}" name="${col.name}" placeholder="${col.placeholder|| ""}" required>
                     <div class="valid-feedback">
                       ${col.validFeedback}
                     </div>
@@ -86,7 +86,7 @@ const render = (state, parent) => {
               <label for="${col.name}">${col.label}</label>
               <div class="input-group">
                 ${getPrepend(col)}
-                <input type="${col.type}" class="form-control" id="${col.name}" placeholder="${col.placeholder}">
+                <input type="${col.type}" class="form-control" id="${col.name}" placeholder="${col.placeholder || ""}" required>
                 <div class="valid-feedback">
                   ${col.validFeedback}
                 </div>
@@ -121,7 +121,7 @@ const render = (state, parent) => {
     console.log(state.inputs);
     return `
     <!-- Form -->
-    <form>
+    <form id="${state.id + "-div-root"}">
       ${getRows(state.inputs.rows)}
     </form>
     `

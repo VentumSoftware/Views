@@ -4,7 +4,7 @@ var dfltState = {
 };
 
 const hide = (state) => {
-    const visible = views.isRendering(state);
+    const visible = state.show;
     if (visible) {
         views.onEvent(state, "onHide", state.onHide);
     }
@@ -17,7 +17,7 @@ const hide = (state) => {
 };
 
 const show = (state, show = true) => {
-    const visible = views.isRendering(state);
+    const visible = state.show;
     if (!visible) {
         views.onEvent(state, "onShow", state.onShow);
     }
