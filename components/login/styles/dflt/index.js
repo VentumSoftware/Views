@@ -35,17 +35,21 @@ const dfltState = {
     },
     signUp: "true",
     onSignUp: (state) => {
-        views.show(state.childs.failedSignInModal)
-    },
-    onForgotPass: (state) => {
-        views.show(state.childs.failedSignInModal)
+        views.show(state.childs.notImplementedModal)
     },
     forgotPass: "true",
+    onForgotPass: (state) => {
+        views.show(state.childs.notImplementedModal)
+    },
     childs: {
         failedSignInModal: {
             type: "modal",
             title: "Usuario o contraseña incorrecta",
         },
+        notImplementedModal:{
+            type: "modal",
+            title: "No implementado",
+        }
     }
 };
 
@@ -120,7 +124,7 @@ const render = (state, parent) => {
         var html = utils.stringToHTML(getHTML(state));
         html = parent.appendChild(html);
         state = getReferences(state, html.getRootNode());
-        if(state.signUp == "false"){
+        if(eval(!state.signUp)){
             state.html.signUpLink.remove();
         }else{
             state.html.signUpLink.addEventListener('click', 
@@ -130,7 +134,7 @@ const render = (state, parent) => {
                 return false;
             });
         }
-        if(state.forgotPass == "false"){
+        if(eval(!state.forgotPass)){
             state.html.forgotPassLink.remove();
         }else{
             state.html.forgotPassLink.addEventListener('click', 

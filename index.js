@@ -83,7 +83,6 @@ const loadComponents = () => {
           dependencies.concat(cmp.dependencies || []);
         })
         dependencies.forEach((dependency) => {
-          console.log(dependency)
           if (dependency.src) {
             //A: es un .js
             let oldScripts = Array.from(document.getElementsByTagName("script")).filter(s => s.src == dependency.src);

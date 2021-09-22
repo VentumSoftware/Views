@@ -118,7 +118,7 @@ const render = (state, parent) => {
       });
       return result;
     };
-    console.log(state.inputs);
+    //console.log(state.inputs);
     return `
     <!-- Form -->
     <form id="${state.id + "-div-root"}">

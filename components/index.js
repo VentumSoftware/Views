@@ -52,7 +52,7 @@ const dfltCmp = {
     if (state.html.root) {
       state.html.root.style.display = "none";
     }
-    console.log(`${state.type} "${state.id}" hidden!`);
+    //console.log(`${state.type} "${state.id}" hidden!`);
     return state;
   },
   show: function (state, show = true) {
@@ -64,7 +64,7 @@ const dfltCmp = {
     if (state.html.root) {
       state.html.root.style.display = "block";
     }
-    console.log(`${state.type} "${state.id}" showed!`);
+    //console.log(`${state.type} "${state.id}" showed!`);
     return state;
   },
   isRendering: function (state) {
@@ -108,8 +108,8 @@ const dfltCmp = {
     return new Promise((resolve, reject) => {
       if (func != null) {
         try {
-          console.log(`Event: ${eventName}`);
-          console.log(state);
+          //console.log(`Event: ${eventName}`);
+          //console.log(state);
           if (typeof func === 'string') func = eval(func);
           let r = func(state, otherData);
           if (r instanceof Promise) r.then((res) => resolve(state));
@@ -120,8 +120,8 @@ const dfltCmp = {
         }
       } else {
         //console.log(`Event not defined: ${eventName}`);
-        console.log(`Event: ${eventName} is null`);
-        console.log(state);
+        //console.log(`Event: ${eventName} is null`);
+        //console.log(state);
         resolve(state);
       }
     });
@@ -205,93 +205,3 @@ const getComponents = () => {
 };
 
 export default { getComponents };
-
-// const dfltCmp = {
-      //   id: "no-ID-" + type,
-      //   type: type,
-      //   style: "dflt",
-      //   show: true,
-      //   log: false,
-      //   html: {},// Referencias a los componentes de html
-      //   childs: {},
-      //   render: (parent) => {
-      //     return new Promise((res, rej) => {
-      //       onEvent("onBeforeRender", this.onBeforeRender);
-
-      //       if (state.html.root != null)
-      //         state.html.root.parentNode.removeChild(state.html.root);
-      //       state.html = {};
-      //       styles[state.style].render(state, parent)
-      //         .then(state => {
-      //           views.onEvent(state, "onAfterRender", state.onAfterRender);
-      //           res(state);
-      //         });
-      //     });
-      //   },
-      //   hide: (show = false) => {
-      //     if (state._showing)
-      //       views.onEvent(state, "onHide", state.onHide);
-      //     state._showing = false;
-      //     state.show = show;
-      //     if (!state.show)
-      //       state.html.root.style.display = "none";
-      //     Object.values(childs).forEach(child => window.views.hide(child, child.show));
-      //     return state;
-      //   },
-      //   show: (show = false) => {
-      //     if (!state._showing)
-      //       views.onEvent(state, "onShow", state.onShow);
-      //     state._showing = false;
-      //     state.show = show;
-      //     if (!state.show)
-      //       state.html.root.style.display = "none";
-      //     Object.values(childs).forEach(child => window.views.hide(child, child.show));
-      //     return state;
-      //   },
-      //   isRendering: (state) => state._showing,
-      //   getParent: (root) => window.views.getParent(this, root),
-      //   onEvent: (eventName, func, otherData) => {
-      //     //Ejecución de un evento de un componente (Ej: Click en un botón)
-      //     return new Promise((resolve, reject) => {
-      //       if (func != null) {
-      //         try {
-      //           console.log(`Event: ${eventName}`);
-      //           console.log(cmps)
-      //           if (typeof func === 'string') func = eval(func);
-      //           let r = func(state, otherData);
-      //           if (r instanceof Promise) r.then((res) => resolve(state));
-      //           else resolve(state);
-      //         } catch (error) {
-      //           console.log(error);
-      //           reject(error);
-      //         }
-      //       } else {
-      //         //console.log(`Event not defined: ${eventName}`);
-      //         resolve(state);
-      //       }
-      //     });
-      //   }
-      // }
-
-
-      // const onEvent = (eventName, func, otherData) => {
-      //   //Ejecución de un evento de un componente (Ej: Click en un botón)
-      //   return new Promise((resolve, reject) => {
-      //     if (func != null) {
-      //       try {
-      //         console.log(`Event: ${eventName}`);
-      //         console.log(cmps)
-      //         if (typeof func === 'string') func = eval(func);
-      //         let r = func(state, otherData);
-      //         if (r instanceof Promise) r.then((res) => resolve(state));
-      //         else resolve(state);
-      //       } catch (error) {
-      //         console.log(error);
-      //         reject(error);
-      //       }
-      //     } else {
-      //       //console.log(`Event not defined: ${eventName}`);
-      //       resolve(state);
-      //     }
-      //   });
-      // };
