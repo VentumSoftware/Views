@@ -163,7 +163,7 @@
 
 //         var selecRecorrido = document.getElementById("recorrido");
 
-//         fetch("http://localhost/public/views/dashboard/maps/recorridos.json")
+//         fetch("http://localhost/public/Views/dashboard/maps/recorridos.json")
 //           .then((res) => res.json())
 //           .then((data) => {
 //             data.map((recorridos) => {
@@ -179,7 +179,7 @@
 //             recorridos(e.target.value);
 //           });
 //         function recorridos(imei) {
-//           fetch("http://localhost/public/views/dashboard/maps/recorridos.json")
+//           fetch("http://localhost/public/Views/dashboard/maps/recorridos.json")
 //             .then((res) => res.json())
 //             .then((data) => data.filter((filtro) => filtro.imei == imei))
 //             .then((filtro) => filtro[0].recorrido)

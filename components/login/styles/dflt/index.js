@@ -34,28 +34,22 @@ const dfltState = {
         });
     },
     signUp: "true",
-    onSignUp: () => {
-        console.log("OnSignUp no implementado!")
+    onSignUp: (state) => {
+        views.show(state.childs.notImplementedModal)
     },
     forgotPass: "true",
+    onForgotPass: (state) => {
+        views.show(state.childs.notImplementedModal)
+    },
     childs: {
         failedSignInModal: {
             type: "modal",
             title: "Usuario o contraseña incorrecta",
-            description: "Revise los datos ingresados por favor",
-            childs: {
-                footer: {
-                    type: "button",
-                    label: "Aceptar",
-                    btnType: "primary",
-                    onClick: (btnState) => {
-                        var modal = getParent(btnState, globalState);
-                        console.log(modal)
-                        cmps.modal.hide(modal);
-                    }
-                }
-            }
         },
+        notImplementedModal:{
+            type: "modal",
+            title: "No implementado",
+        }
     }
 };
 
@@ -100,10 +94,10 @@ const render = (state, parent) => {
                         </button>
                         <div style="height: 10px;"></div>
                         <div class="d-flex justify-content-left links" id="${state.id + "_signUpLink"}" style="white-space: nowrap">
-                            No tienes una cuenta?<a href="../pages/signup">&nbsp;Registrate</a>
+                            No tienes una cuenta?<a href="#" >&nbsp;Registrate</a>
                         </div>
                         <div class="d-flex justify-content-left links" id="${state.id + "_forgotPassLink"}" style="white-space: nowrap">
-                            <a href="../pages/recoverpassword">Olvidaste la contraseña?</a>
+                            <a href="#">Olvidaste la contraseña?</a>
                         </div>
                     </div>
                 </div>
@@ -124,34 +118,35 @@ const render = (state, parent) => {
         return state;
     };
 
-    const renderChilds = (state) => {
-        return new Promise((res, rej) => {
-            utils.forEachPromise(Object.values(state.childs), (child) => views.render(child, state.html.root))
-                .then(() => res(state));
-        });
-    }
-
     state = utils.fillObjWithDflt(state, dfltState);
 
     return new Promise((res, rej) => {
         var html = utils.stringToHTML(getHTML(state));
         html = parent.appendChild(html);
         state = getReferences(state, html.getRootNode());
-        if(state.signUp == "false"){
+        if(eval(!state.signUp)){
             state.html.signUpLink.remove();
-        };
-        if(state.forgotPass == "false"){
+        }else{
+            state.html.signUpLink.addEventListener('click', 
+            (e) => {
+                e.preventDefault();
+                eval(state.onSignUp)(state);
+                return false;
+            });
+        }
+        if(eval(!state.forgotPass)){
             state.html.forgotPassLink.remove();
-        };
-        console.log(state.onSignIn);
+        }else{
+            state.html.forgotPassLink.addEventListener('click', 
+            (e) => {
+                e.preventDefault();
+                eval(state.onForgotPass)(state);
+                return false;
+            });
+        }
+
         state.html.signInBtn.addEventListener('click', (e) => eval(state.onSignIn)(state));
-        res(state);
-        // renderChilds(state)
-        //     .then(state => {
-        //         if (state.show == true) state.html.root.style.display = "none";
-        //         else state.html.root.style.display = "block";
-        //         res(state);
-        //     });
+        views.renderChilds(state).then(res);
     });
 };
 

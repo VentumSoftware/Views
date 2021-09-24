@@ -1,4 +1,9 @@
 const dfltState = {
+  width: "50%",
+  closeBtn: true,
+  staticBackdrop: false,
+  scrollable: true,
+  verticallyCentered: false,
   show: false,
   html: {},
   childs: {}
@@ -8,10 +13,22 @@ const render = (state, parent) => {
 
   const getHTML = (state) => {
 
+    const dataBackdrop = (state) => {
+      if (state.backdrop) return `data-backdrop="static"`;
+      else return "";
+    };
+
+    const modalDialogClasses = (state) => {
+      let result = "modal-dialog";
+      if (state.scrollable) result += " modal-dialog-scrollable";
+      if (state.verticallyCentered) result += " modal-dialog-centered";
+      return result;
+    }
+
     return `
     <!-- Modal -->
-    <div class="modal" tabindex="-1" id="${state.id + "_root"}" role="dialog">
-      <div class="modal-dialog" role="document">
+    <div class="modal fade" id="${state.id + "_root"}" ${dataBackdrop(state)} data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="${modalDialogClasses(state)}" style="max-width:none;width:${state.width}">
         <div class="modal-content">
           <div class="modal-header" id="${state.id + "_header"}">
           </div>
@@ -46,20 +63,25 @@ const render = (state, parent) => {
           if (state.childs.header) {
             views.render(state.childs.header, state.html.header)
               .then(child => {
-                if (state.closeBtn)
-                  state.html.header.appendChild(utils.stringToHTML(`<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                if (state.closeBtn) {
+                  let closeBtn = utils.stringToHTML(`
+                  <button type="button" class="close" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
-                    </button>`));
+                    </button>`);
+                  closeBtn.addEventListener('click', (e)=>cmps.modal.hide(state));
+                  state.html.header.appendChild(closeBtn);
+                }
+
                 state.childs.header = child;
                 res(state);
               });
-          } else if (state.closeBtn) {
-            state.html.header.appendChild(
-              utils.stringToHTML(`
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              `));
+          } else if (eval(state.closeBtn) === true) {
+            let closeBtn = utils.stringToHTML(`
+            <button type="button" class="close" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>`);
+            closeBtn.addEventListener('click', (e)=>cmps.modal.hide(state));
+            state.html.header.appendChild(closeBtn);
             res(state);
           } else
             res(state);
@@ -113,16 +135,19 @@ const render = (state, parent) => {
 
   return new Promise((res, rej) => {
     var html = utils.stringToHTML(getHTML(state));
-    html = parent.appendChild(html);
+    html = document.body.appendChild(html);
     state = getReferences(state, html.getRootNode());
     renderChilds(state)
       .then(state => {
         if (state.show == true) $(`#${state.id}_root`).modal('show');
         else $(`#${state.id}_root`).modal('hide');
+        console.log(state);
         res(state);
       });
   });
 };
+
+
 
 
 export default { dfltState, render };

@@ -1,40 +1,128 @@
 const dfltState = {
   show: true,
+  inputs: {},
   html: {},
   childs: {}
 };
 
+const dfltInput = {
+  colSize: 12, // 1-12 or "auto"
+  name: "",
+  label: "",
+  type: "text",
+  placeholder: "",
+  prepend: null,
+  helpText: "",
+  size: "md", //sm, md, lg
+  inline: false,
+  disabled: false,
+  required: true,
+  validFeedback: "Ok",//Texto que aparece cuando completaste el campo ok, pero otro campo no
+  invalidFeedback: "Campo obligatorio!", //Texto que aparece cuando no completaste el campo
+  validation: {}
+}
+
 const render = (state, parent) => {
+
   const getHTML = (state) => {
-    var formChilds = "";
-    var i = 0;
-    var j = 0;
-    var childs = Object.values(state.childs);
-    var childPos = 0;
-    // <div class="form-group row">
-    //   <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
-    //   <div class="col-sm-10">
-    //     <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
-    //   </div>
-    // </div>
-    for (let i = 0; i < state.rows; i++) {
-      formChilds += `<div class="form-group row">`;
-      for (let j = 0; j < state.cols; j++) {
-        formChilds += `<div class="col">`;
-        if (childPos < childs.length) {
-          var child = childs[childPos];
-          if(child.label ||true)
-            formChilds += `<label class="col-form-label">ssss</label>`;
-            formChilds += `<input type="email" class="form-control" id="inputEmail3" placeholder="Email">`;
-        };
-        formChilds += `</div>`;
-      }
-      formChilds += `</div>`;
-    }
+
+    let noNameCounter = 0;
+
+    const getCols = (cols) => {
+
+      const getPrepend = (col) => {
+        if (col.prepend != null && col.prepend != "null") {
+          return `
+          <div class="input-group-prepend">
+            <span class="input-group-text">${col.prepend}</span>
+          </div>
+        `
+        } else {
+          return "";
+        }
+      };
+
+      if (cols == null) return "";
+      let result = "";
+      Object.values(cols).forEach(col => {
+        if (col.rows != null) {
+          result = `
+            <div class="form-group col-${col.size || "md"}-${col.colSize || 12}">
+              ${getRows(col.rows)}
+            </div>
+            `;
+        } else {
+          col = utils.fillObjWithDflt(col, dfltInput);
+          if (col.name == null) col.name = "noNameInput" + noNameCounter++;
+
+          if (eval(col.inline)) {
+            result += `
+            <div class="col-${col.size || "md"}-${col.colSize || 12}">
+              <div class="row">
+                <div class="col-4">
+                  <label for="${col.name + "_id"}" style="margin:0;vertical-align: -webkit-baseline-middle">${col.label}</label>
+                </div>
+                <div class="col-8">
+                  <div class="input-group">
+                    ${getPrepend(col)}
+                    <input type="${col.type}" class="form-control" id="${col.name+ "_id"}" name="${col.name}" placeholder="${col.placeholder|| ""}" required>
+                    <div class="valid-feedback">
+                      ${col.validFeedback}
+                    </div>
+                    <div class="invalid-feedback">
+                      ${col.invalidFeedback}
+                    </div>
+                    <small id="passwordHelpInline" class="text-muted">
+                      ${col.helpText}
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            `;
+          } else {
+            result += `
+            <div class="col-${col.size || "md"}-${col.colSize || 12}">
+              <label for="${col.name}">${col.label}</label>
+              <div class="input-group">
+                ${getPrepend(col)}
+                <input type="${col.type}" class="form-control" id="${col.name}" placeholder="${col.placeholder || ""}" required>
+                <div class="valid-feedback">
+                  ${col.validFeedback}
+                </div>
+                <div class="invalid-feedback">
+                  ${col.invalidFeedback}
+                </div>
+                <small id="passwordHelpInline" class="text-muted">
+                  ${col.helpText}
+                </small>
+              </div>
+            </div>
+          `;
+          }
+
+        }
+      });
+      return result;
+    };
+
+    const getRows = (rows) => {
+      if (rows == null) return "";
+      let result = "";
+      Object.values(rows).forEach(row => {
+        result += `
+        <div class="row" style="margin-bottom: 15px;">
+          ${getCols(row.cols)}
+        </div>
+        `;
+      });
+      return result;
+    };
+    //console.log(state.inputs);
     return `
     <!-- Form -->
-    <form>
-      ${formChilds}
+    <form id="${state.id + "-div-root"}">
+      ${getRows(state.inputs.rows)}
     </form>
     `
   };
@@ -48,36 +136,12 @@ const render = (state, parent) => {
     return state;
   };
 
-  const renderChilds = (state) => {
-    return new Promise((res, rej) => {
-      var childsKV = Object.entries(state.childs);
-      window.utils.forEachPromise(childsKV, (childKV) => {
-        return new Promise((res, rej) => {
-          window.views.render(childKV[1], state.html.col)
-            .then(childSt => {
-              state.childs[childKV[0]] = childSt;
-              res(state);
-            });
-        })
-      });
-      res(state);
-    });
-  };
-
-  state = window.utils.fillObjWithDflt(state, dfltState);
-
   return new Promise((res, rej) => {
-    var html = window.utils.stringToHTML(getHTML(state));
+    state = utils.fillObjWithDflt(state, dfltState);
+    var html = utils.stringToHTML(getHTML(state));
     html = parent.appendChild(html);
     state = getReferences(state, html.getRootNode());
-    // renderChilds(state)
-    //   .then(state => {
-    //     if (state.show == true) state.html.root.style.display = "none";
-    //     else state.html.root.style.display = "block";
-    //     res(state);
-    //   });
-    
-      res(state);
+    res(state);
   });
 };
 

@@ -23,14 +23,12 @@ const render = (state, parent) => {
   };
 
   const getReferences = (state, root) => {
-    console.log(state);
     state.html = {
       root: root.getElementById(state.id + "_root"),
       header: root.getElementById(state.id + "_header"),
       body: root.getElementById(state.id + "_body"),
       footer: root.getElementById(state.id + "_footer")
     };
-    console.log(state);
     return state;
   };
 
@@ -43,10 +41,10 @@ const render = (state, parent) => {
             state.html.header.innerText = state.title;
 
           if (state.childs.header) {
-            window.views.render(state.childs.header, state.html.header)
+            views.render(state.childs.header, state.html.header)
               .then(child => {
                 if (state.closeBtn)
-                  state.html.header.appendChild(window.utils.stringToHTML(`<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  state.html.header.appendChild(utils.stringToHTML(`<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>`));
                 state.childs.header = child;
@@ -54,7 +52,7 @@ const render = (state, parent) => {
               });
           } else if (state.closeBtn) {
             state.html.header.appendChild(
-              window.utils.stringToHTML(`
+              utils.stringToHTML(`
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -68,14 +66,14 @@ const render = (state, parent) => {
       const renderBody = (state) => {
         return new Promise((res, rej) => {
           if (state.childs.body) {
-            window.views.render(state.childs.body, state.html.body)
+            views.render(state.childs.body, state.html.body)
               .then(child => {
                 state.childs.body = child;
                 res(state);
               });
           }
           else if (state.description) {
-            state.html.body.appendChild(window.utils.stringToHTML(`<p>${state.description}</p>`));
+            state.html.body.appendChild(utils.stringToHTML(`<p>${state.description}</p>`));
             res(state);
           } else {
             res(state);
@@ -86,14 +84,14 @@ const render = (state, parent) => {
       const renderFooter = (state) => {
         return new Promise((res, rej) => {
           if (state.childs.footer) {
-            window.views.render(state.childs.footer, state.html.footer)
+            views.render(state.childs.footer, state.html.footer)
               .then(child => {
                 state.childs.footer = child;
                 res(state);
               });
           }
           else if (state.footerText) {
-            state.html.footer.appendChild(window.utils.stringToHTML(`<h5 class="modal-footer">${state.footerText}</h5>`));
+            state.html.footer.appendChild(utils.stringToHTML(`<h5 class="modal-footer">${state.footerText}</h5>`));
             res(state);
           }
           else {
@@ -108,10 +106,10 @@ const render = (state, parent) => {
     });
   };
 
-  state = window.utils.fillObjWithDflt(state, dfltState);
+  state = utils.fillObjWithDflt(state, dfltState);
 
   return new Promise((res, rej) => {
-    var html = window.utils.stringToHTML(getHTML(state));
+    var html = utils.stringToHTML(getHTML(state));
     html = parent.appendChild(html);
     state = getReferences(state, html.getRootNode());
     renderChilds(state)

@@ -83,7 +83,6 @@ const loadComponents = () => {
           dependencies.concat(cmp.dependencies || []);
         })
         dependencies.forEach((dependency) => {
-          console.log(dependency)
           if (dependency.src) {
             //A: es un .js
             let oldScripts = Array.from(document.getElementsByTagName("script")).filter(s => s.src == dependency.src);
@@ -129,6 +128,7 @@ const loadComponents = () => {
 // Completa los valores que faltan a state con los dflt del cmp y le agrega las funciones
 const create = (state) => cmps[state.type].create(state);
 // Dibuja el componente dentro del parent (nodo html)
+const renderChilds = (state) => cmps[state.type].renderChilds(state);
 const render = (state, parent) => cmps[state.type].render(state, parent);
 const hide = (state, parent) => cmps[state.type].hide(state, parent);
 const show = (state, parent) => cmps[state.type].show(state, parent);
@@ -141,5 +141,5 @@ const call = (func, state, params) => cmps[state.type][func](params);
 
 export default {
   serializeState, loadComponents,
-  create, render,hide,show, render, isRendering, getParent, onEvent, call,
+  create, render,hide,show,renderChilds, render, isRendering, getParent, onEvent, call,
 };
