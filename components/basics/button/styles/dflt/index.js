@@ -50,19 +50,19 @@ const render = (state, parent) => {
     return state;
   };
 
-  state = window.utils.fillObjWithDflt(state, dfltState);
+  state = utils.fillObjWithDflt(state, dfltState);
 
   return new Promise((res, rej) => {
-    var html = window.utils.stringToHTML(getHTML(state));
+    var html = utils.stringToHTML(getHTML(state));
     html = parent.appendChild(html);
     state = getReferences(state, html);
     state.html.btn.addEventListener(
       'click',
-      (e) => window.views.onEvent(state, "onClick", state.onClick)
+      (e) => views.onEvent(state, "onClick", state.onClick)
     );
     res(state);
   });
 }
 
 
-export default {dfltState, render };
+export default { dfltState, render };

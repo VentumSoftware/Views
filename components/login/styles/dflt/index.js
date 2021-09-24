@@ -19,34 +19,51 @@ const dfltState = {
             })
                 .then(r => {
                     if (r.status === 200)
-                        r.json().then(r => {console.log(r);
+                        r.json().then(r => {
+                            console.log(r);
                             document.cookie = `access-token=${r.token}`;
                             window.location.href = "/pages/dashboard";
                             res("Login ok!");
                         })
                     else {
                         console.error("Failed to sign in!");
-                        cmps.modal.show(this.childs.failedSignInModal);
+                        window.cmps.modal.show(state.childs.failedSignInModal);
                         res("Failed login!")
                     }
                 })
                 .catch(err => console.log(err));
         });
     },
-    signUp: "true",
+    rememberMeText: "Recordarme",
+    signUpText: "", // "No tienes una cuenta?"
+    signUpLinkText: "", // "Registrate"
     onSignUp: (state) => {
         views.show(state.childs.notImplementedModal)
     },
-    forgotPass: "true",
+    forgotPassText: "",
+    forgotPassLinkText: "", // "Olvidé mi contraseña"
     onForgotPass: (state) => {
         views.show(state.childs.notImplementedModal)
     },
     childs: {
         failedSignInModal: {
             type: "modal",
+            id: "failedSignInModal",
             title: "Usuario o contraseña incorrecta",
+            description: "Revise los datos ingresados por favor",
+            childs: {
+                footer: {
+                    type: "button",
+                    label: "Aceptar",
+                    btnType: "primary",
+                    onClick: (state) => {
+                        var modal = views.getParent(state, globalState);
+                        cmps.modal.hide(modal);
+                    }
+                }
+            }
         },
-        notImplementedModal:{
+        notImplementedModal: {
             type: "modal",
             title: "No implementado",
         }
@@ -84,7 +101,7 @@ const render = (state, parent) => {
                             <input type="password" class="form-control " id="${state.id + "_pass"}" placeholder="Contraseña">
                         </div>
                         <div>
-                            <input type="checkbox"> Recordarme
+                            <input type="checkbox"> ${state.rememberMeText}
                         </div>
                         <div style="height: 10px;"></div>
                         <button type="submit" class="btn btn-primary" id="${state.id + "_signInBtn"}">
@@ -94,10 +111,10 @@ const render = (state, parent) => {
                         </button>
                         <div style="height: 10px;"></div>
                         <div class="d-flex justify-content-left links" id="${state.id + "_signUpLink"}" style="white-space: nowrap">
-                            No tienes una cuenta?<a href="#" >&nbsp;Registrate</a>
+                            ${state.signUpText}<a href="#" >&nbsp;${state.signUpLinkText}</a>
                         </div>
                         <div class="d-flex justify-content-left links" id="${state.id + "_forgotPassLink"}" style="white-space: nowrap">
-                            <a href="#">Olvidaste la contraseña?</a>
+                            ${state.forgotPassText}<a href="#">${state.forgotPassLinkText}</a>
                         </div>
                     </div>
                 </div>
@@ -124,25 +141,25 @@ const render = (state, parent) => {
         var html = utils.stringToHTML(getHTML(state));
         html = parent.appendChild(html);
         state = getReferences(state, html.getRootNode());
-        if(eval(!state.signUp)){
+        if (eval(!state.signUp)) {
             state.html.signUpLink.remove();
-        }else{
-            state.html.signUpLink.addEventListener('click', 
-            (e) => {
-                e.preventDefault();
-                eval(state.onSignUp)(state);
-                return false;
-            });
+        } else {
+            state.html.signUpLink.addEventListener('click',
+                (e) => {
+                    e.preventDefault();
+                    eval(state.onSignUp)(state);
+                    return false;
+                });
         }
-        if(eval(!state.forgotPass)){
+        if (eval(!state.forgotPass)) {
             state.html.forgotPassLink.remove();
-        }else{
-            state.html.forgotPassLink.addEventListener('click', 
-            (e) => {
-                e.preventDefault();
-                eval(state.onForgotPass)(state);
-                return false;
-            });
+        } else {
+            state.html.forgotPassLink.addEventListener('click',
+                (e) => {
+                    e.preventDefault();
+                    eval(state.onForgotPass)(state);
+                    return false;
+                });
         }
 
         state.html.signInBtn.addEventListener('click', (e) => eval(state.onSignIn)(state));
