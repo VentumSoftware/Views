@@ -72,6 +72,10 @@ const dfltState = {
                   .then(res => res.json())
                   .then(res => {
                     updateLayers(res, layer);
+                  })
+                  .catch(err => {
+                    window.alert("¡Los datos no se pudieron guardar!")
+                    throw new Error("Falló la carga de datos: " + err);
                   });
               } else {
                 layer.properties = options[i];
@@ -85,6 +89,10 @@ const dfltState = {
                   .then(res => res.json())
                   .then((res) => {
                     updateLayers(res, layer);
+                  })
+                  .catch(err => {
+                    window.alert("¡Los datos no se pudieron guardar!")
+                    throw new Error("Falló la carga: " + err);
                   });
                 i++;
               }
