@@ -24,17 +24,19 @@ const dfltState = {
     },
     onDrawStart: (state) => { },
     onRemove: function onRemove(e) {
-      //FETCH to Delete this removed layer.
-      console.log(e.layer);
-      fetch('/davi/map', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(e.layer.feature)
-      })
-        .then(res => res.json())
-        .then(res => console.log(res));
+      let confirmDelete = window.confirm("¿Está seguro de eliminar esta referencia?");
+      if (confirmDelete) {
+        //console.log(e.layer);
+        fetch('/davi/map', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(e.layer.feature)
+        })
+          .then(res => res.json())
+          .then(res => window.alert("¡La referencia seleccionada fue eliminada con éxito!"));
+      }
     },
     controls: {
       position: 'topleft',
@@ -47,41 +49,50 @@ const dfltState = {
       uploadPayload: {
         name: 'Upload Button',
         block: 'custom',
+        className: 'icon-save',
         title: 'Subir Referencias',
         toggle: false,
         onClick: function upload() {
-          let data = window.globalState.childs.daviMap.childs.body.childs[1].editor.layers;
-          let options = window.globalState.childs.daviMap.childs.body.childs[1].editor.options;
-          data = L.layerGroup(data).toGeoJSON();
-          console.log(data);
-          let i = 0;
-          data.features.forEach((layer) => {
-            if (layer.hasOwnProperty('_id')) {
-              fetch('/davi/map', {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(layer)
-              })
-                .then(res => res.json())
-                .then(res => layer.id = res.id);
-            } else {
-              layer.properties = options[i];
-              fetch('/davi/map', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(layer)
-              })
-                .then(res => res.json())
-                .then(res => layer.id = res.id);
+          let confirmacion = window.confirm("¿Desea confirmar y guardar las nuevas referencias?");
+          if (confirmacion) {
+            let data = window.globalState.childs.daviMap.childs.body.childs[1].editor.layers;
+            let options = window.globalState.childs.daviMap.childs.body.childs[1].editor.options;
+            data = L.layerGroup(data).toGeoJSON();
+            console.log(data);
+            let i = 0;
+            data.features.forEach((layer) => {
+              if (layer.hasOwnProperty('_id')) {
+                fetch('/davi/map', {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(layer)
+                })
+                  .then(res => res.json())
+                  .then(res => layer.id = res.id);
+              } else {
+                layer.properties = options[i];
+                fetch('/davi/map', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(layer)
+                })
+                  .then(res => res.json())
+                  .then((res) => {
+                    layer.id = res.id;
+                    window.alert("¡Los datos han sido guardados con éxito!");
+                    window.globalState.childs.daviMap.childs.body.childs[1].editor.layers = [];
+                    window.globalState.childs.daviMap.childs.body.childs[1].editor.options = [];
+                  });
                 i++;
-            }
-          });
-        },
-        icon: "item"
+              }
+            });
+          }
+        }
+
       }
     }
   }
@@ -180,19 +191,18 @@ const render = (state, parent) => {
         .then(state => res(state))
     });
   };
-  //TODO: Make an editor inside map to update data about areas.
   const customEditor = (state, map) => {
     state.editor.layers = [];
     state.editor.options = [];
-    //TODO: Add endpoint and payload to body...
-    //Crea un control customizable
     map.pm.Toolbar.createCustomControl(state.editor.customs.uploadPayload);
     map.pm.addControls(state.editor.controls);
     map.on('pm:drawstart', (e) => eval(state.editor.onDrawStart)(e));
-    //Triggered when a new layer is created.
     map.on('pm:create', (e) => state.editor.onCreate(e));
-    map.on('pm:remove', (e) => state.editor.onRemove(e));
-  }
+    map.on('pm:remove', (e) => {
+      //TODO: FIX POPUP BUG
+      state.editor.onRemove(e);
+    });
+  };
 
   const drawLayers = (state, map) => {
     //Layers de referencias (Markers, Polyline, Circles)
@@ -268,7 +278,7 @@ const render = (state, parent) => {
     //     polygon.bindPopup(polygonData.popUp.innerHTML);
     // });
     return state;
-  }
+  };
 
   state = window.utils.fillObjWithDflt(state, dfltState);
 
@@ -291,7 +301,7 @@ const render = (state, parent) => {
     customEditor(state, mymap);
     renderChilds(state)
       .then(state => {
-        if (state.show == true) state.html.root.style.display = "block";
+        if (state.show) state.html.root.style.display = "block";
         else state.html.root.style.display = "none";
         res(state);
       });
