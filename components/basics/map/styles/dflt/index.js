@@ -26,7 +26,6 @@ const dfltState = {
     onRemove: function onRemove(e) {
       let confirmDelete = window.confirm("¿Está seguro de eliminar esta referencia?");
       if (confirmDelete) {
-        //console.log(e.layer);
         fetch('/davi/map', {
           method: 'DELETE',
           headers: {
@@ -61,6 +60,7 @@ const dfltState = {
             console.log(data);
             let i = 0;
             data.features.forEach((layer) => {
+              //Se repite código... REFACTOR Pendiente
               if (layer.hasOwnProperty('_id')) {
                 fetch('/davi/map', {
                   method: 'PUT',
@@ -70,7 +70,9 @@ const dfltState = {
                   body: JSON.stringify(layer)
                 })
                   .then(res => res.json())
-                  .then(res => layer.id = res.id);
+                  .then(res => {
+                    updateLayers(res, layer);
+                  });
               } else {
                 layer.properties = options[i];
                 fetch('/davi/map', {
@@ -82,14 +84,12 @@ const dfltState = {
                 })
                   .then(res => res.json())
                   .then((res) => {
-                    layer.id = res.id;
-                    window.alert("¡Los datos han sido guardados con éxito!");
-                    window.globalState.childs.daviMap.childs.body.childs[1].editor.layers = [];
-                    window.globalState.childs.daviMap.childs.body.childs[1].editor.options = [];
+                    updateLayers(res, layer);
                   });
                 i++;
               }
             });
+            window.alert("¡Los datos han sido guardados con éxito!");
           }
         }
 
@@ -98,6 +98,12 @@ const dfltState = {
   }
 
 };
+
+const updateLayers = (res, layer) => {
+  layer.id = res.id;
+  window.globalState.childs.daviMap.childs.body.childs[1].editor.layers = [];
+  window.globalState.childs.daviMap.childs.body.childs[1].editor.options = [];
+}
 
 
 const render = (state, parent) => {
