@@ -67,7 +67,7 @@ const render = (state, parent) => {
         </div>
       </div>
       `;
-      var cat = window.utils.stringToHTML(catHTML);
+      var cat = stringToHTML(catHTML);
       var btn = cat.getElementsByTagName("button")[0];
       btn.addEventListener('click', () =>
         window.views.onEvent(state, "onSelect", category.onSelect, category))
@@ -77,8 +77,8 @@ const render = (state, parent) => {
   };
 
   return new Promise((res, rej) => {
-    state = window.utils.fillObjWithDflt(state, dfltState);
-    var html = window.utils.stringToHTML(getHTML(state));
+    state = fillObjWithDflt(state, dfltState);
+    var html = stringToHTML(getHTML(state));
     html = parent.appendChild(html);
     state = getReferences(state, html.getRootNode());
     state = renderCategorys(state);

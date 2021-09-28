@@ -50,10 +50,10 @@ const render = (state, parent) => {
 
   const renderChilds = (state) => new Promise((res, rej) =>res(state));
 
-  state = window.utils.fillObjWithDflt(state, dfltState);
+  state = fillObjWithDflt(state, dfltState);
 
   return new Promise((res, rej) => {
-    var html = window.utils.stringToHTML(getHTML(state));
+    var html = stringToHTML(getHTML(state));
     html = parent.appendChild(html);
     state = getReferences(state, html.getRootNode());
     renderChilds(state)

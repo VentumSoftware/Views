@@ -119,7 +119,7 @@ const render = (state, parent) => {
             window.views.render(state.childs.header, state.html.header)
               .then(child => {
                 if (state.closeBtn)
-                  state.html.header.appendChild(window.utils.stringToHTML(`<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  state.html.header.appendChild(stringToHTML(`<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>`));
                 state.childs.header = child;
@@ -127,7 +127,7 @@ const render = (state, parent) => {
               });
           } else if (state.closeBtn) {
             state.html.header.appendChild(
-              window.utils.stringToHTML(`
+              stringToHTML(`
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -148,7 +148,7 @@ const render = (state, parent) => {
               });
           }
           else if (state.description) {
-            state.html.body.appendChild(window.utils.stringToHTML(`<p>${state.description}</p>`));
+            state.html.body.appendChild(stringToHTML(`<p>${state.description}</p>`));
             res(state);
           } else {
             res(state);
@@ -159,14 +159,14 @@ const render = (state, parent) => {
       const renderFooter = (state) => {
         return new Promise((res, rej) => {
           if (state.childs.footer) {
-            window.views.render(state.childs.footer, state.html.footer)
+            render(state.childs.footer, state.html.footer)
               .then(child => {
                 state.childs.footer = child;
                 res(state);
               });
           }
           else if (state.footerText) {
-            state.html.footer.appendChild(window.utils.stringToHTML(`<h5 class="modal-footer">${state.footerText}</h5>`));
+            state.html.footer.appendChild(stringToHTML(`<h5 class="modal-footer">${state.footerText}</h5>`));
             res(state);
           }
           else {
@@ -270,10 +270,10 @@ const render = (state, parent) => {
     return state;
   }
 
-  state = window.utils.fillObjWithDflt(state, dfltState);
+  state = fillObjWithDflt(state, dfltState);
 
   return new Promise((res, rej) => {
-    var html = window.utils.stringToHTML(getHTML(state));
+    var html = stringToHTML(getHTML(state));
     html = parent.appendChild(html);
     state = getReferences(state, html.getRootNode());
     var mymap = L.map(state.id).setView(Object.values(state.initialPos), state.initialZoom);

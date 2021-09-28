@@ -52,7 +52,7 @@ const render = (state, parent) => {
             </div>
             `;
         } else {
-          col = utils.fillObjWithDflt(col, dfltInput);
+          col = fillObjWithDflt(col, dfltInput);
           if (col.name == null) col.name = "noNameInput" + noNameCounter++;
 
           if (eval(col.inline)) {
@@ -137,8 +137,8 @@ const render = (state, parent) => {
   };
 
   return new Promise((res, rej) => {
-    state = utils.fillObjWithDflt(state, dfltState);
-    var html = utils.stringToHTML(getHTML(state));
+    state = fillObjWithDflt(state, dfltState);
+    var html = stringToHTML(getHTML(state));
     html = parent.appendChild(html);
     state = getReferences(state, html.getRootNode());
     res(state);

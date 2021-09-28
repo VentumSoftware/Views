@@ -135,10 +135,10 @@ const render = (state, parent) => {
         return state;
     };
 
-    state = utils.fillObjWithDflt(state, dfltState);
+    state = fillObjWithDflt(state, dfltState);
 
     return new Promise((res, rej) => {
-        var html = utils.stringToHTML(getHTML(state));
+        var html = stringToHTML(getHTML(state));
         html = parent.appendChild(html);
         state = getReferences(state, html.getRootNode());
         if (eval(!state.signUp)) {

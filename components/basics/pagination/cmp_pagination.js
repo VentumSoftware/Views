@@ -4,7 +4,11 @@ const dfltState = {
     style: "dflt"
 };
 
-export default { dfltState}
+const getSelectedPage = (state) => {
+    return Math.trunc(state.index / state.elementsPerPage);
+};
+
+export default { dfltState, getSelectedPage }
 
 // const render = (state, parent) => {
 
@@ -57,7 +61,7 @@ export default { dfltState}
 // };
 
 // const update = (state) => {
-    
+
 //     views.onEvent(state, "onBeforeUpdate", state.onBeforeUpdate);
 
 //     state = utils.fillObjWithDflt(state, dfltState);
@@ -86,7 +90,7 @@ export default { dfltState}
 
 //     if (state.enabled != "true") btn.setAttribute(document.createAttribute("disabled"));
 //     else btn.removeAttribute("disabled");
-        
+
 //     //https://fontawesome.com/v5.15/icons?d=gallery&p=2
 //     var icon = state.html.icon;
 //     icon.className = `fa fa-${state.icon}`;

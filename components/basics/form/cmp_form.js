@@ -77,7 +77,7 @@ var getFile = (state, msg) => {
         cache: msg.cache || 'no-cache',
         credentials: msg.credentials || 'same-origin',
         headers: msg.headers || {
-            'access-token': utils.getCookie('access-token')
+            'access-token': getCookie('access-token')
         },
         redirect: msg.redirect || 'follow',
         referrerPolicy: msg.referrerPolicy || 'no-referrer'
@@ -107,7 +107,7 @@ var postWebForm = (state, msg) => {
             cache: msg.cache || 'no-cache',
             credentials: msg.credentials || 'same-origin',
             headers: msg.headers || {
-                'access-token': utils.getCookie('access-token')
+                'access-token': getCookie('access-token')
             },
             redirect: msg.redirect || 'follow',
             referrerPolicy: msg.referrerPolicy || 'no-referrer',

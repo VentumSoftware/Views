@@ -1,7 +1,7 @@
 //Herramientas utiles que usamos por ahí
 import comp from './components/index.js';
 import utils from './lib/index.js';
-window.utils = utils;
+
 // ---------------------------- Aux Funcs -------------------------
 
 const serializeState = (state = globalState) => {
@@ -123,6 +123,8 @@ const loadComponents = () => {
   });
 };
 
+
+
 // ----------------------------- State funcs -------------------------
 
 // Completa los valores que faltan a state con los dflt del cmp y le agrega las funciones
@@ -130,10 +132,11 @@ const create = (state) => cmps[state.type].create(state);
 // Dibuja el componente dentro del parent (nodo html)
 const renderChilds = (state) => cmps[state.type].renderChilds(state);
 const render = (state, parent) => cmps[state.type].render(state, parent);
+const update = (state, parent) => cmps[state.type].update(state);
 const hide = (state, parent) => cmps[state.type].hide(state, parent);
 const show = (state, parent) => cmps[state.type].show(state, parent);
 const isRendering = (state, parent) => cmps[state.type].isRendering(state, parent);
-//Me devuelve el componente padre del child
+// Me devuelve el componente padre del child
 const getParent = (state, root = globalState) => cmps[state.type].getParent(state, root);
 const onEvent = (state, eventName, func, otherData) => cmps[state.type].onEvent(state, eventName, func, otherData);
 
@@ -141,5 +144,5 @@ const call = (func, state, params) => cmps[state.type][func](params);
 
 export default {
   serializeState, loadComponents,
-  create, render,hide,show,renderChilds, render, isRendering, getParent, onEvent, call,
+  create, render, update, hide, show, renderChilds, render, isRendering, getParent, onEvent, call
 };

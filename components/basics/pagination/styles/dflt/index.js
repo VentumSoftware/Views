@@ -1,5 +1,102 @@
 const dfltState = {
+  index: 0,
+  elementsPerPage: 10,
+  totalElements: 0,
+  section: 0,
+  pagesPerSection: 10,
+  firstText: "Primero",
+  lastText: "Último",
+  goText: "Ir",
+  foundsText: "Resultados",
+  getData: (state) => {
+    return new Promise((res, rej) => {
+      const vehicle = "869170034336793";
+      fetchWAT(`/davi/runs/${vehicle}?index=${state.index}&count=${state.elementsPerPage}`)
+        .then(data => data.json())
+        .then(res)
+        .catch(rej);
+    });
+  },
+  getCount: (state) => {
+    return new Promise((res, rej) => {
+      const vehicle = "869170034336793";
+      fetchWAT(`/davi/runscount/${vehicle}`)
+        .then(totalElements => totalElements.json())
+        .then(totalElements => res(totalElements.count))
+        .catch(rej);
+    });
+  },
+  onBtnPressed: (state, btn) => {
+    let page = Number.parseInt(btn.innerText);
+    if (!Number.isNaN(page)) {
+      page--;
+      state.index = state.elementsPerPage * page;
+    } else if (btn.innerText === "<<") {
+      state.section--;
+    } else if (btn.innerText === ">>") {
+      state.section++;
+    }
+    return update(state);
+  },
+  //onAfterUpdate: ()=>{console.log("hola")},
+};
+const update = (state) => {
 
+  const getPagesHTML = (state) => {
+    const aStyle = (state, N) => {
+      if (N === cmps.pagination.getSelectedPage(state)) return `style="font-weight: bolder;"`;
+      else return "";
+    };
+    let result = "";
+    let pages = Math.min(state.pagesPerSection, ((state.totalElements - state.index) / state.elementsPerPage));
+    console.log(state)
+    for (let i = 0; i < pages; i++) {
+      const pageN = state.section * state.pagesPerSection + i;
+      result += `
+      <li class="page-item">
+        <a class="page-link" ${aStyle(state, pageN)} href="#">${pageN + 1}</a>
+      </li>`;
+    }
+    return result;
+  };
+
+  return new Promise((res, rej) => {
+    state.getData(state)
+      .then(data => state.data = data)
+      .then(_ => state.getCount(state))
+      .then(count => state.totalElements = count)
+      .then(_ => {
+        state.html.root.innerHTML = `
+            <nav aria-label="Page navigation example">
+              <ul class="pagination" style="margin:0;">
+                <li class="page-item"><a class="page-link" href="#">${state.firstText}</a></li>
+                <li class="page-item"><a class="page-link" href="#"><<</a></li>
+                ${getPagesHTML(state)}
+                <li class="page-item"><a class="page-link" href="#">>></a></li>
+                <li class="page-item"><a class="page-link" href="#">${state.lastText}</a></li>
+                <li class="page-item">
+                  <div class="input-group" style="width:40%">
+                    <div class="input-group-prepend">
+                      <button class="btn btn-outline-secondary page-link" type="button">${state.goText}</button>
+                    </div>
+                    <input type="number" class="form-control page-link" placeholder="1" aria-label="" aria-describedby="basic-addon1">
+                  </div>
+                </li>
+                <li class="page-item" style="align-self:center;">${state.totalElements} ${state.foundsText}</li>
+              </ul>
+            </nav>
+        `;
+        let btns = state.html.root.getElementsByTagName("A");
+        for (let i = 0; i < btns.length; i++) {
+          btns[i].onclick = () => state.onBtnPressed(state, btns[i]);
+        };
+        return views.onEvent(state, "onAfterUpdate", state.onAfterUpdate, {});
+      })
+      .then(_ => {
+        res(state);
+      })
+      .catch(rej);
+  });
 };
 
 const render = (state, parent) => {
@@ -12,27 +109,16 @@ const render = (state, parent) => {
         <ul class="pagination" style="margin:0;">
           <li class="page-item"><a class="page-link" href="#">Primero</a></li>
           <li class="page-item"><a class="page-link" href="#"><<</a></li>
-          <li class="page-item"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item"><a class="page-link" href="#">4</a></li>
-          <li class="page-item"><a class="page-link" href="#">5</a></li>
-          <li class="page-item"><a class="page-link" href="#">6</a></li>
-          <li class="page-item"><a class="page-link" href="#">7</a></li>
-          <li class="page-item"><a class="page-link" href="#">8</a></li>
-          <li class="page-item"><a class="page-link" href="#">9</a></li>
-          <li class="page-item"><a class="page-link" href="#">10</a></li>
-          <li class="page-item"><a class="page-link" href="#">>></a></li>
           <li class="page-item"><a class="page-link" href="#">Último</a></li>
           <li class="page-item">
             <div class="input-group" style="width:40%">
               <div class="input-group-prepend">
-                <button class="btn btn-outline-secondary page-link" type="button">Ir</button>
+                <a class="btn btn-outline-secondary page-link" href="#" type="button">Ir</a>
               </div>
               <input type="number" class="form-control page-link" placeholder="1" aria-label="" aria-describedby="basic-addon1">
             </div>
           </li>
-          <li class="page-item" style="align-self:center;">2341 Resultados</li>
+          <li class="page-item" style="align-self:center;min-inline-size:fit-content;">2341 Resultados</li>
         </ul>
       </nav>
     </div>
@@ -46,15 +132,18 @@ const render = (state, parent) => {
     return state;
   };
 
-  const renderChilds = (state) => new Promise((res, rej) =>res(state));
-
-  state = window.utils.fillObjWithDflt(state, dfltState);
+  const renderChilds = (state) => {
+    console.log("renderChilds");
+    return new Promise((resolve, reject) => resolve(state));
+  }
+  state = fillObjWithDflt(state, dfltState);
 
   return new Promise((res, rej) => {
-    var html = window.utils.stringToHTML(getHTML(state));
+    var html = stringToHTML(getHTML(state));
     html = parent.appendChild(html);
     state = getReferences(state, html.getRootNode());
-    renderChilds(state)
+    update(state)
+      .then(state => renderChilds(state))
       .then(state => {
         if (state.show == true) state.html.root.style.display = "block";
         else state.html.root.style.display = "none";
@@ -63,4 +152,4 @@ const render = (state, parent) => {
   });
 };
 
-export default { dfltState, render }
+export default { dfltState, render, update }

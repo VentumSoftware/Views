@@ -30,7 +30,7 @@ const render = (state, parent) => {
   const renderChilds = (state) => {
     return new Promise((res, rej) => {
       var childsKV = Object.entries(state.childs);
-      window.utils.forEachPromise(childsKV, (childKV) => {
+      window.forEachPromise(childsKV, (childKV) => {
         return new Promise((res, rej) => {
           window.views.render(childKV[1], state.html.col)
             .then(childSt => {
@@ -43,10 +43,10 @@ const render = (state, parent) => {
     });
   };
 
-  state = window.utils.fillObjWithDflt(state, dfltState);
+  state = window.fillObjWithDflt(state, dfltState);
 
   return new Promise((res, rej) => {
-    var html = window.utils.stringToHTML(getHTML(state));
+    var html = window.stringToHTML(getHTML(state));
     html = parent.appendChild(html);
     state = getReferences(state, html.getRootNode());
     renderChilds(state)

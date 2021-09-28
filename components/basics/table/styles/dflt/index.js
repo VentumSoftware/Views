@@ -1,5 +1,4 @@
 const dfltState = {
-
 };
 
 const render = (state, parent) => {
@@ -11,13 +10,13 @@ const render = (state, parent) => {
     Object.values(state.headers).forEach(header => {
       headers += `<th>${header.title}</th>`;
     })
-    
+
 
     var body = "";
     Object.values(state.rows).forEach(row => {
       body += `<tr>`;
       for (let i = 0; i < Object.values(state.headers).length; i++) {
-        body += `<td>${row[i] || state.emptyCellChar}</td>`; 
+        body += `<td>${row[i] || state.emptyCellChar}</td>`;
       }
       body += `<tr>`;
     })
@@ -49,9 +48,9 @@ const render = (state, parent) => {
   const renderChilds = (state) => {
     return new Promise((res, rej) => {
       var childsKV = Object.entries(state.childs);
-      window.utils.forEachPromise(childsKV, (childKV) => {
+      forEachPromise(childsKV, (childKV) => {
         return new Promise((res, rej) => {
-          window.views.render(childKV[1], state.html.col)
+          views.render(childKV[1], state.html.col)
             .then(childSt => {
               state.childs[childKV[0]] = childSt;
               res(state);
@@ -62,10 +61,10 @@ const render = (state, parent) => {
     });
   };
 
-  state = window.utils.fillObjWithDflt(state, dfltState);
+  state = fillObjWithDflt(state, dfltState);
 
   return new Promise((res, rej) => {
-    var html = window.utils.stringToHTML(getHTML(state));
+    var html = stringToHTML(getHTML(state));
     html = parent.appendChild(html);
     state = getReferences(state, html.getRootNode());
     renderChilds(state)
@@ -77,5 +76,40 @@ const render = (state, parent) => {
   });
 };
 
+const update = (state) => {
 
-export default { dfltState, render };
+  return new Promise((res, rej) => {
+    var headers = "";
+
+    Object.values(state.headers).forEach(header => {
+      headers += `<th>${header.title}</th>`;
+    });
+
+    var body = "";
+    Object.values(state.rows).forEach(row => {
+      body += `<tr>`;
+      for (let i = 0; i < Object.values(state.headers).length; i++) {
+        body += `<td>${row[i] || state.emptyCellChar}</td>`;
+      }
+      body += `<tr>`;
+    });
+
+    state.html.root.innerHTML = `
+      <table class="table table-striped" style="margin-bottom:0;">
+        <thead>
+          <tr>
+          ${headers}
+          </tr>
+        </thead>
+        <tbody>
+          ${body}
+        </tbody>
+      </table>
+    `;
+
+    res(state);
+  });
+};
+
+
+export default { dfltState, render, update };
