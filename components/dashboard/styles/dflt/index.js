@@ -70,7 +70,7 @@ const render = (state, parent) => {
       var cat = stringToHTML(catHTML);
       var btn = cat.getElementsByTagName("button")[0];
       btn.addEventListener('click', () =>
-        window.views.onEvent(state, "onSelect", category.onSelect, category))
+        views.onEvent(state, "onSelect", category.onSelect, category))
       state.html.categorys.appendChild(cat.getRootNode());
     });
     return state;

@@ -50,8 +50,8 @@ const dfltState = {
         title: 'Subir Referencias',
         toggle: false,
         onClick: function upload() {
-          let data = window.globalState.childs.daviMap.childs.body.childs[1].editor.layers;
-          let options = window.globalState.childs.daviMap.childs.body.childs[1].editor.options;
+          let data = globalState.childs.daviMap.childs.body.childs[1].editor.layers;
+          let options = globalState.childs.daviMap.childs.body.childs[1].editor.options;
           data = L.layerGroup(data).toGeoJSON();
           console.log(data);
           let i = 0;
@@ -215,7 +215,7 @@ const render = (state, parent) => {
 
 
     //Markers de vehiculos (Última posición)
-    fetch('/davi/vehicles', {
+    fetch('/davi/vehiclesNow', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

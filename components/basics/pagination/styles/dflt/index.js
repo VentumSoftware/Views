@@ -8,24 +8,8 @@ const dfltState = {
   lastText: "Último",
   goText: "Ir",
   foundsText: "Resultados",
-  getData: (state) => {
-    return new Promise((res, rej) => {
-      const vehicle = "869170034336793";
-      fetchWAT(`/davi/runs/${vehicle}?index=${state.index}&count=${state.elementsPerPage}`)
-        .then(data => data.json())
-        .then(res)
-        .catch(rej);
-    });
-  },
-  getCount: (state) => {
-    return new Promise((res, rej) => {
-      const vehicle = "869170034336793";
-      fetchWAT(`/davi/runscount/${vehicle}`)
-        .then(totalElements => totalElements.json())
-        .then(totalElements => res(totalElements.count))
-        .catch(rej);
-    });
-  },
+  //getData: (state) => {},
+  //getCount: (state) => {},
   onBtnPressed: (state, btn) => {
     let page = Number.parseInt(btn.innerText);
     if (!Number.isNaN(page)) {
@@ -61,6 +45,8 @@ const update = (state) => {
   };
 
   return new Promise((res, rej) => {
+    state.getData = eval(state.getData);
+    state.getCount = eval(state.getCount);
     state.getData(state)
       .then(data => state.data = data)
       .then(_ => state.getCount(state))
