@@ -129,6 +129,7 @@ const loadComponents = () => {
 
 // Completa los valores que faltan a state con los dflt del cmp y le agrega las funciones
 const create = (state) => cmps[state.type].create(state);
+const generateID = (state) => cmps[state.type].generateID(state);
 // Dibuja el componente dentro del parent (nodo html)
 const renderChilds = (state) => cmps[state.type].renderChilds(state);
 const render = (state, parent) => cmps[state.type].render(state, parent);
@@ -144,5 +145,5 @@ const call = (func, state, params) => cmps[state.type][func](params);
 
 export default {
   serializeState, loadComponents,
-  create, render, update, hide, show, renderChilds, render, isRendering, getParent, onEvent, call
+  create, generateID, render, update, hide, show, renderChilds, render, isRendering, getParent, onEvent, call
 };

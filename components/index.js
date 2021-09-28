@@ -7,12 +7,25 @@ const dfltState = {
 
 const dfltCmp = {
   create: function (state) {
+    if(state.id == null) state.id = views.generateID(state);
     state.style = state.style || "dflt";
     state = fillObjWithDflt(state, this.styles[state.style].dfltState);
     state = fillObjWithDflt(state, this.dfltState);
     const childKVs = Object.entries(state.childs);
     childKVs.forEach(childKV => state.childs[childKV[0]] = views.create(childKV[1]));
     return state;
+  },
+  generateID: function (state) {
+    let result = "";
+    let child = state;
+    let parent = views.getParent(child);
+    while(parent != null){
+      let key =  Object.keys(parent.childs).find(k => parent.childs[k] === child);
+      result = key + "-" + result;
+      child = parent;
+      parent = views.getParent(child);
+    };
+    return result;
   },
   renderChilds: function (state) {
     return new Promise((res, rej) => {

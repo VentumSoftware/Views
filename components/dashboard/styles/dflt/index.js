@@ -81,13 +81,17 @@ const render = (state, parent) => {
     var html = stringToHTML(getHTML(state));
     html = parent.appendChild(html);
     state = getReferences(state, html.getRootNode());
-    state = renderCategorys(state);
     state.html.logout.addEventListener('click', (e) => {
       e.preventDefault();
       document.cookie = 'access-token=; Max-Age=0';
       location.reload();
     })
-    views.renderChilds(state).then(res);
+    views.renderChilds(state)
+      .then(state=> {
+        state = renderCategorys(state);
+        cmps.dashboard.selectCat(state, Object.keys(state.childs)[0]);
+        res(state);
+      });
   });
 };
 
