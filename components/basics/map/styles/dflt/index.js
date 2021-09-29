@@ -88,9 +88,7 @@ const dfltState = {
 
 };
 
-
 const render = (state, parent) => {
-
   const getHTML = (state) => {
     return `
     <!-- Map -->
@@ -101,9 +99,7 @@ const render = (state, parent) => {
   const getReferences = (state, root) => {
     state.html = {
       root: root.getElementById(state.id),
-
     };
-
     return state;
   };
 
@@ -116,7 +112,7 @@ const render = (state, parent) => {
             state.html.header.innerText = state.title;
 
           if (state.childs.header) {
-            window.views.render(state.childs.header, state.html.header)
+            views.render(state.childs.header, state.html.header)
               .then(child => {
                 if (state.closeBtn)
                   state.html.header.appendChild(stringToHTML(`<button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -141,7 +137,7 @@ const render = (state, parent) => {
       const renderBody = (state) => {
         return new Promise((res, rej) => {
           if (state.childs.body) {
-            window.views.render(state.childs.body, state.html.body)
+            views.render(state.childs.body, state.html.body)
               .then(child => {
                 state.childs.body = child;
                 res(state);
@@ -180,6 +176,7 @@ const render = (state, parent) => {
         .then(state => res(state))
     });
   };
+
   //TODO: Make an editor inside map to update data about areas.
   const customEditor = (state, map) => {
     state.editor.layers = [];
@@ -192,7 +189,7 @@ const render = (state, parent) => {
     //Triggered when a new layer is created.
     map.on('pm:create', (e) => state.editor.onCreate(e));
     map.on('pm:remove', (e) => state.editor.onRemove(e));
-  }
+  };
 
   const drawLayers = (state, map) => {
     //Layers de referencias (Markers, Polyline, Circles)
@@ -205,10 +202,7 @@ const render = (state, parent) => {
       .then((references) => references.json())
       .then((references) => {
         references.forEach((ref) => {
-          L.geoJSON(ref, {
-            onEachFeature(feature, layer) {
-              layer.on('pm:edit', (e) => state.editor.onEdit(e))
-            }
+          L.geoJSON(ref, {onEachFeature(feature, layer) {layer.on('pm:edit', (e) => state.editor.onEdit(e))}
           }).bindPopup(ref => { return ref.feature.properties }).addTo(map)
         });
       });
@@ -223,6 +217,7 @@ const render = (state, parent) => {
     })
       .then((vehicles) => vehicles.json())
       .then((vehicles) => {
+        state.markers = {};
         let markers = {};
         for (let i = 0; i < vehicles.length; i++) {
           markers[vehicles[i].id] = {
@@ -240,15 +235,16 @@ const render = (state, parent) => {
             }
           }
         }
-        Object.values(markers).forEach(markerData => {
-          var marker = L.marker(Object.values(markerData.pos)).addTo(map);
-          if (markerData.popUp.show == "true")
-            marker.bindPopup(markerData.popUp.innerHTML).openPopup();
+        Object.entries(markers).forEach(kv => {
+          var marker = L.marker(Object.values(kv[1].pos)).addTo(map);
+          if (kv[1].popUp.show == "true")
+            marker.bindPopup(kv[1].popUp.innerHTML).openPopup();
           else
-            marker.bindPopup(markerData.popUp.innerHTML);
+            marker.bindPopup(kv[1].popUp.innerHTML);
 
-          markerData.ref = marker;
-          views.onEvent(state, "markerOnCreate", markerData.onCreate, marker);
+          kv[1].ref = marker;
+          state.markers[kv[0]] = kv[1];
+          views.onEvent(state, "markerOnCreate", kv[1].onCreate, marker);
         });
       });
 
@@ -268,7 +264,7 @@ const render = (state, parent) => {
     //     polygon.bindPopup(polygonData.popUp.innerHTML);
     // });
     return state;
-  }
+  };
 
   state = fillObjWithDflt(state, dfltState);
 
@@ -285,8 +281,7 @@ const render = (state, parent) => {
       tileSize: state.tileSize,
       zoomOffset: state.zoomOffset,
       accessToken: state.apitoken
-    })
-      .addTo(mymap);
+    }).addTo(mymap);
     state = drawLayers(state, mymap);
     customEditor(state, mymap);
     renderChilds(state)
