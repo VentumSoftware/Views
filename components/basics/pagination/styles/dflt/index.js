@@ -41,7 +41,7 @@ const update = (state) => {
       else return "";
     };
     let result = "";
-    let pages = Math.min(state.pagesPerSection, ((state.totalElements - state.index) / state.elementsPerPage));
+    let pages = Math.min(state.pagesPerSection, ((state.totalElements - state.section * state.pagesPerSection * state.elementsPerPage) / state.elementsPerPage));
     for (let i = 0; i < pages; i++) {
       const pageN = state.section * state.pagesPerSection + i;
       result += `

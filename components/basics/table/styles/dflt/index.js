@@ -81,6 +81,9 @@ const render = (state, parent) => {
 
 const update = (state) => {
 
+  console.log("update")
+  console.log(state)
+
   return new Promise((res, rej) => {
     var headers = "";
 
