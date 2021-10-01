@@ -59,7 +59,7 @@ const render = (state, parent) => {
     state = getReferences(state, html);
     state.html.btn.addEventListener(
       'click',
-      (e) => views.onEvent(state, "onClick", state.onClick)
+      (e) => views.onEvent(state, "onClick", state.onClick, e)
     );
     res(state);
   });

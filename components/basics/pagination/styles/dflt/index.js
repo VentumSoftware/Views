@@ -86,9 +86,7 @@ const update = (state) => {
         };
         return views.onEvent(state, "onAfterUpdate", state.onAfterUpdate, {});
       })
-      .then(_ => {
-        res(state);
-      })
+      .then(_ => res(state))
       .catch(rej);
   });
 };
