@@ -44,6 +44,7 @@ const render = (state, parent) => {
 
   const getReferences = (state, root) => {
     state.html = {
+      root: root.getElementsByTagName("button")[0],
       btn: root.getElementsByTagName("button")[0],
     };
     state.html.btn.id = state.id + "_btn";

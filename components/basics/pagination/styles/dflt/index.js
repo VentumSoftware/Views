@@ -16,9 +16,18 @@ const dfltState = {
       page--;
       state.index = state.elementsPerPage * page;
     } else if (btn.innerText === "<<") {
-      state.section--;
+      state.section = Math.max(Number.parseInt(state.section)-1, 0);
     } else if (btn.innerText === ">>") {
-      state.section++;
+      const maxSection = Number.parseInt((state.totalElements/state.elementsPerPage)/state.pagesPerSection);
+      state.section = Math.min(Number.parseInt(state.section)+1, maxSection);
+    } else if (btn.innerText === "Primero") {
+      state.index = 0;
+      state.section = 0;
+    }else if (btn.innerText === "Último") {
+      const maxPage = Number.parseInt(state.totalElements/state.elementsPerPage);
+      const maxSection = Number.parseInt(maxPage/state.pagesPerSection);
+      state.index = state.totalElements - state.elementsPerPage;
+      state.section = maxSection;
     }
     return update(state);
   },
@@ -33,7 +42,6 @@ const update = (state) => {
     };
     let result = "";
     let pages = Math.min(state.pagesPerSection, ((state.totalElements - state.index) / state.elementsPerPage));
-    console.log(state)
     for (let i = 0; i < pages; i++) {
       const pageN = state.section * state.pagesPerSection + i;
       result += `
@@ -118,10 +126,7 @@ const render = (state, parent) => {
     return state;
   };
 
-  const renderChilds = (state) => {
-    console.log("renderChilds");
-    return new Promise((resolve, reject) => resolve(state));
-  }
+  const renderChilds = (state) =>new Promise((resolve, reject) => resolve(state));
   state = fillObjWithDflt(state, dfltState);
 
   return new Promise((res, rej) => {

@@ -1,6 +1,25 @@
 const dfltState = {
 };
 
+const getHeadersRowsHTML = (state, root) => {
+  state.html.headers = Array.from(root.getElementsByTagName("TH"));
+  let rows = Array.from(root.getElementsByTagName("TR"));
+  state.html.rows = rows.map(r=> Array.from(r.getElementsByTagName("TD")));
+  return state;
+};
+
+const renderChilds = (state) => {
+  let childs = Object.entries(state.childs);
+  return new Promise((res,rej) => {
+    forEachPromise(childs, (child) => {
+      let i = child[0].split("_")[0];
+      let j = child[0].split("_")[1];
+      return views.render(child[1], state.html.rows[Number.parseInt(i) +1][j]);
+    }).then(_=> res(state));
+  })
+  
+};
+
 const render = (state, parent) => {
 
   const getHTML = (state) => {
@@ -11,14 +30,13 @@ const render = (state, parent) => {
       headers += `<th>${header.title}</th>`;
     })
 
-
     var body = "";
     Object.values(state.rows).forEach(row => {
       body += `<tr>`;
       for (let i = 0; i < Object.values(state.headers).length; i++) {
-        body += `<td>${row[i] || state.emptyCellChar}</td>`;
+        body += `<td style="padding: .5rem;vertical-align: middle;">${row[i] || state.emptyCellChar}</td>`;
       }
-      body += `<tr>`;
+      body += `</tr>`;
     })
 
     return `
@@ -42,23 +60,8 @@ const render = (state, parent) => {
     state.html = {
       root: root.getElementById(state.id + "-table-root"),
     };
+    state= getHeadersRowsHTML(state, state.html.root);
     return state;
-  };
-
-  const renderChilds = (state) => {
-    return new Promise((res, rej) => {
-      var childsKV = Object.entries(state.childs);
-      forEachPromise(childsKV, (childKV) => {
-        return new Promise((res, rej) => {
-          views.render(childKV[1], state.html.col)
-            .then(childSt => {
-              state.childs[childKV[0]] = childSt;
-              res(state);
-            });
-        })
-      });
-      res(state);
-    });
   };
 
   state = fillObjWithDflt(state, dfltState);
@@ -68,7 +71,7 @@ const render = (state, parent) => {
     html = parent.appendChild(html);
     state = getReferences(state, html.getRootNode());
     renderChilds(state)
-      .then(state => {
+      .then(_ => {
         if (state.show == true) state.html.root.style.display = "block";
         else state.html.root.style.display = "none";
         res(state);
@@ -86,12 +89,12 @@ const update = (state) => {
     });
 
     var body = "";
-    Object.values(state.rows).forEach(row => {
+    Object.values(state.rows).forEach((row, index) => {
       body += `<tr>`;
       for (let i = 0; i < Object.values(state.headers).length; i++) {
-        body += `<td>${row[i] || state.emptyCellChar}</td>`;
+          body += `<td style="padding: .5rem;vertical-align: middle;">${row[i] || state.emptyCellChar}</td>`;
       }
-      body += `<tr>`;
+      body += `</tr>`;
     });
 
     state.html.root.innerHTML = `
@@ -107,7 +110,8 @@ const update = (state) => {
       </table>
     `;
 
-    res(state);
+    state = getHeadersRowsHTML(state, state.html.root);
+    renderChilds(state).then(res).catch(console.log);
   });
 };
 

@@ -133,7 +133,7 @@ const generateID = (state) => cmps[state.type].generateID(state);
 // Dibuja el componente dentro del parent (nodo html)
 const renderChilds = (state) => cmps[state.type].renderChilds(state);
 const render = (state, parent) => cmps[state.type].render(state, parent);
-const update = (state, parent) => cmps[state.type].update(state);
+const update = (state) => cmps[state.type].update(state);
 const hide = (state, parent) => cmps[state.type].hide(state, parent);
 const show = (state, parent) => cmps[state.type].show(state, parent);
 const isRendering = (state, parent) => cmps[state.type].isRendering(state, parent);

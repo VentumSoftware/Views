@@ -141,27 +141,18 @@ const render = (state, parent) => {
         var html = stringToHTML(getHTML(state));
         html = parent.appendChild(html);
         state = getReferences(state, html.getRootNode());
-        if (eval(!state.signUp)) {
-            state.html.signUpLink.remove();
-        } else {
-            state.html.signUpLink.addEventListener('click',
-                (e) => {
-                    e.preventDefault();
-                    eval(state.onSignUp)(state);
-                    return false;
-                });
-        }
-        if (eval(!state.forgotPass)) {
-            state.html.forgotPassLink.remove();
-        } else {
-            state.html.forgotPassLink.addEventListener('click',
-                (e) => {
-                    e.preventDefault();
-                    eval(state.onForgotPass)(state);
-                    return false;
-                });
-        }
-
+        state.html.signUpLink.addEventListener('click',
+            (e) => {
+                e.preventDefault();
+                eval(state.onSignUp)(state);
+                return false;
+            });
+        state.html.forgotPassLink.addEventListener('click',
+            (e) => {
+                e.preventDefault();
+                eval(state.onForgotPass)(state);
+                return false;
+            });
         state.html.signInBtn.addEventListener('click', (e) => eval(state.onSignIn)(state));
         views.renderChilds(state).then(res);
     });
