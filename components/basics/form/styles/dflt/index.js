@@ -13,6 +13,7 @@ const dfltInput = {
   type: "text",
   placeholder: "",
   prepend: null,
+  display: "block",
   helpText: "",
   size: "md", //sm, md, lg
   inline: false,
@@ -23,54 +24,61 @@ const dfltInput = {
   validation: {}
 }
 
-const getButtonHTML = (state) => {
 
-  state.enabled = state.enabled || "true";
-  state.showLabel = state.showLabel || "true";
-
-
-  var innerText = ""
-  if (state.showLabel == "true") innerText = state.label;
-
-  //https://getbootstrap.com/docs/4.0/components/buttons/
-  var addOutline = "";
-  if (state.outline == "true") addOutline = "-outline";
-  var className = `btn btn${addOutline}-${state.btnType}`;
-
-  var attr = ""
-  if (state.selected == "true") {
-    className += " active";
-    attr += `aria-pressed="true"`;
-  };
-
-  var disabled = ""
-  if (state.enabled != "true") disabled = "disabled";
-
-  //https://fontawesome.com/v5.15/icons?d=gallery&p=2
-  var iconClassName = `fa fa-${state.icon}`;
-  var iconDisplay = "";
-  if (state.showIcon == "true") iconDisplay = "inherit";
-  else iconDisplay = "none";
-
-  return `
-    <!-- Btn -->
-    <button class="${className.toString()}" onClick="${(e) => views.onEvent(state, "onClick", state.onClick, e)}" id="btn-root" ${attr} style="
-        width : 100%;
-        height : 100%;"
-    ${disabled}>
-      ${innerText}
-     
-    </button>
-    `
-};
 
 const render = (state, parent) => {
+
+  const getButtonHTML = (col) => {
+
+    col.enabled = col.enabled || "true";
+    col.showLabel = col.showLabel || "true";
+
+
+    var innerText = ""
+    if (col.showLabel == "true") innerText = col.label;
+
+    //https://getbootstrap.com/docs/4.0/components/buttons/
+    var addOutline = "";
+    if (col.outline == "true") addOutline = "-outline";
+    var className = `btn btn${addOutline}-${col.btnType}`;
+
+    var attr = ""
+    if (col.selected == "true") {
+      className += " active";
+      attr += `aria-pressed="true"`;
+    };
+
+    var disabled = ""
+    if (eval(col.enabled) != true) disabled = "disabled";
+
+    //https://fontawesome.com/v5.15/icons?d=gallery&p=2
+    var iconClassName = `fa fa-${col.icon}`;
+    var iconDisplay = "";
+    if (col.showIcon == "true") iconDisplay = "inherit";
+    else iconDisplay = "none";
+
+    return `
+      <!-- Btn -->
+      <button class="${className.toString()}" type="button" id="${state.id + "_" + col.name}" ${attr} style="
+          width : 100%;
+          height : 100%;"
+      ${disabled}>
+        ${innerText}
+       
+      </button>
+      `
+  };
 
   const getHTML = (state) => {
 
     let noNameCounter = 0;
 
     const getCols = (cols) => {
+
+      const isRequired = (col) => {
+        if (eval(col.required) === true) return "required";
+        else return "";
+      }
 
       const getPrepend = (col) => {
         if (col.prepend != null && col.prepend != "null") {
@@ -95,6 +103,8 @@ const render = (state, parent) => {
             `;
         } else {
           col = fillObjWithDflt(col, dfltInput);
+          if (col.display === 'none') col.required = false;
+
           if (col.name == null) col.name = "noNameInput" + noNameCounter++;
 
 
@@ -102,14 +112,14 @@ const render = (state, parent) => {
             if (eval(col.inline)) {
               result += `
               <div class="col-${col.size || "md"}-${col.colSize || 12}">
-                <div class="row">
+                <div class="row" style="display:${col.display || "block"}">
                   <div class="col-4">
                     <label for="${col.name + "_id"}" style="margin:0;vertical-align: -webkit-baseline-middle">${col.label}</label>
                   </div>
                   <div class="col-8">
                     <div class="input-group">
                       ${getPrepend(col)}
-                      <input type="${col.type}" class="form-control" id="${col.name + "_id"}" name="${col.name}" placeholder="${col.placeholder || ""}" required>
+                      <input type="${col.type}" class="form-control" id="${state.id + "_" + col.name}" name="${col.name}" placeholder="${col.placeholder || ""}" ${isRequired(col)}>
                       <div class="valid-feedback">
                         ${col.validFeedback}
                       </div>
@@ -130,7 +140,7 @@ const render = (state, parent) => {
                 <label for="${col.name}">${col.label}</label>
                 <div class="input-group">
                   ${getPrepend(col)}
-                  <input type="${col.type}" class="form-control" id="${col.name}" placeholder="${col.placeholder || ""}" required>
+                  <input type="${col.type}" class="form-control" id="${state.id + "_" + col.name}" placeholder="${col.placeholder || ""}" ${isRequired(col)}>
                   <div class="valid-feedback">
                     ${col.validFeedback}
                   </div>
@@ -182,7 +192,7 @@ const render = (state, parent) => {
       });
       return result;
     };
-    //console.log(state.inputs);
+
     return `
     <!-- Form -->
     <form id="${state.id + "-div-root"}" style="margin:${state.margin}">
@@ -192,10 +202,44 @@ const render = (state, parent) => {
   };
 
   const getReferences = (state, root) => {
+
+    const getInputs = (rows, root) => {
+      if (rows == null) return {};
+      let result = {};
+      const rs = Object.entries(rows);
+      rs.forEach(r => {
+        console.log("r")
+        console.log(r)
+        result[r[0]] = { cols: {} };
+        const cs = Object.entries(r[1].cols);
+        cs.forEach(c => {
+          console.log("c")
+          console.log(c)
+          if (c[1].rows == null) {
+            console.log("c1")
+            console.log(c[1])
+            console.log("result[r[0]].cols[c[0]]")
+            console.log(result[r[0]].cols[c[0]])
+            result[r[0]].cols[c[0]] = root.getElementById(`${state.id + "_" + c[1].name}`);
+            if (c[1].onClick != null) {
+              result[r[0]].cols[c[0]].addEventListener('click', (e) => {
+                e.preventDefault();
+                views.onEvent(state, "onClick", c[1].onClick, e);
+              });
+            }
+          } else {
+            result[r[0]].cols[c[0]] = { rows: getInputs(c[1].rows, root) };
+          }
+        })
+      })
+      return result;
+    };
+
     state.html = {
       root: root.getElementById(state.id + "-div-root"),
-      row: root.getElementById(state.id + "-div-row"),
-      col: root.getElementById(state.id + "-div-col")
+    };
+    state.html.inputs = {
+      rows: getInputs(state.inputs.rows, root)
     };
     return state;
   };
