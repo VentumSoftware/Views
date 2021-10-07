@@ -52,7 +52,6 @@ const dfltState = {
         title: 'Subir Referencias',
         toggle: false,
         onClick: function upload() {
-<<<<<<< HEAD
           let confirmacion = window.confirm("¿Desea confirmar y guardar las nuevas referencias?");
           if (confirmacion) {
             let data = window.globalState.childs.daviMap.childs.body.childs[1].editor.layers;
@@ -95,35 +94,6 @@ const dfltState = {
                     window.alert("¡Los datos no se pudieron guardar!")
                     throw new Error("Falló la carga: " + err);
                   });
-=======
-          let data = globalState.childs.daviMap.childs.body.childs[1].editor.layers;
-          let options = globalState.childs.daviMap.childs.body.childs[1].editor.options;
-          data = L.layerGroup(data).toGeoJSON();
-          console.log(data);
-          let i = 0;
-          data.features.forEach((layer) => {
-            if (layer.hasOwnProperty('_id')) {
-              fetch('/davi/map', {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(layer)
-              })
-                .then(res => res.json())
-                .then(res => layer.id = res.id);
-            } else {
-              layer.properties = options[i];
-              fetch('/davi/map', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(layer)
-              })
-                .then(res => res.json())
-                .then(res => layer.id = res.id);
->>>>>>> 9f179b1a122ca1cc4ff30622c6b83e3e0b1811e4
                 i++;
               }
             });
@@ -137,7 +107,6 @@ const dfltState = {
 
 };
 
-<<<<<<< HEAD
 const updateLayers = (res, layer) => {
   layer.id = res.id;
   window.globalState.childs.daviMap.childs.body.childs[1].editor.layers = [];
@@ -145,8 +114,6 @@ const updateLayers = (res, layer) => {
 }
 
 
-=======
->>>>>>> 9f179b1a122ca1cc4ff30622c6b83e3e0b1811e4
 const render = (state, parent) => {
   const getHTML = (state) => {
     return `
@@ -235,11 +202,6 @@ const render = (state, parent) => {
         .then(state => res(state))
     });
   };
-<<<<<<< HEAD
-=======
-
-  //TODO: Make an editor inside map to update data about areas.
->>>>>>> 9f179b1a122ca1cc4ff30622c6b83e3e0b1811e4
   const customEditor = (state, map) => {
     state.editor.layers = [];
     state.editor.options = [];
@@ -247,14 +209,10 @@ const render = (state, parent) => {
     map.pm.addControls(state.editor.controls);
     map.on('pm:drawstart', (e) => eval(state.editor.onDrawStart)(e));
     map.on('pm:create', (e) => state.editor.onCreate(e));
-<<<<<<< HEAD
     map.on('pm:remove', (e) => {
       //TODO: FIX POPUP BUG
       state.editor.onRemove(e);
     });
-=======
-    map.on('pm:remove', (e) => state.editor.onRemove(e));
->>>>>>> 9f179b1a122ca1cc4ff30622c6b83e3e0b1811e4
   };
 
   const drawLayers = (state, map) => {
