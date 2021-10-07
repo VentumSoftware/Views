@@ -1,4 +1,4 @@
-// import utils from '../../lib/utils.js';
+// import utils from '../../lib/js';
 // import views from "../../../views.js";
 
 const dfltState = {
@@ -14,7 +14,7 @@ const dfltState = {
     
 //     views.onEvent(state, "onBeforeUpdate", state.onBeforeUpdate);
 
-//     state = utils.fillObjWithDflt(state, dfltState);
+//     state = fillObjWithDflt(state, dfltState);
 //     var btn = state.html.btn;
 //     btn.style.display = state.display;
 //     btn.style.width = state.width;

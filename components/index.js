@@ -7,25 +7,61 @@ const dfltState = {
 
 const dfltCmp = {
   create: function (state) {
+    if(state.id == null) state.id = views.generateID(state);
     state.style = state.style || "dflt";
-    state = utils.fillObjWithDflt(state, this.styles[state.style].dfltState);
-    state = utils.fillObjWithDflt(state, this.dfltState);
+    state = fillObjWithDflt(state, this.styles[state.style].dfltState);
+    state = fillObjWithDflt(state, this.dfltState);
     const childKVs = Object.entries(state.childs);
     childKVs.forEach(childKV => state.childs[childKV[0]] = views.create(childKV[1]));
     return state;
   },
+  generateID: function (state) {
+    let result = "";
+    let child = state;
+    let parent = views.getParent(child);
+    while(parent != null){
+      let key =  Object.keys(parent.childs).find(k => parent.childs[k] === child);
+      result = key + "-" + result;
+      child = parent;
+      parent = views.getParent(child);
+    };
+    return result;
+  },
+  renderChilds: function (state) {
+    return new Promise((res, rej) => {
+      var childsKV = Object.entries(state.childs);
+      forEachPromise(childsKV, (childKV) => {
+        return new Promise((res, rej) => {
+          views.render(childKV[1], state.html.content)
+            .then(childSt => {
+              state.childs[childKV[0]] = childSt;
+              res(state);
+            });
+        })
+      });
+      res(state);
+    });
+  },
   render: function(state, parent) {
     return new Promise((res, rej) => {
       this.onEvent(state, "onBeforeRender", state.onBeforeRender);
-
       if (state.html.root != null) {
         state.html.root.parentNode.removeChild(state.html.root);
       }
-        
       state.html = {};
       this.styles[state.style].render(state, parent)
         .then(state => {
           views.onEvent(state, "onAfterRender", state.onAfterRender);
+          res(state);
+        });
+    });
+  },
+  update: function(state, parent) {
+    return new Promise((res, rej) => {
+      this.onEvent(state, "onBeforeUpdate", state.onBeforeUpdate);
+      this.styles[state.style].update(state)
+        .then(state => {
+          views.onEvent(state, "onAfterUpdate", state.onAfterUpdate);
           res(state);
         });
     });
@@ -39,7 +75,7 @@ const dfltCmp = {
     if (state.html.root) {
       state.html.root.style.display = "none";
     }
-    console.log(`${state.type} "${state.id}" hidden!`);
+    //console.log(`${state.type} "${state.id}" hidden!`);
     return state;
   },
   show: function (state, show = true) {
@@ -51,7 +87,7 @@ const dfltCmp = {
     if (state.html.root) {
       state.html.root.style.display = "block";
     }
-    console.log(`${state.type} "${state.id}" showed!`);
+    //console.log(`${state.type} "${state.id}" showed!`);
     return state;
   },
   isRendering: function (state) {
@@ -80,7 +116,7 @@ const dfltCmp = {
       else {
         let childs = Object.values(root.childs);
         for (let i = 0; i < childs.length; i++) {
-          let a = getParent(state, childs[i]);
+          let a = views.getParent(state, childs[i]);
           if (a != null) return a;
         }
         return null;
@@ -95,27 +131,25 @@ const dfltCmp = {
     return new Promise((resolve, reject) => {
       if (func != null) {
         try {
-          console.log(`Event: ${eventName}`);
-          console.log(state);
+          //console.log(`Event: ${eventName}`);
+          //console.log(state);
           if (typeof func === 'string') func = eval(func);
           let r = func(state, otherData);
-          if (r instanceof Promise) r.then((res) => resolve(state));
+          if (r instanceof Promise) r.then(_ => resolve(state));
           else resolve(state);
         } catch (error) {
           console.log(error);
           reject(error);
         }
       } else {
-        //console.log(`Event not defined: ${eventName}`);
-        console.log(`Event: ${eventName} is null`);
-        console.log(state);
+        // console.log(`Event not defined: ${eventName}`);
+        // console.log(`Event: ${eventName} is null`);
+        // console.log(state);
         resolve(state);
       }
     });
   }
 };
-
-
 
 const getComponents = () => {
 
@@ -124,11 +158,11 @@ const getComponents = () => {
       cmp.type = path.split("cmp_")[1].split(".")[0];
       cmp.path = path;
       cmp.stylesPath = path.split("cmp_")[0] + 'styles';
-      cmp.dfltState = utils.fillObjWithDflt(cmp.dfltState, dfltState);
-      utils.loadIndexes(cmp.stylesPath)
+      cmp.dfltState = fillObjWithDflt(cmp.dfltState, dfltState);
+      loadIndexes(cmp.stylesPath)
         .then(styles => {
           cmp.styles = styles;
-          cmp = utils.fillObjWithDflt(cmp, dfltCmp);
+          cmp = fillObjWithDflt(cmp, dfltCmp);
           res(cmp);
         });
     });
@@ -194,93 +228,3 @@ const getComponents = () => {
 };
 
 export default { getComponents };
-
-// const dfltCmp = {
-      //   id: "no-ID-" + type,
-      //   type: type,
-      //   style: "dflt",
-      //   show: true,
-      //   log: false,
-      //   html: {},// Referencias a los componentes de html
-      //   childs: {},
-      //   render: (parent) => {
-      //     return new Promise((res, rej) => {
-      //       onEvent("onBeforeRender", this.onBeforeRender);
-
-      //       if (state.html.root != null)
-      //         state.html.root.parentNode.removeChild(state.html.root);
-      //       state.html = {};
-      //       styles[state.style].render(state, parent)
-      //         .then(state => {
-      //           views.onEvent(state, "onAfterRender", state.onAfterRender);
-      //           res(state);
-      //         });
-      //     });
-      //   },
-      //   hide: (show = false) => {
-      //     if (state._showing)
-      //       views.onEvent(state, "onHide", state.onHide);
-      //     state._showing = false;
-      //     state.show = show;
-      //     if (!state.show)
-      //       state.html.root.style.display = "none";
-      //     Object.values(childs).forEach(child => window.views.hide(child, child.show));
-      //     return state;
-      //   },
-      //   show: (show = false) => {
-      //     if (!state._showing)
-      //       views.onEvent(state, "onShow", state.onShow);
-      //     state._showing = false;
-      //     state.show = show;
-      //     if (!state.show)
-      //       state.html.root.style.display = "none";
-      //     Object.values(childs).forEach(child => window.views.hide(child, child.show));
-      //     return state;
-      //   },
-      //   isRendering: (state) => state._showing,
-      //   getParent: (root) => window.views.getParent(this, root),
-      //   onEvent: (eventName, func, otherData) => {
-      //     //Ejecución de un evento de un componente (Ej: Click en un botón)
-      //     return new Promise((resolve, reject) => {
-      //       if (func != null) {
-      //         try {
-      //           console.log(`Event: ${eventName}`);
-      //           console.log(cmps)
-      //           if (typeof func === 'string') func = eval(func);
-      //           let r = func(state, otherData);
-      //           if (r instanceof Promise) r.then((res) => resolve(state));
-      //           else resolve(state);
-      //         } catch (error) {
-      //           console.log(error);
-      //           reject(error);
-      //         }
-      //       } else {
-      //         //console.log(`Event not defined: ${eventName}`);
-      //         resolve(state);
-      //       }
-      //     });
-      //   }
-      // }
-
-
-      // const onEvent = (eventName, func, otherData) => {
-      //   //Ejecución de un evento de un componente (Ej: Click en un botón)
-      //   return new Promise((resolve, reject) => {
-      //     if (func != null) {
-      //       try {
-      //         console.log(`Event: ${eventName}`);
-      //         console.log(cmps)
-      //         if (typeof func === 'string') func = eval(func);
-      //         let r = func(state, otherData);
-      //         if (r instanceof Promise) r.then((res) => resolve(state));
-      //         else resolve(state);
-      //       } catch (error) {
-      //         console.log(error);
-      //         reject(error);
-      //       }
-      //     } else {
-      //       //console.log(`Event not defined: ${eventName}`);
-      //       resolve(state);
-      //     }
-      //   });
-      // };

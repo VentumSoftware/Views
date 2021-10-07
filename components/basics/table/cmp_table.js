@@ -3,7 +3,7 @@ var dfltState = {
     headers: {},
     rows: {},
     maxCharsPerCell: 20,
-    emptyCellChar: "-",
+    emptyCellChar: "",
 };
 
 export default { dfltState}

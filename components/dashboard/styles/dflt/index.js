@@ -55,22 +55,6 @@ const render = (state, parent) => {
     return state;
   };
 
-  const renderChilds = (state) => {
-    return new Promise((res, rej) => {
-      var childsKV = Object.entries(state.childs);
-      window.utils.forEachPromise(childsKV, (childKV) => {
-        return new Promise((res, rej) => {
-          window.views.render(childKV[1], state.html.content)
-            .then(childSt => {
-              state.childs[childKV[0]] = childSt;
-              res(state);
-            });
-        })
-      });
-      res(state);
-    });
-  };
-
   const renderCategorys = (state) => {
     Object.values(state.categorys).forEach(category => {
       var catHTML = `
@@ -83,29 +67,29 @@ const render = (state, parent) => {
         </div>
       </div>
       `;
-      var cat = window.utils.stringToHTML(catHTML);
+      var cat = stringToHTML(catHTML);
       var btn = cat.getElementsByTagName("button")[0];
       btn.addEventListener('click', () =>
-        window.views.onEvent(state, "onSelect", category.onSelect, category))
+        views.onEvent(state, "onSelect", category.onSelect, category))
       state.html.categorys.appendChild(cat.getRootNode());
     });
     return state;
   };
 
   return new Promise((res, rej) => {
-    state = window.utils.fillObjWithDflt(state, dfltState);
-    var html = window.utils.stringToHTML(getHTML(state));
+    state = fillObjWithDflt(state, dfltState);
+    var html = stringToHTML(getHTML(state));
     html = parent.appendChild(html);
     state = getReferences(state, html.getRootNode());
-    state = renderCategorys(state);
     state.html.logout.addEventListener('click', (e) => {
       e.preventDefault();
       document.cookie = 'access-token=; Max-Age=0';
       location.reload();
     })
-    renderChilds(state)
-      .then(state => {
-        //Seleccionar cat
+    views.renderChilds(state)
+      .then(state=> {
+        state = renderCategorys(state);
+        cmps.dashboard.selectCat(state, Object.keys(state.childs)[0]);
         res(state);
       });
   });

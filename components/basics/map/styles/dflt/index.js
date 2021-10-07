@@ -52,6 +52,7 @@ const dfltState = {
         title: 'Subir Referencias',
         toggle: false,
         onClick: function upload() {
+<<<<<<< HEAD
           let confirmacion = window.confirm("¿Desea confirmar y guardar las nuevas referencias?");
           if (confirmacion) {
             let data = window.globalState.childs.daviMap.childs.body.childs[1].editor.layers;
@@ -94,6 +95,35 @@ const dfltState = {
                     window.alert("¡Los datos no se pudieron guardar!")
                     throw new Error("Falló la carga: " + err);
                   });
+=======
+          let data = globalState.childs.daviMap.childs.body.childs[1].editor.layers;
+          let options = globalState.childs.daviMap.childs.body.childs[1].editor.options;
+          data = L.layerGroup(data).toGeoJSON();
+          console.log(data);
+          let i = 0;
+          data.features.forEach((layer) => {
+            if (layer.hasOwnProperty('_id')) {
+              fetch('/davi/map', {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(layer)
+              })
+                .then(res => res.json())
+                .then(res => layer.id = res.id);
+            } else {
+              layer.properties = options[i];
+              fetch('/davi/map', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(layer)
+              })
+                .then(res => res.json())
+                .then(res => layer.id = res.id);
+>>>>>>> 9f179b1a122ca1cc4ff30622c6b83e3e0b1811e4
                 i++;
               }
             });
@@ -107,6 +137,7 @@ const dfltState = {
 
 };
 
+<<<<<<< HEAD
 const updateLayers = (res, layer) => {
   layer.id = res.id;
   window.globalState.childs.daviMap.childs.body.childs[1].editor.layers = [];
@@ -114,8 +145,9 @@ const updateLayers = (res, layer) => {
 }
 
 
+=======
+>>>>>>> 9f179b1a122ca1cc4ff30622c6b83e3e0b1811e4
 const render = (state, parent) => {
-
   const getHTML = (state) => {
     return `
     <!-- Map -->
@@ -126,9 +158,7 @@ const render = (state, parent) => {
   const getReferences = (state, root) => {
     state.html = {
       root: root.getElementById(state.id),
-
     };
-
     return state;
   };
 
@@ -141,10 +171,10 @@ const render = (state, parent) => {
             state.html.header.innerText = state.title;
 
           if (state.childs.header) {
-            window.views.render(state.childs.header, state.html.header)
+            views.render(state.childs.header, state.html.header)
               .then(child => {
                 if (state.closeBtn)
-                  state.html.header.appendChild(window.utils.stringToHTML(`<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  state.html.header.appendChild(stringToHTML(`<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>`));
                 state.childs.header = child;
@@ -152,7 +182,7 @@ const render = (state, parent) => {
               });
           } else if (state.closeBtn) {
             state.html.header.appendChild(
-              window.utils.stringToHTML(`
+              stringToHTML(`
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -166,14 +196,14 @@ const render = (state, parent) => {
       const renderBody = (state) => {
         return new Promise((res, rej) => {
           if (state.childs.body) {
-            window.views.render(state.childs.body, state.html.body)
+            views.render(state.childs.body, state.html.body)
               .then(child => {
                 state.childs.body = child;
                 res(state);
               });
           }
           else if (state.description) {
-            state.html.body.appendChild(window.utils.stringToHTML(`<p>${state.description}</p>`));
+            state.html.body.appendChild(stringToHTML(`<p>${state.description}</p>`));
             res(state);
           } else {
             res(state);
@@ -184,14 +214,14 @@ const render = (state, parent) => {
       const renderFooter = (state) => {
         return new Promise((res, rej) => {
           if (state.childs.footer) {
-            window.views.render(state.childs.footer, state.html.footer)
+            render(state.childs.footer, state.html.footer)
               .then(child => {
                 state.childs.footer = child;
                 res(state);
               });
           }
           else if (state.footerText) {
-            state.html.footer.appendChild(window.utils.stringToHTML(`<h5 class="modal-footer">${state.footerText}</h5>`));
+            state.html.footer.appendChild(stringToHTML(`<h5 class="modal-footer">${state.footerText}</h5>`));
             res(state);
           }
           else {
@@ -205,6 +235,11 @@ const render = (state, parent) => {
         .then(state => res(state))
     });
   };
+<<<<<<< HEAD
+=======
+
+  //TODO: Make an editor inside map to update data about areas.
+>>>>>>> 9f179b1a122ca1cc4ff30622c6b83e3e0b1811e4
   const customEditor = (state, map) => {
     state.editor.layers = [];
     state.editor.options = [];
@@ -212,10 +247,14 @@ const render = (state, parent) => {
     map.pm.addControls(state.editor.controls);
     map.on('pm:drawstart', (e) => eval(state.editor.onDrawStart)(e));
     map.on('pm:create', (e) => state.editor.onCreate(e));
+<<<<<<< HEAD
     map.on('pm:remove', (e) => {
       //TODO: FIX POPUP BUG
       state.editor.onRemove(e);
     });
+=======
+    map.on('pm:remove', (e) => state.editor.onRemove(e));
+>>>>>>> 9f179b1a122ca1cc4ff30622c6b83e3e0b1811e4
   };
 
   const drawLayers = (state, map) => {
@@ -229,17 +268,14 @@ const render = (state, parent) => {
       .then((references) => references.json())
       .then((references) => {
         references.forEach((ref) => {
-          L.geoJSON(ref, {
-            onEachFeature(feature, layer) {
-              layer.on('pm:edit', (e) => state.editor.onEdit(e))
-            }
+          L.geoJSON(ref, {onEachFeature(feature, layer) {layer.on('pm:edit', (e) => state.editor.onEdit(e))}
           }).bindPopup(ref => { return ref.feature.properties }).addTo(map)
         });
       });
 
 
     //Markers de vehiculos (Última posición)
-    fetch('/davi/vehicles', {
+    fetch('/davi/vehiclesNow', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -247,6 +283,7 @@ const render = (state, parent) => {
     })
       .then((vehicles) => vehicles.json())
       .then((vehicles) => {
+        state.markers = {};
         let markers = {};
         for (let i = 0; i < vehicles.length; i++) {
           markers[vehicles[i].id] = {
@@ -264,15 +301,16 @@ const render = (state, parent) => {
             }
           }
         }
-        Object.values(markers).forEach(markerData => {
-          var marker = L.marker(Object.values(markerData.pos)).addTo(map);
-          if (markerData.popUp.show == "true")
-            marker.bindPopup(markerData.popUp.innerHTML).openPopup();
+        Object.entries(markers).forEach(kv => {
+          var marker = L.marker(Object.values(kv[1].pos)).addTo(map);
+          if (kv[1].popUp.show == "true")
+            marker.bindPopup(kv[1].popUp.innerHTML).openPopup();
           else
-            marker.bindPopup(markerData.popUp.innerHTML);
+            marker.bindPopup(kv[1].popUp.innerHTML);
 
-          markerData.ref = marker;
-          views.onEvent(state, "markerOnCreate", markerData.onCreate, marker);
+          kv[1].ref = marker;
+          state.markers[kv[0]] = kv[1];
+          views.onEvent(state, "markerOnCreate", kv[1].onCreate, marker);
         });
       });
 
@@ -294,10 +332,10 @@ const render = (state, parent) => {
     return state;
   };
 
-  state = window.utils.fillObjWithDflt(state, dfltState);
+  state = fillObjWithDflt(state, dfltState);
 
   return new Promise((res, rej) => {
-    var html = window.utils.stringToHTML(getHTML(state));
+    var html = stringToHTML(getHTML(state));
     html = parent.appendChild(html);
     state = getReferences(state, html.getRootNode());
     var mymap = L.map(state.id).setView(Object.values(state.initialPos), state.initialZoom);
@@ -309,8 +347,7 @@ const render = (state, parent) => {
       tileSize: state.tileSize,
       zoomOffset: state.zoomOffset,
       accessToken: state.apitoken
-    })
-      .addTo(mymap);
+    }).addTo(mymap);
     state = drawLayers(state, mymap);
     customEditor(state, mymap);
     renderChilds(state)
