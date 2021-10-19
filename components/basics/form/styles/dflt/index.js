@@ -208,18 +208,10 @@ const render = (state, parent) => {
       let result = {};
       const rs = Object.entries(rows);
       rs.forEach(r => {
-        console.log("r")
-        console.log(r)
         result[r[0]] = { cols: {} };
         const cs = Object.entries(r[1].cols);
         cs.forEach(c => {
-          console.log("c")
-          console.log(c)
           if (c[1].rows == null) {
-            console.log("c1")
-            console.log(c[1])
-            console.log("result[r[0]].cols[c[0]]")
-            console.log(result[r[0]].cols[c[0]])
             result[r[0]].cols[c[0]] = root.getElementById(`${state.id + "_" + c[1].name}`);
             if (c[1].onClick != null) {
               result[r[0]].cols[c[0]].addEventListener('click', (e) => {
@@ -249,6 +241,8 @@ const render = (state, parent) => {
     var html = stringToHTML(getHTML(state));
     html = parent.appendChild(html);
     state = getReferences(state, html.getRootNode());
+    if (state.show == true) state.html.root.style.display = "block";
+    else state.html.root.style.display = "none";
     res(state);
   });
 };
