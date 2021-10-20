@@ -54,7 +54,18 @@ const submit = (state, path, options = {}) => {
 }
 
 var getData = (state) => {
-    return state.inputs;
+    let result = {};
+    //Inputs:
+    Array.from(state.html.root.getElementsByTagName("input")).forEach(input => {
+        result[input.name] = input.value;
+    })
+    //Botones de dropdown:
+    Array.from(state.html.root.getElementsByClassName("dropdown-toggle")).forEach(btn => {
+        let name = btn.id.split(state.id + "_")[1];
+        result[name] = btn.innerHTML.replace(/(\r\n|\n|\r)/gm, "").trim();
+    })
+    
+    return result;
 };
 
 var fillInputs = (state, values) => {
