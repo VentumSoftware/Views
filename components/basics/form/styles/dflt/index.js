@@ -124,6 +124,12 @@ const render = (state, parent) => {
 
     const getCols = (cols) => {
 
+
+      const isDisabled = (col) => {
+        if(col.type === "fixed") return "disabled";
+        else return "";
+      }
+
       const isRequired = (col) => {
         if (eval(col.required) === true) return "required";
         else return "";
@@ -204,7 +210,7 @@ const render = (state, parent) => {
                   <div class="col-12">
                     <div class="input-group">
                       ${getPrepend(col)}
-                      <input type="${col.type}" class="form-control" id="${state.id + "_" + col.name}" name="${col.name}" placeholder="${col.placeholder || ""}" ${isRequired(col)}>
+                      <input type="${col.type}" class="form-control" id="${state.id + "_" + col.name}" name="${col.name}" placeholder="${col.placeholder || ""}" ${isRequired(col)} ${isDisabled(col)}>
                       <div class="valid-feedback">
                         ${col.validFeedback}
                       </div>
@@ -225,7 +231,7 @@ const render = (state, parent) => {
                 <label style="white-space: nowrap;" for="${col.name}">${col.label}</label>
                 <div class="input-group">
                   ${getPrepend(col)}
-                  <input type="${col.type}" class="form-control" id="${state.id + "_" + col.name}" placeholder="${col.placeholder || ""}" ${isRequired(col)}>
+                  <input type="${col.type}" class="form-control" id="${state.id + "_" + col.name}" placeholder="${col.placeholder || ""}" ${isRequired(col)} ${isDisabled(col)}>
                   <div class="valid-feedback">
                     ${col.validFeedback}
                   </div>
