@@ -7,20 +7,27 @@ const dfltState = {
 
 const dfltCmp = {
   create: function (state) {
-    if(state.id == null) state.id = views.generateID(state);
-    state.style = state.style || "dflt";
-    state = fillObjWithDflt(state, this.styles[state.style].dfltState);
-    state = fillObjWithDflt(state, this.dfltState);
-    const childKVs = Object.entries(state.childs);
-    childKVs.forEach(childKV => state.childs[childKV[0]] = views.create(childKV[1]));
-    return state;
+    try {
+      if (state.id == null) state.id = views.generateID(state);
+      state.style = state.style || "dflt";
+      state = fillObjWithDflt(state, this.styles[state.style].dfltState);
+      state = fillObjWithDflt(state, this.dfltState);
+      const childKVs = Object.entries(state.childs);
+      childKVs.forEach(childKV => state.childs[childKV[0]] = views.create(childKV[1]));
+      return state;
+    } catch (error) {
+      console.log("Failed to create: ");
+      console.log(state);
+      throw error;
+    }
+
   },
   generateID: function (state) {
     let result = "";
     let child = state;
     let parent = views.getParent(child);
-    while(parent != null){
-      let key =  Object.keys(parent.childs).find(k => parent.childs[k] === child);
+    while (parent != null) {
+      let key = Object.keys(parent.childs).find(k => parent.childs[k] === child);
       result = key + "-" + result;
       child = parent;
       parent = views.getParent(child);
@@ -42,7 +49,7 @@ const dfltCmp = {
       res(state);
     });
   },
-  render: function(state, parent) {
+  render: function (state, parent) {
     return new Promise((res, rej) => {
       this.onEvent(state, "onBeforeRender", state.onBeforeRender);
       if (state.html.root != null) {
@@ -56,7 +63,7 @@ const dfltCmp = {
         });
     });
   },
-  update: function(state, parent) {
+  update: function (state, parent) {
     return new Promise((res, rej) => {
       this.onEvent(state, "onBeforeUpdate", state.onBeforeUpdate);
       this.styles[state.style].update(state)
@@ -101,13 +108,13 @@ const dfltCmp = {
     }
     return result;
   }, //reviso todo el arblo a ver si tiene un parent apagado
-  getParent: function(state, root = globalState) {
+  getParent: function (state, root = globalState) {
     let containsChild = (state, parent) => {
       let found = Object.values(parent.childs).find(c => c === state);
       if (found) return true;
       else return false;
     };
-  
+
     try {
       if (root.childs == null || Object.values(root.childs).length == 0)
         return null;
@@ -126,7 +133,7 @@ const dfltCmp = {
       return null;
     }
   },
-  onEvent: function(state, eventName, func, otherData){
+  onEvent: function (state, eventName, func, otherData) {
     //Ejecución de un evento de un componente (Ej: Click en un botón)
     return new Promise((resolve, reject) => {
       if (func != null) {
